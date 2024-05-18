@@ -1,5 +1,5 @@
 {
     "injected_interfaces": {
-      "net/minecraft/text/Style": ["com/samsthenerd/cobblecards/inline/InlineStyle"]
+      "net/minecraft/text/Style": ["com/samsthenerd/inline/InlineStyle"]
     }
   }
