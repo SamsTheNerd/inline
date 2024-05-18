@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "inline",
+  "version": "${version}",
+
+  "name": "Inline",
+  "description": "A library for rendering in line with text",
+  "authors": [
+    "samsthenerd"
+  ],
+  "contact": {
+    "homepage": "https://github.com/SamsTheNerd/inline",
+    "sources": "https://github.com/SamsTheNerd/inline",
+    "issues": "https://github.com/SamsTheNerd/inline/issues"
+  },
+
+  "license": "lgpl-3",
+  "icon": "assets/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.samsthenerd.inline.InlineFabric"
+    ],
+    "client": [
+      "com.samsthenerd.inline.InlineFabricClient"
+    ]
+  },
+  "mixins": [
+    "inline.mixins.json",
+    "inline-common.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "fabric-api": "*",
+    "architectury": ">=6.5.82",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}

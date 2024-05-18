@@ -1,0 +1,40 @@
+.DS_Store
+.vscode/launch.json
+.vscode/settings.json
+/TexturePSDs/
+run/
+build/
+bin/
+.gradle/
+.architectury-transformer/
+/JSScripts/
+remappedSrc/
+modrinth_token.txt
+curseforge_token.txt
+PlanningAndSchemingAndWhatnot/
+todo.md
+
+# hexdoc
+_site/
+_checkout/
+__gradle_version__.py
+.hexdoc*/
+
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle

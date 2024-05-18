@@ -1,0 +1,104 @@
+plugins {
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
+    id "org.jetbrains.kotlin.jvm" version "1.7.10" apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+    apply plugin: "org.jetbrains.kotlin.jvm"
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        // The following line declares the mojmap mappings, you may use other mappings as well
+        // mappings loom.officialMojangMappings()
+        // The following line declares the yarn mappings you may select this one as well.
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+
+        // Required for mixin annotation processor
+        annotationProcessor "org.ow2.asm:asm:${project.asm_version}"
+        annotationProcessor "org.ow2.asm:asm-analysis:${project.asm_version}"
+        annotationProcessor "org.ow2.asm:asm-commons:${project.asm_version}"
+        annotationProcessor "org.ow2.asm:asm-tree:${project.asm_version}"
+        annotationProcessor "org.ow2.asm:asm-util:${project.asm_version}"
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = rootProject.archives_base_name
+    version = rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+        // Add repositories to retrieve artifacts from in here.
+        // You should only use this when depending on other mods because
+        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+        // for more information about repositories.
+        flatDir {
+            name="localModLibs"
+            dir 'libs'
+        }
+        maven { url 'https://jitpack.io' }
+        maven {
+            url "https://squiddev.cc/maven/"
+        }
+        maven { url "https://maven.terraformersmc.com/" }
+        maven { url "https://maven.terraformersmc.com/releases" }
+        maven { url = "https://maven.theillusivec4.top" }
+        maven { url "https://maven.shedaniel.me/" }
+        // Hex Casting Dependencies
+        maven { url "https://maven.blamejared.com/"}
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    java {
+        withSourcesJar()
+    }
+}
+
+ext.trimChangelog = { changelogString -> 
+    String changelogSec = ""
+    def lines = changelogString.split("\n")
+    Boolean going = false;
+    for (String line : lines){
+        if (line.startsWith("##") && !line.startsWith("###")){
+            if(going)
+                break
+            going = true;
+        }
+        if(going){
+            changelogSec += (line + "\n")
+        }
+    }
+    // println(changelogSec)
+    return changelogSec
+}

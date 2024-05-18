@@ -1,0 +1,154 @@
+plugins {
+	// id 'fabric-loom' version '1.1-SNAPSHOT'
+	// id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "me.modmuss50.mod-publish-plugin" version "0.3.3"
+}
+
+// sourceCompatibility = JavaVersion.VERSION_17
+// targetCompatibility = JavaVersion.VERSION_17
+
+// apply from: '../common/build.gradle'
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom {
+    runs {
+        client {
+            programArgs(["--username", "samsthenerd", "--uuid", "6f07899c-2b26-4221-8033-1f53f7a0e111"])
+        }
+    }
+}
+
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+	// minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	// mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
+
+    runtimeOnly(include("com.github.llamalad7.mixinextras:mixinextras-fabric:${mixinExtrasVersion}"))
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set "dev-shadow"
+}
+
+remapJar {
+    // injectAccessWidener = true
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier.set "fabric"
+}
+
+jar {
+    archiveClassifier.set "fabric-dev"
+}
+
+sourcesJar {
+    archiveClassifier.set "fabric-sources"
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}
+
+
+publishMods {
+    file = remapJar.archiveFile
+    additionalFiles.from(sourcesJar.archiveFile)
+    changelog = trimChangelog(file("$rootDir/changelog.md").text)
+    type = STABLE
+    modLoaders.add("fabric")
+    modLoaders.add("quilt")
+
+    version = project.version + "-fabric"
+    displayName = "Inline" + " " + project.version + " [Fabric]"
+ 
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+        projectId = "832658"
+        minecraftVersions.add("1.20.1")
+        requires {
+            slug = "architectury-api"
+        }
+        requires {
+            slug = "cc-tweaked"
+        }
+        optional {
+            slug = "hexcasting"
+        }
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+        projectId = "l2IpK3Ji"
+        minecraftVersions.add("1.20.1")
+
+        optional {
+            slug = "hex-casting"
+        }
+        requires {
+            // architectury api
+            // id = "XV72M5Gg"
+            slug = "architectury-api"
+        }
+        requires {
+            // architectury api
+            // id = "XV72M5Gg"
+            slug = "cc-tweaked"
+        }
+        requires{
+            // fabric api
+            // id = "hfsU4hXq"
+            slug = "fabric-api"
+        }
+    }
+}

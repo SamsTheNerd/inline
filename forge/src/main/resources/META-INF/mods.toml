@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+license = "LGPL-3.0-only"
+issueTrackerURL = "https://github.com/SamsTheNerd/inline/issues"
+showAsResourcePack = false
+
+[[mods]]
+modId = "inline"
+version = "${mod_version}"
+displayName = "Inline"
+displayURL = "https://github.com/SamsTheNerd/inline"
+logoFile = "icon.png"
+authors = "samsthenerd"
+description = "A library for rendering in line with text"
+
+[[dependencies.inline]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+  [[dependencies.inline]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.inline]]
+    modId="architectury"
+    mandatory=true
+    versionRange="[9.1.12,)"
+    ordering="NONE"
+    side="BOTH"
