@@ -39,7 +39,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         MinecraftClient client = MinecraftClient.getInstance();
         float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(45f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(15f));
         renderer.render(ent, 0, 0, matrices, trContext.vertexConsumers, trContext.light);
         return cDist;
     }

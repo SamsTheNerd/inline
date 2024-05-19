@@ -89,8 +89,9 @@ public class MixinInlineRendering {
         matrices.push();
 
         matrices.multiplyPositionMatrix(matrix);
-        matrices.scale(1,1,(float)0.001);
-        matrices.translate(x, y, inlStyle.hasGlowyMarker() ? 0 : 100);
+        matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
+        matrices.translate(x, y, 0);
+        // matrices.translate(x, y, inlStyle.hasGlowyMarker() ? 1 : 10);
 
 
         if(inlStyle.hasGlowyMarker()){

@@ -9,7 +9,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper.Argb;
 
 // this is generic-d weirdly so that other renderers can extend and use its render method while keeping their own data types
 // ultimately the generics don't matter all that much since it's all called based on trust that the renderer a data says it should use can actually use it
@@ -34,7 +33,9 @@ public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineR
         matrices.translate(0, 0, 1);
         RenderSystem.enableDepthTest();
         // context.drawTexture(data.sprite.getTextureId(), 0, 0 , 0, 0, 0, width, height, width, height);
-        int argb = Argb.getArgb((int)(trContext.alpha * 255), (int)(trContext.red * 255), (int)(trContext.green * 255), (int)(trContext.blue * 255));
+        // if(MinecraftClient.getInstance().getTickDelta() < 0.1){
+        //     Inline.logPrint("Drawing sprite with light " + trContext.light + " (" + LightmapTextureManager.getBlockLightCoordinates(trContext.light) + ", " + LightmapTextureManager.getSkyLightCoordinates(trContext.light) + ")");
+        // }
         data.sprite.drawSpriteWithLight(context, 0, 0, 0, 8 * width / height,8, trContext.light, 0xFFFFFFFF);
         return (int)Math.ceil(whRatio * 8);
     }

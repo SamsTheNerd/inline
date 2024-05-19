@@ -30,16 +30,18 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         return new Identifier(Inline.MOD_ID, "item");
     }
 
+    public static boolean debugEarlyReturn = true;
+
     public int render(ItemInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext){
         // only draw it once
         if(trContext.shadow){
             return 8;
         }
         MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.scale(0.5f, 0.5f,0.5f);
+        
         // context.drawItem(data.getStack(), 0, 0);
         // matrices.pop();
+
         ItemStack stack = data.getStack();
         MinecraftClient client = MinecraftClient.getInstance();
         World world = client.world;
@@ -49,12 +51,12 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         }
         BakedModel bakedModel = client.getItemRenderer().getModel(stack, world, null, 0);
         matrices.push();
-        matrices.translate(8, 8, 0);
+        matrices.translate(4, 4, 0);
         RenderSystem.enableDepthTest();
         try {
             boolean flat = !bakedModel.isSideLit();
             matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
-            matrices.scale(16.0f, 16.0f, 1.0f);
+            matrices.scale(8.0f, 8.0f, 8f);
             if (flat) {
                 DiffuseLighting.disableGuiDepthLighting();
             } else {
@@ -62,8 +64,8 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             }
             client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light, OverlayTexture.DEFAULT_UV, bakedModel);
             context.draw();
-            if (flat) {
-                DiffuseLighting.enableGuiDepthLighting();
+            if (!flat) {
+                DiffuseLighting.disableGuiDepthLighting();
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
@@ -74,7 +76,6 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
             throw new CrashException(crashReport);
         }
-        matrices.pop();
         matrices.pop();
         return 8;
     }
