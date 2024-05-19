@@ -1,11 +1,14 @@
 package com.samsthenerd.inline.api;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public interface InlineRenderer<D extends InlineData> {
 
     public Identifier getId();

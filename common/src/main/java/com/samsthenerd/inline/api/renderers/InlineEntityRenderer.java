@@ -23,7 +23,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
 
     public int render(EntityInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext){
         // only draw it once
-        Entity ent = data.getEntity();
+        Entity ent = data.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return 0;
         float width = ent.getWidth();
         float height = ent.getHeight();
@@ -45,7 +45,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
     }
 
     public int charWidth(EntityInlineData data, Style style, int codepoint){
-        Entity ent = data.getEntity();
+        Entity ent = data.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return 0;
         float width = ent.getWidth();
         float height = ent.getHeight();

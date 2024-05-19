@@ -4,10 +4,10 @@
     "package": "com.samsthenerd.inline.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+      "MixinInlineStyle",
+      "MixinInlineParsing"
     ],
     "client": [
-      "MixinInlineStyle",
-      "MixinInlineParsing",
       "MixinInlineRendering",
       "MixinSetTessBuffer",
       "MixinTextWiden"

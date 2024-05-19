@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
@@ -30,7 +30,7 @@ public class MixinTextWiden {
         if(inlData == null){
             return;
         }
-        InlineRenderer ilRenderer = Inline.getRenderer(inlData.getRendererId());
+        InlineRenderer ilRenderer = InlineAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(ilRenderer != null){
             int cWidth = ilRenderer.charWidth(inlData, style, codepoint);
             cir.setReturnValue((float)cWidth);
@@ -46,7 +46,7 @@ public class MixinTextWiden {
         if(inlData == null){
             return original.call(glyph, bold);
         }
-        InlineRenderer ilRenderer = Inline.getRenderer(inlData.getRendererId());
+        InlineRenderer ilRenderer = InlineAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(ilRenderer != null){
             int cWidth = ilRenderer.charWidth(inlData, style, codepoint);
             return cWidth;
