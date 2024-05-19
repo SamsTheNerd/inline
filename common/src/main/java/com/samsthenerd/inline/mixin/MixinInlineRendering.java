@@ -90,8 +90,7 @@ public class MixinInlineRendering {
 
         matrices.multiplyPositionMatrix(matrix);
         matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
-        matrices.translate(x, y, 0);
-        // matrices.translate(x, y, inlStyle.hasGlowyMarker() ? 1 : 10);
+        matrices.translate(x, y, inlStyle.hasGlowyMarker() ? 0 : 500);
 
 
         if(inlStyle.hasGlowyMarker()){
