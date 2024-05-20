@@ -76,7 +76,8 @@ public class MixinInlineRendering {
         if(renderer == null){
             return;
         }
-        // for now just try to get an item renderer set up here
+
+        boolean needsGlowHelp = inlStyle.hasGlowyMarker() && !renderer.canBeTrustedWithOutlines();
 
         Tessellator heldTess = Tessellator.getInstance();
 
@@ -90,27 +91,10 @@ public class MixinInlineRendering {
 
         matrices.multiplyPositionMatrix(matrix);
         matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
-        matrices.translate(x, y, inlStyle.hasGlowyMarker() ? 0 : 500);
-
-
-        if(inlStyle.hasGlowyMarker()){
-            // RenderSystem.disableDepthTest();
-            // RenderSystem.blendFunc(SrcFactor.ONE_MINUS_SRC_ALPHA, DstFactor.DST_ALPHA);
-            // drawContext.fill(-4, -4, 12, 12, style.getColor().getRgb());
-            // RenderSystem.colorMask(false, false, false, true);
-            // RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.DST_ALPHA);
-        }
+        matrices.translate(x, y, needsGlowHelp ? 0 : 500);
 
         TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, red, green, blue, alpha, layerType, vertexConsumers);
         x += renderer.render(inlData, drawContext, index, style, codepoint, trContext);
-
-        if(inlStyle.hasGlowyMarker()){
-            // RenderSystem.colorMask(true, true, true, false);
-            // drawContext.fill(-4, -4, 12, 12, style.getColor().getRgb());
-            // RenderSystem.defaultBlendFunc();
-            // RenderSystem.colorMask(true, true, true, true);
-        }
-
 
         matrices.pop();
 

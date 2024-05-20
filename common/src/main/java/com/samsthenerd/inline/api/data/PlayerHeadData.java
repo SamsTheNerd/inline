@@ -66,38 +66,6 @@ public class PlayerHeadData implements InlineData{
         this.profile = profile;
     }
 
-    // // abstracted so it can be used in the super constructor
-    // @Nullable // nullable for now i guess? do a 
-    // public static Spritelike spriteFromModid(String modid){
-    //     try {
-    //         Mod mod = Platform.getMod(modid);
-    //         Optional<String> logoFile = mod.getLogoFile(128);
-    //         if(logoFile.isEmpty()) return null; // TODO: make this give some placeholder maybe?
-    //         Optional<Path> logoPath = mod.findResource(logoFile.get());
-    //         if(logoPath.isEmpty()) return null;
-    //         return new URLSprite(logoPath.get().toUri().toURL().toString(), new Identifier("inlinemodicon", mod.getModId()));
-    //     } catch (Exception e){
-    //         return null;
-    //     }
-    // }
-
-    // public static Style getTooltipStyle(String modid){
-    //     try {
-    //         Mod mod = Platform.getMod(modid);
-    //         // kinda a shame to have it be just the name and not the description and everything but that'd require adding a new tooltip type i think?
-    //         HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(mod.getName())); 
-    //         Style styled = Style.EMPTY.withHoverEvent(he);
-    //         Optional<String> homepageMaybe = mod.getHomepage();
-    //         if(homepageMaybe.isPresent()){
-    //             ClickEvent ce = new ClickEvent(ClickEvent.Action.OPEN_URL, homepageMaybe.get().toString());
-    //             styled = styled.withClickEvent(ce);
-    //         }
-    //         return styled;
-    //     } catch (Exception e){
-    //         return Style.EMPTY;
-    //     }
-    // }
-
     public IDSerializer<PlayerHeadData> getSerializer(){
         return Serializer.INSTANCE;
     }

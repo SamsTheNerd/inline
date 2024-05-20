@@ -17,7 +17,6 @@ public class TextureSprite extends Spritelike{
     private int textWidth;
     private int textHeight;
 
-    // TODO: figure out if we should clean this up to be fully int pixel based? - deal with that later BUT BEFORE RELEASE
     public TextureSprite(Identifier id, float minU, float minV, float maxU, float maxV, int textWidth, int textHeight){
         this.id = id;
         this.minU = minU;

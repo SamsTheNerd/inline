@@ -54,7 +54,6 @@ public class MixinTextWiden {
         return original.call(glyph, bold);
     }
 
-    // TODO: mixin to the drawer accept call right after this ^ and stick a marker on the style - oh wow i already put a note for that huh
     @WrapOperation(method="method_37297(Lnet/minecraft/client/font/TextRenderer$Drawer;[FIFIIILnet/minecraft/text/Style;I)Z",
     at=@At(value="INVOKE", target="net/minecraft/text/Style.withColor (I)Lnet/minecraft/text/Style;"))
     private Style MarkTextGlowy(Style originalStyle, int color, Operation<Style> original){
