@@ -3,6 +3,8 @@ plugins {
     id "me.modmuss50.mod-publish-plugin" version "0.3.3"
 }
 
+archivesBaseName = "${archivesBaseName}-forge"
+
 architectury {
     platformSetupLoomIde()
     forge()
@@ -79,15 +81,9 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier.set "forge"
-}
-
-jar {
-    archiveClassifier.set "forge-dev"
 }
 
 sourcesJar {
-    archiveClassifier.set "forge-sources"
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }

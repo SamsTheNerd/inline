@@ -10,6 +10,8 @@ plugins {
 
 // apply from: '../common/build.gradle'
 
+archivesBaseName = "${archivesBaseName}-fabric"
+
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -75,15 +77,9 @@ remapJar {
     // injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier.set "fabric"
-}
-
-jar {
-    archiveClassifier.set "fabric-dev"
 }
 
 sourcesJar {
-    archiveClassifier.set "fabric-sources"
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
