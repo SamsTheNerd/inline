@@ -66,22 +66,7 @@ public abstract class Spritelike {
 
         ctx.getVertexConsumers().draw();
     }
-
-    // @Environment(EnvType.CLIENT)
-    // public void drawSpriteWithLight(DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb){
-    //     Identifier texture = this.getTextureId();
-    //     RenderSystem.setShaderTexture(0, texture);
-    //     RenderSystem.setShader(GameRenderer::getPositionTexLightmapColorProgram);
-    //     Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
-    //     BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-    //     bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_LIGHT_COLOR);
-    //     bufferBuilder.vertex(matrix4f, x, y, z).texture(getMinU(), getMinV()).light(light).color(argb).next();
-    //     bufferBuilder.vertex(matrix4f, x, y+height, z).texture(getMinU(), getMaxV()).light(light).color(argb).next();
-    //     bufferBuilder.vertex(matrix4f, x+width, y+height, z).texture(getMaxU(), getMaxV()).light(light).color(argb).next();
-    //     bufferBuilder.vertex(matrix4f, x+width, y, z).texture(getMaxU(), getMinV()).light(light).color(argb).next();
-    //     BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-    // }
-
+    
     @Environment(EnvType.CLIENT)
     public void drawSprite(DrawContext ctx, float x, float y, float z, float width, float height){
         Identifier texture = this.getTextureId();
