@@ -59,9 +59,10 @@ public interface RegexMatcher extends InlineMatcher {
         }
     }
 
-    // public static class Standard extends Simple{
-    //     public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher){
-            
-    //     }
-    // }
+    public static class Standard extends Simple{
+        public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher){
+            // TODO: improve this format to handle escape sequences 
+            super("\\[" + namespace + ":" + innerRegex + "\\]", matcher);
+        }
+    }
 }
