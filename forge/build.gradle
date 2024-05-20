@@ -97,9 +97,10 @@ publishing {
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven {
+            url System.getenv("local_maven_url")
+        }
     }
 }
 
@@ -116,36 +117,22 @@ publishMods {
  
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-        projectId = "832658"
+        projectId = "971167"
         minecraftVersions.add("1.20.1")
         requires {
             slug = "architectury-api"
-        }
-        requires {
-            slug = "cc-tweaked"
-        }
-        optional {
-            slug = "hexcasting"
         }
     }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
-        projectId = "l2IpK3Ji"
+        projectId = "fin1PX4m"
         minecraftVersions.add("1.20.1")
 
-        optional {
-            slug = "hex-casting"
-        }
         requires {
             // architectury api
             // id = "XV72M5Gg"
             slug = "architectury-api"
-        }
-        requires {
-            // architectury api
-            // id = "XV72M5Gg"
-            slug = "cc-tweaked"
         }
     }
 }
