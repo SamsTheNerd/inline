@@ -58,4 +58,10 @@ public interface RegexMatcher extends InlineMatcher {
             return matcher.apply(regexMatch);
         }
     }
+
+    // public static class Standard extends Simple{
+    //     public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher){
+            
+    //     }
+    // }
 }
