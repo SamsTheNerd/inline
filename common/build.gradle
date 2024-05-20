@@ -16,6 +16,16 @@ dependencies {
     
 }
 
+tasks.register("jenkinsArtifacts", Copy){
+    from remapJar, remapSourcesJar, javadocJar
+    into "${rootDir.toPath()}/build/jenkinsArtifacts"
+}
+
+build {
+    dependsOn tasks.named("jenkinsArtifacts")
+}
+
+
 publishing {
     publications {
         mavenCommon(MavenPublication) {
