@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nullable;
 
@@ -24,14 +25,15 @@ public class URLTextureUtils {
 
     // informed by hellozyemlya on discord
     public static Identifier loadTextureFromURL(String url, Identifier textureId){
-        if(LOADED_TEXTURES.containsKey(textureId)){
-            return LOADED_TEXTURES.get(textureId);
+        Identifier maybeTexture = LOADED_TEXTURES.get(textureId);
+        if(maybeTexture != null){
+            return maybeTexture;
         }
         Inline.logPrint("Loading texture from URL: " + url);
-        MinecraftClient.getInstance().execute(() -> {
-        try{
-            URL textureUrl = new URL(url);
-            InputStream stream = textureUrl.openStream();
+        CompletableFuture.runAsync(() -> {
+            try{
+                URL textureUrl = new URL(url);
+                InputStream stream = textureUrl.openStream();
                 Inline.logPrint("in thread maybe ?");
                 try{
                     NativeImageBackedTexture texture = new NativeImageBackedTexture(NativeImage.read(stream));

@@ -1,6 +1,6 @@
 package com.samsthenerd.inline;
 
-import com.samsthenerd.inline.api.InlineAPI;
+import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.renderers.PlayerHeadRenderer;
@@ -12,9 +12,9 @@ public class InlineClient {
     }
 
     private static void addDefaultRenderers(){
-        InlineAPI.INSTANCE.addRenderer(InlineItemRenderer.INSTANCE);
-        InlineAPI.INSTANCE.addRenderer(InlineEntityRenderer.INSTANCE);
-        InlineAPI.INSTANCE.addRenderer(SpriteInlineRenderer.INSTANCE);
-        InlineAPI.INSTANCE.addRenderer(PlayerHeadRenderer.INSTANCE);
+        InlineClientAPI.INSTANCE.addRenderer(InlineItemRenderer.INSTANCE);
+        InlineClientAPI.INSTANCE.addRenderer(InlineEntityRenderer.INSTANCE);
+        InlineClientAPI.INSTANCE.addRenderer(SpriteInlineRenderer.INSTANCE);
+        InlineClientAPI.INSTANCE.addRenderer(PlayerHeadRenderer.INSTANCE);
     }
 }

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.samsthenerd.inline.api.InlineAPI;
+import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineRenderer;
 import com.samsthenerd.inline.api.InlineRenderer.TextRenderingContext;
@@ -72,7 +72,7 @@ public class MixinInlineRendering {
         if(inlData == null){
             return;
         }
-        InlineRenderer renderer = InlineAPI.INSTANCE.getRenderer(inlData.getRendererId());
+        InlineRenderer renderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(renderer == null){
             return;
         }
