@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
@@ -19,6 +21,7 @@ import com.samsthenerd.inline.utils.TextureSprite;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -95,7 +98,7 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
             }
         }
         if(weakProf.getName() != null && !weakProf.getName().equals("")){
-            Optional<GameProfile> maybeProf = NAME_PROFILE_CACHE.get(weakProf.getName());
+            Optional<GameProfile> maybeProf = NAME_PROFILE_CACHE.get(weakProf.getName().toLowerCase());
             if(maybeProf != null){
                 return maybeProf.orElse(null);
             }
@@ -107,7 +110,7 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
         if(weakProf.getId() != null)
             UUID_PROFILE_CACHE.put(weakProf.getId(), Optional.empty());
         if(weakProf.getName() != null && !weakProf.getName().equals(""))
-            NAME_PROFILE_CACHE.put(weakProf.getName(), Optional.empty());
+            NAME_PROFILE_CACHE.put(weakProf.getName().toLowerCase(), Optional.empty());
 
         MinecraftClient client = MinecraftClient.getInstance();
         if(MixinClientHeadChecker.getSessionService() == null){
@@ -118,12 +121,18 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
         SkullBlockEntity.loadProperties(weakProf, betterProf -> {
             Inline.logPrint(betterProf.toString());
-            betterProf.isComplete();
+            Property property = Iterables.getFirst(betterProf.getProperties().get(PlayerSkinProvider.TEXTURES), null);
+            if(property == null){
+                Inline.logPrint("null texture");
+            } else {
+                Inline.logPrint("Texture: "+ property.getValue());
+
+            }
             if(betterProf.getId() != null){
                 UUID_PROFILE_CACHE.put(betterProf.getId(), Optional.of(betterProf));
             }
             if(betterProf.getName() != null && !betterProf.getName().equals("")){
-                NAME_PROFILE_CACHE.put(betterProf.getName(), Optional.of(betterProf));
+                NAME_PROFILE_CACHE.put(betterProf.getName().toLowerCase(), Optional.of(betterProf));
             }
         });
         return null;
