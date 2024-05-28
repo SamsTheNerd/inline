@@ -10,7 +10,9 @@
       "MixinInlineRendering",
       "MixinInlineParsing",
       "MixinSetTessBuffer",
-      "MixinTextWiden"
+      "MixinTextWiden",
+      "MixinClientHeadChecker",
+      "MixinClientAccessor"
     ],
     "injectors": {
       "defaultRequire": 1

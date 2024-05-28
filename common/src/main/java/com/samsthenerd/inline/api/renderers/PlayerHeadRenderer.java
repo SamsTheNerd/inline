@@ -1,17 +1,28 @@
 package com.samsthenerd.inline.api.renderers;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
+import com.samsthenerd.inline.mixin.MixinClientAccessor;
+import com.samsthenerd.inline.mixin.MixinClientHeadChecker;
 import com.samsthenerd.inline.utils.TextureSprite;
 
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 
@@ -25,7 +36,7 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     }
 
     public Identifier textureFromHeadData(PlayerHeadData data){
-        GameProfile prof = PlayerHeadData.getBetterProfile(data.profile);
+        GameProfile prof = getBetterProfile(data.profile);
         Identifier skinTextId;
         if(prof == null){
             // get a steve head i guess
@@ -68,5 +79,53 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     @Override
     public int charWidth(PlayerHeadData data, Style style, int codepoint){
         return 8;
+    }
+
+
+    public static final Map<UUID, Optional<GameProfile>> UUID_PROFILE_CACHE = new HashMap<>();
+    public static final Map<String, Optional<GameProfile>> NAME_PROFILE_CACHE = new HashMap<>();
+
+    @Nullable
+    public static GameProfile getBetterProfile(GameProfile weakProf){
+        // try to find the better profile in our caches
+        if(weakProf.getId() != null){
+            Optional<GameProfile> maybeProf = UUID_PROFILE_CACHE.get(weakProf.getId());
+            if(maybeProf != null){
+                return maybeProf.orElse(null);
+            }
+        }
+        if(weakProf.getName() != null && !weakProf.getName().equals("")){
+            Optional<GameProfile> maybeProf = NAME_PROFILE_CACHE.get(weakProf.getName());
+            if(maybeProf != null){
+                return maybeProf.orElse(null);
+            }
+        }
+        // can't find, try to fetch it
+        // MinecraftClient.getInstance().getSessionService().fillProfileProperties(weakProf, false);
+
+        // set these to empty optionals so we don't repeatedly fetch a ton
+        if(weakProf.getId() != null)
+            UUID_PROFILE_CACHE.put(weakProf.getId(), Optional.empty());
+        if(weakProf.getName() != null && !weakProf.getName().equals(""))
+            NAME_PROFILE_CACHE.put(weakProf.getName(), Optional.empty());
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        if(MixinClientHeadChecker.getSessionService() == null){
+            ApiServices apiServices = ApiServices.create(((MixinClientAccessor)client).getAuthenticationService(), client.runDirectory);
+            apiServices.userCache().setExecutor(client);
+            SkullBlockEntity.setServices(apiServices, client);
+        }
+
+        SkullBlockEntity.loadProperties(weakProf, betterProf -> {
+            Inline.logPrint(betterProf.toString());
+            betterProf.isComplete();
+            if(betterProf.getId() != null){
+                UUID_PROFILE_CACHE.put(betterProf.getId(), Optional.of(betterProf));
+            }
+            if(betterProf.getName() != null && !betterProf.getName().equals("")){
+                NAME_PROFILE_CACHE.put(betterProf.getName(), Optional.of(betterProf));
+            }
+        });
+        return null;
     }
 }

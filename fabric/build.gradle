@@ -51,11 +51,25 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
+    modApi ("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}"){
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modImplementation ("com.terraformersmc:modmenu:${mod_menu_version}"){
+        transitive(false)
+    }
 
     runtimeOnly(include("com.github.llamalad7.mixinextras:mixinextras-fabric:${mixinExtrasVersion}"))
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+}
+
+sourceSets {
+    main {
+        resources {
+            source(project(":common").sourceSets.main.resources)
+        }
+    }
 }
 
 processResources {

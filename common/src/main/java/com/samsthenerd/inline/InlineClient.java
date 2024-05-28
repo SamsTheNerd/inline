@@ -35,6 +35,9 @@ import net.minecraft.util.Identifier;
 
 public class InlineClient {
     public static void initClient(){
+
+        // InlineAutoConfig.init();
+
         addDefaultRenderers();
         addDefaultMatchers();
     }

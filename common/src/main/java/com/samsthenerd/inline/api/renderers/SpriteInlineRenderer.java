@@ -23,6 +23,7 @@ public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineR
     }
 
     public int render(SpriteInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext){
+        if(data == null || data.sprite == null) return 0;
         float height = data.sprite.getSpriteHeight();
         if(height == 0){
             return 0;
@@ -42,6 +43,7 @@ public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineR
     }
 
     public int charWidth(SpriteInlineData data, Style style, int codepoint){
+        if(data == null || data.sprite == null) return 0;
         int height = data.sprite.getSpriteHeight();
         if(height == 0){
             return 0;

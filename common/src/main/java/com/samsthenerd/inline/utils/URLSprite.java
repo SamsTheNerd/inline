@@ -34,7 +34,6 @@ public class URLSprite extends Spritelike{
         return UrlSpriteType.INSTANCE;
     }
 
-    // TODO: figure out asyncronous loading
     public Identifier getTextureId(){
         return URLTextureUtils.loadTextureFromURL(url, id);
     }

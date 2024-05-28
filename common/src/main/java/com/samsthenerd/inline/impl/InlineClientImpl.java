@@ -53,7 +53,7 @@ public class InlineClientImpl extends InlineClientAPI{
     }
 
     @Override
-    public Set<InlineMatcher> getAllMatchers(){
-        return new HashSet<>(MATCHERS.values());
+    public Map<Identifier, InlineMatcher> getAllMatchers(){
+        return new HashMap<>(MATCHERS);
     }
 }

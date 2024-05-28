@@ -1,2 +1,22 @@
 {
+    "matcher.inline.link.title": "Link",
+    "matcher.inline.link.description": "Markdown style links",
+    "matcher.inline.link.example": "[Inline's Repo](https://github.com/SamsTheNerd/inline)",
+    
+    "matcher.inline.modicon.title": "Mod Icon",
+    "matcher.inline.modicon.description": "Displays the mod icon",
+    "matcher.inline.modicon.example": "<mod:inline>",
+
+    "matcher.inline.item.title": "Item",
+    "matcher.inline.item.description": "Displays an item based on its id",
+    "matcher.inline.item.example": "<item:diamond_sword><item:book>",
+
+    "matcher.inline.entity.title": "Entity",
+    "matcher.inline.entity.description": "Displays an entity based on its type id",
+    "matcher.inline.entity.example": "<entity:pig>",
+
+    "matcher.inline.playerface.title": "Player Head",
+    "matcher.inline.playerface.description": "Displays a player's head",
+    "matcher.inline.playerface.example": "<face:samsthenerd>"
+
 }

@@ -1,5 +1,6 @@
 package com.samsthenerd.inline.api;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.samsthenerd.inline.impl.InlineClientImpl;
@@ -20,6 +21,6 @@ public abstract class InlineClientAPI {
 
     public abstract InlineMatcher getMatcher(Identifier id);
 
-    public abstract Set<InlineMatcher> getAllMatchers();
+    public abstract Map<Identifier, InlineMatcher> getAllMatchers();
 
 }
