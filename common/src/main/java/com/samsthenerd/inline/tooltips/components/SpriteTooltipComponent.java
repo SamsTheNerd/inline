@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.tooltips.data.SpriteTooltipData;
 import com.samsthenerd.inline.utils.Spritelike;
+import com.samsthenerd.inline.utils.SpritelikeRenderers;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -35,7 +36,7 @@ public class SpriteTooltipComponent implements TooltipComponent {
         ps.translate(mouseX, mouseY, 500);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         
-        sprite.drawSprite(context, 0, 0, 0, getWidth(font), getHeight());
+        SpritelikeRenderers.getRenderer(sprite).drawSprite(sprite, context, 0, 0, 0, getWidth(font), getHeight());
 
 
         // float scale = ((float)getWidth(font)) / sprite.getSpriteWidth();

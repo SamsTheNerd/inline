@@ -4,12 +4,7 @@ adjacent matches of different types get attached incorrectly:
 
 3 renderers in a row seems to still break ?
 
-item renderer is dark for sidelit/block items
-
-entity renderer is a mess
-
 face renderer needs correct capitalization (kinda cringe)
 
-sprite renderer too bright on signs and whatnot
+glow-y things are still kinda weird
 
-dark block thing is back, probably flattened it too much? idk

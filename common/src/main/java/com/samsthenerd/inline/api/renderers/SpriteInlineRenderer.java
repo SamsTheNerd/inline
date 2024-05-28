@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineRenderer;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
+import com.samsthenerd.inline.utils.SpritelikeRenderers;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
@@ -36,7 +37,7 @@ public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineR
         // if(MinecraftClient.getInstance().getTickDelta() < 0.1){
         //     Inline.logPrint("Drawing sprite with light " + trContext.light + " (" + LightmapTextureManager.getBlockLightCoordinates(trContext.light) + ", " + LightmapTextureManager.getSkyLightCoordinates(trContext.light) + ")");
         // }
-        data.sprite.drawSpriteWithLight(context, 0, 0, 0, 8 * width / height,8, trContext.light, 0xFFFFFFFF);
+        SpritelikeRenderers.getRenderer(data.sprite).drawSpriteWithLight(data.sprite, context, 0, 0, 0, 8 * width / height,8, trContext.light, 0xFFFFFFFF);
         return (int)Math.ceil(whRatio * 8);
     }
 

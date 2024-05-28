@@ -3,27 +3,13 @@ package com.samsthenerd.inline.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joml.Matrix4f;
-
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.samsthenerd.inline.utils.TextureSprite.TextureSpriteType;
 import com.samsthenerd.inline.utils.URLSprite.UrlSpriteType;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
@@ -51,36 +37,7 @@ public abstract class Spritelike {
         return (int) ((getMaxV()-getMinV()) * getTextureHeight());
     }
 
-    @Environment(EnvType.CLIENT)
-    public void drawSpriteWithLight(DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb){
-        Identifier texture = this.getTextureId();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getRenderTypeEntityCutoutProgram);
-        Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
-        // BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        VertexConsumer vc = ctx.getVertexConsumers().getBuffer(RenderLayer.getEntityCutout(texture));
-        vc.vertex(matrix4f, x, y, z).color(argb).texture(getMinU(), getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-        vc.vertex(matrix4f, x, y+height, z).color(argb).texture(getMinU(), getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-        vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(getMaxU(), getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-        vc.vertex(matrix4f, x+width, y, z).color(argb).texture(getMaxU(), getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-
-        ctx.getVertexConsumers().draw();
-    }
     
-    @Environment(EnvType.CLIENT)
-    public void drawSprite(DrawContext ctx, float x, float y, float z, float width, float height){
-        Identifier texture = this.getTextureId();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f, x, y, z).texture(getMinU(), getMinV()).next();
-        bufferBuilder.vertex(matrix4f, x, y+height, z).texture(getMinU(), getMaxV()).next();
-        bufferBuilder.vertex(matrix4f, x+width, y+height, z).texture(getMaxU(), getMaxV()).next();
-        bufferBuilder.vertex(matrix4f, x+width, y, z).texture(getMaxU(), getMinV()).next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-    }
 
     public static Spritelike fromJson(JsonElement json){
         return Spritelike.CODEC.parse(JsonOps.INSTANCE, (json))
@@ -98,6 +55,7 @@ public abstract class Spritelike {
 
     static{
         registerType(UrlSpriteType.INSTANCE);
+        registerType(TextureSpriteType.INSTANCE);
     }
 
     public static void registerType(SpritelikeType type){
