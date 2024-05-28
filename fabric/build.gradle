@@ -17,11 +17,19 @@ architectury {
     fabric()
 }
 
+
 loom {
     runs {
         client {
             programArgs(["--username", "samsthenerd", "--uuid", "6f07899c-2b26-4221-8033-1f53f7a0e111"])
         }
+    }
+}
+
+tasks {
+    tasks.withType(Jar).configureEach {
+        exclude("architectury.common.json")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
 
