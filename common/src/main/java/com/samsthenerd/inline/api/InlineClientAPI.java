@@ -15,4 +15,11 @@ public abstract class InlineClientAPI {
     public abstract InlineRenderer<?> getRenderer(Identifier id);
 
     public abstract Set<InlineRenderer<?>> getAllRenderers();
+
+    public abstract void addMatcher(Identifier id, InlineMatcher matcher);
+
+    public abstract InlineMatcher getMatcher(Identifier id);
+
+    public abstract Set<InlineMatcher> getAllMatchers();
+
 }

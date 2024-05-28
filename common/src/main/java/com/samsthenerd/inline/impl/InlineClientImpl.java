@@ -7,12 +7,14 @@ import java.util.Set;
 
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineClientAPI;
+import com.samsthenerd.inline.api.InlineMatcher;
 import com.samsthenerd.inline.api.InlineRenderer;
 
 import net.minecraft.util.Identifier;
 
 public class InlineClientImpl extends InlineClientAPI{
     private final Map<Identifier, InlineRenderer<?>> RENDERERS = new HashMap<>();
+    private final Map<Identifier, InlineMatcher> MATCHERS = new HashMap<>();
 
     @Override
     public void addRenderer(InlineRenderer<?> renderer){
@@ -38,5 +40,20 @@ public class InlineClientImpl extends InlineClientAPI{
     @Override
     public Set<InlineRenderer<?>> getAllRenderers(){
         return new HashSet<>(RENDERERS.values());
+    }
+    
+    @Override
+    public void addMatcher(Identifier id, InlineMatcher matcher){
+        MATCHERS.put(id, matcher);
+    }
+
+    @Override
+    public InlineMatcher getMatcher(Identifier id){
+        return MATCHERS.get(id);
+    }
+
+    @Override
+    public Set<InlineMatcher> getAllMatchers(){
+        return new HashSet<>(MATCHERS.values());
     }
 }

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.samsthenerd.inline.api.InlineMatchResult;
 import com.samsthenerd.inline.api.InlineMatcher;
+import com.samsthenerd.inline.api.MatcherInfo;
 
 import net.minecraft.util.Pair;
 
@@ -40,14 +41,16 @@ public interface RegexMatcher extends InlineMatcher {
     public static class Simple implements RegexMatcher {
         private Pattern regex;
         private Function<MatchResult, InlineMatchResult.Match> matcher;
+        private MatcherInfo info;
 
-        public Simple(Pattern regex, Function<MatchResult, InlineMatchResult.Match> matcher){
+        public Simple(Pattern regex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
             this.regex = regex;
             this.matcher = matcher;
+            this.info = info;
         }
 
-        public Simple(String regex, Function<MatchResult, InlineMatchResult.Match> matcher){
-            this(Pattern.compile(regex), matcher);
+        public Simple(String regex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+            this(Pattern.compile(regex), matcher, info);
         }
 
         public Pattern getRegex(){
@@ -57,12 +60,17 @@ public interface RegexMatcher extends InlineMatcher {
         public InlineMatchResult.Match getMatch(MatchResult regexMatch){
             return matcher.apply(regexMatch);
         }
+
+        public MatcherInfo getInfo(){
+            return info;
+        }
     }
 
     public static class Standard extends Simple{
-        public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher){
+
+        public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
             // TODO: improve this format to handle escape sequences 
-            super("\\[" + namespace + ":" + innerRegex + "\\]", matcher);
+            super("\\[" + namespace + ":" + innerRegex + "\\]", matcher, info);
         }
     }
 }

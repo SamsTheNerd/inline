@@ -16,7 +16,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import com.samsthenerd.inline.api.InlineAPI;
+import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.InlineMatchResult;
 import com.samsthenerd.inline.api.InlineMatchResult.Match;
 import com.samsthenerd.inline.api.InlineMatcher;
@@ -58,7 +58,7 @@ public class MixinInlineParsing {
         BitSet matchMask = new BitSet(text.length());
 
         // run all the matchers
-        for(InlineMatcher matcher : InlineAPI.INSTANCE.getAllMatchers()){
+        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
             List<Pair<Integer, String>> newUnmatchedTexts = new ArrayList<>();
             for(int i = 0; i < unmatchedTexts.size(); i++){
                 Pair<Integer, String> pair = unmatchedTexts.get(i);
