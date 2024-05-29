@@ -1,6 +1,5 @@
 package com.samsthenerd.inline.api;
 
-import java.util.Map;
 import java.util.Set;
 
 import com.samsthenerd.inline.impl.InlineClientImpl;
@@ -17,10 +16,10 @@ public abstract class InlineClientAPI {
 
     public abstract Set<InlineRenderer<?>> getAllRenderers();
 
-    public abstract void addMatcher(Identifier id, InlineMatcher matcher);
+    public abstract void addMatcher(InlineMatcher matcher);
 
     public abstract InlineMatcher getMatcher(Identifier id);
 
-    public abstract Map<Identifier, InlineMatcher> getAllMatchers();
+    public abstract Set<InlineMatcher> getAllMatchers();
 
 }

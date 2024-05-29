@@ -13,6 +13,7 @@ import com.samsthenerd.inline.api.InlineMatchResult;
 import com.samsthenerd.inline.api.InlineMatcher;
 import com.samsthenerd.inline.api.MatcherInfo;
 
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 public interface RegexMatcher extends InlineMatcher {
@@ -42,15 +43,17 @@ public interface RegexMatcher extends InlineMatcher {
         private Pattern regex;
         private Function<MatchResult, InlineMatchResult.Match> matcher;
         private MatcherInfo info;
+        private Identifier id;
 
-        public Simple(Pattern regex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+        public Simple(Pattern regex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
             this.regex = regex;
             this.matcher = matcher;
             this.info = info;
+            this.id = id;
         }
 
-        public Simple(String regex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
-            this(Pattern.compile(regex), matcher, info);
+        public Simple(String regex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+            this(Pattern.compile(regex), id, matcher, info);
         }
 
         public Pattern getRegex(){
@@ -64,13 +67,17 @@ public interface RegexMatcher extends InlineMatcher {
         public MatcherInfo getInfo(){
             return info;
         }
+
+        public Identifier getId(){
+            return id;
+        }
     }
 
     public static class Standard extends Simple{
 
-        public Standard(String namespace, String innerRegex, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+        public Standard(String namespace, String innerRegex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
             // TODO: improve this format to handle escape sequences 
-            super("\\[" + namespace + ":" + innerRegex + "\\]", matcher, info);
+            super("\\[" + namespace + ":" + innerRegex + "\\]", id, matcher, info);
         }
     }
 }

@@ -27,7 +27,7 @@ public class InlineConfig {
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
-        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers().values()){
+        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
             matcherConfig.addEntry(makeMatcherConfig(entryBuilder, matcher));
         }
 

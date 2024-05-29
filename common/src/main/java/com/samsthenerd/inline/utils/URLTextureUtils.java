@@ -34,10 +34,15 @@ public class URLTextureUtils {
             try{
                 URL textureUrl = new URL(url);
                 InputStream stream = textureUrl.openStream();
-                Inline.logPrint("in thread maybe ?");
+                Inline.logPrint("in thread maybe ?"); 
                 try{
-                    NativeImageBackedTexture texture = new NativeImageBackedTexture(NativeImage.read(stream));
-                    NativeImage baseImage = texture.getImage();
+                    NativeImage baseImage = NativeImage.read(stream);
+                    if(baseImage == null){
+                        Inline.logPrint("null baseImage: " + url.toString());
+                        return;
+                    }
+                    NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
+                    // NativeImage baseImage = texture.getImage();
                     Identifier actualTextureId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(textureId.toTranslationKey(), texture);
                     LOADED_TEXTURES.put(textureId, actualTextureId);
                     TEXTURE_DIMENSIONS.put(textureId, new Pair<>(baseImage.getWidth(), baseImage.getHeight()));

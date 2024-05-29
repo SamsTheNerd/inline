@@ -58,7 +58,7 @@ public class MixinInlineParsing {
         BitSet matchMask = new BitSet(text.length());
 
         // run all the matchers
-        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers().values()){
+        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
             List<Pair<Integer, String>> newUnmatchedTexts = new ArrayList<>();
             for(int i = 0; i < unmatchedTexts.size(); i++){
                 Pair<Integer, String> pair = unmatchedTexts.get(i);

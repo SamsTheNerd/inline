@@ -51,7 +51,7 @@ public class InlineClient {
 
     private static void addDefaultMatchers(){
         Identifier itemMatcherID = new Identifier(Inline.MOD_ID, "item");
-        InlineClientAPI.INSTANCE.addMatcher(itemMatcherID, new RegexMatcher.Simple("<item:([a-z:\\/_]+)>", (MatchResult mr) ->{
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<item:([a-z:\\/_]+)>", itemMatcherID, (MatchResult mr) ->{
             Item item = Registries.ITEM.get(new Identifier(mr.group(1)));
             if(item == null) return null;
             ItemStack stack = new ItemStack(item);
@@ -60,14 +60,14 @@ public class InlineClient {
         }, MatcherInfo.fromId(itemMatcherID)));
 
         Identifier entityMatcherID = new Identifier(Inline.MOD_ID, "entity");
-        InlineClientAPI.INSTANCE.addMatcher(entityMatcherID, new RegexMatcher.Simple("<entity:([a-z:\\/_]+)>", (MatchResult mr) ->{
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<entity:([a-z:\\/_]+)>", entityMatcherID, (MatchResult mr) ->{
             EntityType entType = Registries.ENTITY_TYPE.get(new Identifier(mr.group(1)));
             if(entType == null) return null;
             return new DataMatch(EntityInlineData.fromType(entType));
         }, MatcherInfo.fromId(entityMatcherID)));
 
         Identifier linkMatcherId = new Identifier(Inline.MOD_ID, "link");
-        InlineClientAPI.INSTANCE.addMatcher(linkMatcherId, new RegexMatcher.Simple("\\[(.*)\\]\\((.*)\\)", (MatchResult mr) ->{
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("\\[(.*)\\]\\((.*)\\)", linkMatcherId, (MatchResult mr) ->{
             String text = mr.group(1);
             String link = mr.group(2);
             ClickEvent ce = new ClickEvent(ClickEvent.Action.OPEN_URL, link);
@@ -87,7 +87,7 @@ public class InlineClient {
         // }));
 
         Identifier modMatcherId = new Identifier(Inline.MOD_ID, "modicon");
-        InlineClientAPI.INSTANCE.addMatcher(modMatcherId, new RegexMatcher.Simple("<mod:([a-z:\\/_-]+)>", (MatchResult mr) -> {
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<mod:([a-z:\\/_-]+)>", modMatcherId, (MatchResult mr) -> {
             String modid = mr.group(1);
             try{
                 Mod mod = Platform.getMod(modid);
@@ -99,7 +99,7 @@ public class InlineClient {
         }, MatcherInfo.fromId(modMatcherId)));
 
         Identifier faceMatcherId = new Identifier(Inline.MOD_ID, "playerface");
-        InlineClientAPI.INSTANCE.addMatcher(faceMatcherId, new RegexMatcher.Simple("<face:([a-z:A-Z0-9\\/_-]+)>", (MatchResult mr) -> {
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<face:([a-z:A-Z0-9\\/_-]+)>", faceMatcherId, (MatchResult mr) -> {
             String playerNameOrUUID = mr.group(1);
             GameProfile profile;
             try{

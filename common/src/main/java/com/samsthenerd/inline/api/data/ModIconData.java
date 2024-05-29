@@ -9,8 +9,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.InlineData.IDSerializer;
 import com.samsthenerd.inline.utils.Spritelike;
+import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.URLSprite;
 
 import dev.architectury.platform.Mod;
@@ -31,25 +31,31 @@ public class ModIconData extends SpriteInlineData{
         return new Identifier(Inline.MOD_ID, "spritelike");
     }
 
+    public static final Spritelike MISSING_ICON = new TextureSprite(new Identifier(Inline.MOD_ID, "textures/missingicon.png"));
+
     public String modid;
 
     public ModIconData(String modid){
-        super(spriteFromModid(modid));
+        this(modid, true);
+    }
+
+    public ModIconData(String modid, boolean usePlaceholder){
+        super(spriteFromModid(modid, usePlaceholder));
         this.modid = modid;
     }
 
     // abstracted so it can be used in the super constructor
     @Nullable // nullable for now i guess? do a 
-    public static Spritelike spriteFromModid(String modid){
+    public static Spritelike spriteFromModid(String modid, boolean usePlaceholder){
         try {
             Mod mod = Platform.getMod(modid);
             Optional<String> logoFile = mod.getLogoFile(128);
-            if(logoFile.isEmpty()) return null; // TODO: make this give some placeholder maybe?
+            if(logoFile.isEmpty()) return MISSING_ICON;
             Optional<Path> logoPath = mod.findResource(logoFile.get());
-            if(logoPath.isEmpty()) return null;
+            if(logoPath.isEmpty()) return MISSING_ICON;
             return new URLSprite(logoPath.get().toUri().toURL().toString(), new Identifier("inlinemodicon", mod.getModId()));
         } catch (Exception e){
-            return null;
+            return MISSING_ICON;
         }
     }
 
