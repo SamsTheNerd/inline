@@ -12,7 +12,8 @@
       "MixinSetTessBuffer",
       "MixinTextWiden",
       "MixinClientHeadChecker",
-      "MixinClientAccessor"
+      "MixinClientAccessor",
+      "prompts/MixinSuggestInChat"
     ],
     "injectors": {
       "defaultRequire": 1
