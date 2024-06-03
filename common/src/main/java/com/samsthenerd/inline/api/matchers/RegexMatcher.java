@@ -10,16 +10,15 @@ import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import com.samsthenerd.inline.api.InlineMatch;
-import com.samsthenerd.inline.api.InlineMatchResult;
 import com.samsthenerd.inline.api.MatcherInfo;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 public interface RegexMatcher extends ContinousMatcher {
-    public default InlineMatchResult match(String input){
+    public default ContinuousMatchResult match(String input){
         Matcher regexMatcher = getRegex().matcher(input);
-        InlineMatchResult result = new InlineMatchResult();
+        ContinuousMatchResult result = new ContinuousMatchResult();
         while(regexMatcher.find()){
             MatchResult mr = regexMatcher.toMatchResult();
             Pair<InlineMatch, Integer> matchAndGroup = getMatchAndGroup(mr);

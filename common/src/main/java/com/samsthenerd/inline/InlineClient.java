@@ -1,5 +1,6 @@
 package com.samsthenerd.inline;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.MatchResult;
 
@@ -17,9 +18,8 @@ import com.samsthenerd.inline.api.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.renderers.PlayerHeadRenderer;
 import com.samsthenerd.inline.api.renderers.SpriteInlineRenderer;
+import com.samsthenerd.inline.xplat.IModMeta;
 
-import dev.architectury.platform.Mod;
-import dev.architectury.platform.Platform;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -89,13 +89,12 @@ public class InlineClient {
         Identifier modMatcherId = new Identifier(Inline.MOD_ID, "modicon");
         InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<mod:([a-z:\\/_-]+)>", modMatcherId, (MatchResult mr) -> {
             String modid = mr.group(1);
-            try{
-                Mod mod = Platform.getMod(modid);
-                return new DataMatch(new ModIconData(modid), ModIconData.getTooltipStyle(modid));
-            } catch (Exception e){
-                Inline.LOGGER.error("error parsing modicon: " + modid);
+            Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
+            if(maybeMod.isEmpty()){
                 return null;
             }
+            IModMeta mod = maybeMod.get();
+            return new DataMatch(new ModIconData(modid), ModIconData.getTooltipStyle(modid));
         }, MatcherInfo.fromId(modMatcherId)));
 
         Identifier faceMatcherId = new Identifier(Inline.MOD_ID, "playerface");

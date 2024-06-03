@@ -26,10 +26,3 @@ description = "A library for rendering in line with text"
     versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
-
-[[dependencies.inline]]
-    modId="architectury"
-    mandatory=true
-    versionRange="[9.1.12,)"
-    ordering="NONE"
-    side="BOTH"

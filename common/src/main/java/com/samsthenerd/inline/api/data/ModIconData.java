@@ -12,9 +12,8 @@ import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.URLSprite;
+import com.samsthenerd.inline.xplat.IModMeta;
 
-import dev.architectury.platform.Mod;
-import dev.architectury.platform.Platform;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -45,35 +44,40 @@ public class ModIconData extends SpriteInlineData{
     }
 
     // abstracted so it can be used in the super constructor
-    @Nullable // nullable for now i guess? do a 
+    @Nullable
     public static Spritelike spriteFromModid(String modid, boolean usePlaceholder){
+        Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
+        if(maybeMod.isEmpty()){
+            return usePlaceholder ? MISSING_ICON : null;
+        }
+        IModMeta mod = maybeMod.get();
         try {
-            Mod mod = Platform.getMod(modid);
             Optional<String> logoFile = mod.getLogoFile(128);
-            if(logoFile.isEmpty()) return MISSING_ICON;
+            if(logoFile.isEmpty()) return usePlaceholder ? MISSING_ICON : null;
             Optional<Path> logoPath = mod.findResource(logoFile.get());
-            if(logoPath.isEmpty()) return MISSING_ICON;
+            if(logoPath.isEmpty()) return usePlaceholder ? MISSING_ICON : null;
             return new URLSprite(logoPath.get().toUri().toURL().toString(), new Identifier("inlinemodicon", mod.getModId()));
         } catch (Exception e){
-            return MISSING_ICON;
+            return usePlaceholder ? MISSING_ICON : null;
         }
     }
 
     public static Style getTooltipStyle(String modid){
-        try {
-            Mod mod = Platform.getMod(modid);
-            // kinda a shame to have it be just the name and not the description and everything but that'd require adding a new tooltip type i think?
-            HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(mod.getName())); 
-            Style styled = Style.EMPTY.withHoverEvent(he);
-            Optional<String> homepageMaybe = mod.getHomepage();
-            if(homepageMaybe.isPresent()){
-                ClickEvent ce = new ClickEvent(ClickEvent.Action.OPEN_URL, homepageMaybe.get().toString());
-                styled = styled.withClickEvent(ce);
-            }
-            return styled;
-        } catch (Exception e){
+        Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
+        if(maybeMod.isEmpty()){
             return Style.EMPTY;
         }
+        IModMeta mod = maybeMod.get();
+        
+        // kinda a shame to have it be just the name and not the description and everything but that'd require adding a new tooltip type i think?
+        HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(mod.getName())); 
+        Style styled = Style.EMPTY.withHoverEvent(he);
+        Optional<String> homepageMaybe = mod.getHomepage();
+        if(homepageMaybe.isPresent()){
+            ClickEvent ce = new ClickEvent(ClickEvent.Action.OPEN_URL, homepageMaybe.get().toString());
+            styled = styled.withClickEvent(ce);
+        }
+        return styled;
     }
 
     public IDSerializer<SpriteInlineData> getSerializer(){

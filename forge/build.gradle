@@ -55,8 +55,7 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+
     modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -141,20 +140,11 @@ publishMods {
         accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
         projectId = "971167"
         minecraftVersions.add("1.20.1")
-        requires {
-            slug = "architectury-api"
-        }
     }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
         projectId = "fin1PX4m"
         minecraftVersions.add("1.20.1")
-
-        requires {
-            // architectury api
-            // id = "XV72M5Gg"
-            slug = "architectury-api"
-        }
     }
 }

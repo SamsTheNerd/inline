@@ -3,7 +3,7 @@ package com.samsthenerd.inline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.architectury.platform.Platform;
+import com.samsthenerd.inline.xplat.XPlatInstances;
 
 // this will probably be bumped out into its own mod Soon, but i want to get it working in this test environment first
 public class Inline {
@@ -12,12 +12,18 @@ public class Inline {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("inline");
 
+    public static XPlatInstances getXPlats(){
+        return xPlats;
+    }
+
 	public static final void logPrint(String message){
-		if(Platform.isDevelopmentEnvironment())
-			LOGGER.info(message);
+			LOGGER.debug(message);
 	}
 
-    public static void onInitialize(){
+    private static XPlatInstances xPlats;
+
+    public static void onInitialize(XPlatInstances xPlats){
         // nothing yet !
+        Inline.xPlats = xPlats;
     }
 }
