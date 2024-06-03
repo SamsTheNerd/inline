@@ -5,8 +5,8 @@ import java.util.regex.MatchResult;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.api.InlineClientAPI;
-import com.samsthenerd.inline.api.InlineMatchResult.DataMatch;
-import com.samsthenerd.inline.api.InlineMatchResult.TextMatch;
+import com.samsthenerd.inline.api.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.InlineMatch.TextMatch;
 import com.samsthenerd.inline.api.MatcherInfo;
 import com.samsthenerd.inline.api.data.EntityInlineData;
 import com.samsthenerd.inline.api.data.ItemInlineData;

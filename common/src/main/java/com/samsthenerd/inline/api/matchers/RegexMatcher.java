@@ -9,20 +9,20 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.samsthenerd.inline.api.InlineMatch;
 import com.samsthenerd.inline.api.InlineMatchResult;
-import com.samsthenerd.inline.api.InlineMatcher;
 import com.samsthenerd.inline.api.MatcherInfo;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-public interface RegexMatcher extends InlineMatcher {
+public interface RegexMatcher extends ContinousMatcher {
     public default InlineMatchResult match(String input){
         Matcher regexMatcher = getRegex().matcher(input);
         InlineMatchResult result = new InlineMatchResult();
         while(regexMatcher.find()){
             MatchResult mr = regexMatcher.toMatchResult();
-            Pair<InlineMatchResult.Match, Integer> matchAndGroup = getMatchAndGroup(mr);
+            Pair<InlineMatch, Integer> matchAndGroup = getMatchAndGroup(mr);
             if(matchAndGroup.getLeft() == null) continue;
             result.addMatch(mr.start(matchAndGroup.getRight()), mr.end(matchAndGroup.getRight()), matchAndGroup.getLeft());
         }
@@ -32,27 +32,27 @@ public interface RegexMatcher extends InlineMatcher {
     public Pattern getRegex();
 
     @NotNull
-    public default Pair<InlineMatchResult.Match, Integer> getMatchAndGroup(MatchResult regexMatch){
+    public default Pair<InlineMatch, Integer> getMatchAndGroup(MatchResult regexMatch){
         return new Pair<>(getMatch(regexMatch), 0);
     }
 
     @Nullable
-    public InlineMatchResult.Match getMatch(MatchResult regexMatch);
+    public InlineMatch getMatch(MatchResult regexMatch);
 
     public static class Simple implements RegexMatcher {
         private Pattern regex;
-        private Function<MatchResult, InlineMatchResult.Match> matcher;
+        private Function<MatchResult, InlineMatch> matcher;
         private MatcherInfo info;
         private Identifier id;
 
-        public Simple(Pattern regex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+        public Simple(Pattern regex, Identifier id, Function<MatchResult, InlineMatch> matcher, MatcherInfo info){
             this.regex = regex;
             this.matcher = matcher;
             this.info = info;
             this.id = id;
         }
 
-        public Simple(String regex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+        public Simple(String regex, Identifier id, Function<MatchResult, InlineMatch> matcher, MatcherInfo info){
             this(Pattern.compile(regex), id, matcher, info);
         }
 
@@ -60,7 +60,7 @@ public interface RegexMatcher extends InlineMatcher {
             return regex;
         }
 
-        public InlineMatchResult.Match getMatch(MatchResult regexMatch){
+        public InlineMatch getMatch(MatchResult regexMatch){
             return matcher.apply(regexMatch);
         }
 
@@ -75,7 +75,7 @@ public interface RegexMatcher extends InlineMatcher {
 
     public static class Standard extends Simple{
 
-        public Standard(String namespace, String innerRegex, Identifier id, Function<MatchResult, InlineMatchResult.Match> matcher, MatcherInfo info){
+        public Standard(String namespace, String innerRegex, Identifier id, Function<MatchResult, InlineMatch> matcher, MatcherInfo info){
             // TODO: improve this format to handle escape sequences 
             super("\\[" + namespace + ":" + innerRegex + "\\]", id, matcher, info);
         }

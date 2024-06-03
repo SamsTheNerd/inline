@@ -3,7 +3,7 @@ package com.samsthenerd.inline.api;
 import net.minecraft.util.Identifier;
 
 public interface InlineMatcher {
-    public InlineMatchResult match(String input);
+    public void match(MatchContext matchContext);
 
     public MatcherInfo getInfo();
 
