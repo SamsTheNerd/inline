@@ -10,6 +10,8 @@ import com.google.gson.JsonObject;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
+import com.samsthenerd.inline.tooltips.CustomTooltipManager;
+import com.samsthenerd.inline.tooltips.providers.ModDataTTProvider;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.URLSprite;
@@ -44,7 +46,6 @@ public class ModIconData extends SpriteInlineData{
         this.modid = modid;
     }
 
-    // abstracted so it can be used in the super constructor
     @Nullable
     public static Spritelike spriteFromModid(String modid, boolean usePlaceholder){
         Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
@@ -70,8 +71,10 @@ public class ModIconData extends SpriteInlineData{
         }
         IModMeta mod = maybeMod.get();
 
-        // kinda a shame to have it be just the name and not the description and everything but that'd require adding a new tooltip type i think?
-        HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(mod.getName())); 
+        HoverEvent he = new HoverEvent(
+            HoverEvent.Action.SHOW_ITEM, 
+            new HoverEvent.ItemStackContent(CustomTooltipManager.getForTooltip(ModDataTTProvider.INSTANCE, mod))
+        ); 
         Style styled = Style.EMPTY.withHoverEvent(he);
         Optional<String> homepageMaybe = mod.getHomepage();
         if(homepageMaybe.isPresent()){

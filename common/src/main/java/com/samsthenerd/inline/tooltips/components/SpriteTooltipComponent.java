@@ -36,7 +36,7 @@ public class SpriteTooltipComponent implements TooltipComponent {
         ps.translate(mouseX, mouseY, 500);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         
-        SpritelikeRenderers.getRenderer(sprite).drawSprite(sprite, context, 0, 0, 0, getWidth(font), getHeight());
+        SpritelikeRenderers.getRenderer(sprite).drawSprite(sprite, context, 0, 0, 0, getWidth(font), getRenderHeight());
 
 
         // float scale = ((float)getWidth(font)) / sprite.getSpriteWidth();
@@ -54,8 +54,7 @@ public class SpriteTooltipComponent implements TooltipComponent {
         );
     }
 
-    @Override
-    public int getHeight() {
+    private int getRenderHeight(){
         int realWidth = widthProvider.apply(
             (int) ((sprite.getMaxU()-sprite.getMinU()) * sprite.getTextureWidth()),
             (int) ((sprite.getMaxV()-sprite.getMinV()) * sprite.getTextureHeight())
@@ -64,5 +63,10 @@ public class SpriteTooltipComponent implements TooltipComponent {
             return 0;
         }
         return (int)(realWidth * ((double)sprite.getTextureHeight())/sprite.getTextureWidth());
+    }
+
+    @Override
+    public int getHeight() {
+        return getRenderHeight() + 4;
     }
 }

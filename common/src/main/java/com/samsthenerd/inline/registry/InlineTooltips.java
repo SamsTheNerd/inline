@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.samsthenerd.inline.tooltips.CustomTooltipManager;
 import com.samsthenerd.inline.tooltips.components.SpriteTooltipComponent;
 import com.samsthenerd.inline.tooltips.data.SpriteTooltipData;
+import com.samsthenerd.inline.tooltips.providers.ModDataTTProvider;
 
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.TooltipData;
@@ -32,5 +34,6 @@ public class InlineTooltips {
     // should be called sided in tooltip registration stuff
     public static void init(){
         tooltipDataToComponent.put(SpriteTooltipData.class, convertTooltip(SpriteTooltipData.class, SpriteTooltipComponent::new));
+        CustomTooltipManager.registerProvider(ModDataTTProvider.INSTANCE);
     }
 }

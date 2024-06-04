@@ -25,21 +25,27 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         // only draw it once
         Entity ent = data.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return 0;
+
         float width = ent.getWidth();
         float height = ent.getHeight();
-        int cDist = (int)Math.ceil(width * 8 / height);
+
+        float rot = 15f;
+        double radRot = Math.toRadians(rot % 90);
+        double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
+
+        int cDist = (int)Math.ceil(pWidth * 8 / height) + 1;
         if(trContext.shadow){
             return cDist;
         }
         EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(ent);
         MatrixStack matrices = context.getMatrices();
-        matrices.translate(0, 8, 0);
+        matrices.translate(cDist/2.0, 8, 0);
         matrices.scale(8 / height, -8 / height, 8 / height);
         MinecraftClient.getInstance().getTickDelta();
         MinecraftClient client = MinecraftClient.getInstance();
         float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(15f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot));
         renderer.render(ent, 0, 0, matrices, trContext.vertexConsumers, trContext.light);
         return cDist;
     }
@@ -49,6 +55,11 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         if(ent == null) return 0;
         float width = ent.getWidth();
         float height = ent.getHeight();
-        return (int)Math.ceil(width * 8 / height);
+
+        float rot = 15f;
+        double radRot = Math.toRadians(rot % 90);
+        double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
+
+        return (int)Math.ceil(pWidth * 8 / height) + 1;
     }
 }

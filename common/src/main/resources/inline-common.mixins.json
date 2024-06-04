@@ -14,7 +14,8 @@
       "MixinClientHeadChecker",
       "MixinClientAccessor",
       "prompts/MixinSuggestInChat",
-      "MixinAddModIconToTooltip"
+      "MixinAddModIconToTooltip",
+      "MixinHijackFeatherForTooltip"
     ],
     "injectors": {
       "defaultRequire": 1
