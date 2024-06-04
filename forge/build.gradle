@@ -19,7 +19,7 @@ loom {
         // convertAccessWideners = true
         // extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
         // uncomment *and add the file* if we want forge-only mixins?
-        mixinConfig "inline.mixins.json"
+        mixinConfig "inline-fabric.mixins.json"
         mixinConfig "inline-common.mixins.json"
     }
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -69,13 +69,14 @@ dependencies {
 
 }
 
-sourceSets {
-    main {
-        resources {
-            source(project(":common").sourceSets.main.resources)
-        }
-    }
-}
+// breaks mixins
+// sourceSets {
+//     main {
+//         resources {
+//             source(project(":common").sourceSets.main.resources)
+//         }
+//     }
+// }
 
 processResources {
     inputs.property "mod_version", project.mod_version

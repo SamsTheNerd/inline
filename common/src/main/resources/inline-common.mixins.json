@@ -13,7 +13,8 @@
       "MixinTextWiden",
       "MixinClientHeadChecker",
       "MixinClientAccessor",
-      "prompts/MixinSuggestInChat"
+      "prompts/MixinSuggestInChat",
+      "MixinAddModIconToTooltip"
     ],
     "injectors": {
       "defaultRequire": 1

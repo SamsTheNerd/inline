@@ -78,7 +78,7 @@ public class MatchContextImpl implements MatchContext{
         int matchIndex = matchCheck.nextSetBit(0);
         Map<Integer, InlineMatch> squishedMatchMap = new TreeMap<>();
         InlineMatch currentMatch = null;
-        for(int i = 0; i < fullInput.length(); i++){
+        for(int i = matchIndex; i < fullInput.length(); i++){
             if(matchCheck.get(i)){
                 InlineMatch newMatch = matchMap.get(i);
                 if(newMatch != currentMatch){

@@ -17,7 +17,8 @@ public class Inline {
     }
 
 	public static final void logPrint(String message){
-			LOGGER.debug(message);
+        // if(IXPlatAbstractions.getInstance().isDevEnv())
+			LOGGER.info(message);
 	}
 
     private static XPlatInstances xPlats;

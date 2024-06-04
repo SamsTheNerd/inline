@@ -6,6 +6,9 @@ import com.samsthenerd.inline.impl.InlineClientImpl;
 
 import net.minecraft.util.Identifier;
 
+/**
+ * This API is primarily for adding and getting renderers and matchers. 
+ */
 public abstract class InlineClientAPI {
 
     public static final InlineClientAPI INSTANCE = new InlineClientImpl();

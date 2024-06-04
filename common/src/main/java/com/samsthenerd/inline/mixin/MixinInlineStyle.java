@@ -111,7 +111,7 @@ public class MixinInlineStyle implements InlineStyle {
     //     return ((Style)(Object)this).withParent(((PatternStyle)Style.EMPTY.withBold(null)).setHidden(hidden));
     // }
 
-    @ModifyReturnValue(method = "withParent", at = @At("RETURN"))
+    @ModifyReturnValue(method = "withParent(Lnet/minecraft/text/Style;)Lnet/minecraft/text/Style;", at = @At("RETURN"))
 	private Style InlineStyWithParent(Style original, Style parent) {
         if(this.getInlineData() != null){
             original = ((InlineStyle) original).withInlineData(this.getInlineData());
@@ -127,7 +127,7 @@ public class MixinInlineStyle implements InlineStyle {
 		return original;
 	}
 
-	@Inject(method = "equals", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "equals(Ljava/lang/Object;)Z", at = @At("HEAD"), cancellable = true)
 	private void InlineStyEquals(Object obj, CallbackInfoReturnable<Boolean> cir) {
 		if (this != obj && (obj instanceof InlineStyle style)) {
 			if (!Objects.equals(this.getInlineData(), style.getInlineData())) {

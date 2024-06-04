@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
+import com.samsthenerd.inline.impl.InlineStyle;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.URLSprite;
@@ -68,7 +69,7 @@ public class ModIconData extends SpriteInlineData{
             return Style.EMPTY;
         }
         IModMeta mod = maybeMod.get();
-        
+
         // kinda a shame to have it be just the name and not the description and everything but that'd require adding a new tooltip type i think?
         HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(mod.getName())); 
         Style styled = Style.EMPTY.withHoverEvent(he);
@@ -78,6 +79,11 @@ public class ModIconData extends SpriteInlineData{
             styled = styled.withClickEvent(ce);
         }
         return styled;
+    }
+
+    public static Text makeModIcon(IModMeta mod){
+        Style dataStyle = InlineStyle.fromInlineData(new ModIconData(mod.getModId()));
+        return Text.literal(".").setStyle(dataStyle.withParent(getTooltipStyle(mod.getModId())));
     }
 
     public IDSerializer<SpriteInlineData> getSerializer(){

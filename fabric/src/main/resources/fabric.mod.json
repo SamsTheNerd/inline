@@ -30,7 +30,7 @@
     ]
   },
   "mixins": [
-    "inline.mixins.json",
+    "inline-fabric.mixins.json",
     "inline-common.mixins.json"
   ],
 

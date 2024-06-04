@@ -71,13 +71,14 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-sourceSets {
-    main {
-        resources {
-            source(project(":common").sourceSets.main.resources)
-        }
-    }
-}
+// breaks mixins
+// sourceSets {
+//     main {
+//         resources {
+//             source(project(":common").sourceSets.main.resources)
+//         }
+//     }
+// }
 
 processResources {
     inputs.property "version", project.version

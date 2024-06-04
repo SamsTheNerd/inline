@@ -5,10 +5,12 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
 
 import net.minecraft.client.MinecraftClient;
@@ -43,9 +45,16 @@ public class URLTextureUtils {
                     }
                     NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
                     // NativeImage baseImage = texture.getImage();
-                    Identifier actualTextureId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(textureId.toTranslationKey(), texture);
-                    LOADED_TEXTURES.put(textureId, actualTextureId);
-                    TEXTURE_DIMENSIONS.put(textureId, new Pair<>(baseImage.getWidth(), baseImage.getHeight()));
+                    Runnable registerTextureRunnable = () -> {
+                        Identifier actualTextureId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(textureId.toTranslationKey(), texture);
+                        LOADED_TEXTURES.put(textureId, actualTextureId);
+                        TEXTURE_DIMENSIONS.put(textureId, new Pair<>(baseImage.getWidth(), baseImage.getHeight()));
+                    };
+                    MinecraftClient.getInstance().execute(() -> {
+                        Objects.requireNonNull(registerTextureRunnable);
+                        RenderSystem.recordRenderCall(registerTextureRunnable::run);
+                    });
+                    
                 } catch (Exception e){
                     Inline.LOGGER.error("Failed to load texture from URL: " + url + "\n:" + e);
                 }

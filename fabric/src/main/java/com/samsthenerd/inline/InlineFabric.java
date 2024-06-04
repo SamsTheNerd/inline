@@ -1,5 +1,6 @@
 package com.samsthenerd.inline;
 
+import com.samsthenerd.inline.xplat.FabricAbstractions;
 import com.samsthenerd.inline.xplat.FabricModMeta;
 import com.samsthenerd.inline.xplat.XPlatInstances;
 
@@ -9,7 +10,8 @@ public class InlineFabric implements ModInitializer {
     @Override
 	public void onInitialize() {
         XPlatInstances fabricXPlats = new XPlatInstances(
-            FabricModMeta::getMod
+            FabricModMeta::getMod,
+            new FabricAbstractions()
         );
         Inline.onInitialize(fabricXPlats);
     }

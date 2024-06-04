@@ -3,6 +3,7 @@ package com.samsthenerd.inline.forge;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.InlineClient;
 import com.samsthenerd.inline.config.InlineConfig;
+import com.samsthenerd.inline.forge.xplat.ForgeAbstractions;
 import com.samsthenerd.inline.forge.xplat.ForgeModMeta;
 import com.samsthenerd.inline.xplat.XPlatInstances;
 
@@ -30,7 +31,8 @@ public class InlineForge {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modBus.register(InlineForgeClient.class));
 
         XPlatInstances forgeXPlats = new XPlatInstances(
-            ForgeModMeta::getMod
+            ForgeModMeta::getMod,
+            new ForgeAbstractions()
         );
 
         Inline.onInitialize(forgeXPlats);
