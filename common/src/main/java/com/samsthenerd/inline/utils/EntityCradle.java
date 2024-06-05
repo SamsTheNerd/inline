@@ -27,6 +27,11 @@ public interface EntityCradle {
 
     public static final Map<Identifier, CradleType<? extends EntityCradle>> CRADLES = new HashMap<>();
 
+    public static <T extends CradleType> T addCradleType(T cradleType){
+        CRADLES.put(cradleType.getId(), cradleType);
+        return cradleType;
+    }
+
     public static final Codec<CradleType<?>> TYPE_CODEC = Identifier.CODEC.comapFlatMap(
         (id) -> {
             if(CRADLES.containsKey(id)){

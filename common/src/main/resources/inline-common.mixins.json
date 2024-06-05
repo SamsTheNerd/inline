@@ -15,7 +15,9 @@
       "MixinClientAccessor",
       "prompts/MixinSuggestInChat",
       "MixinAddModIconToTooltip",
-      "MixinHijackFeatherForTooltip"
+      "MixinHijackFeatherForTooltip",
+      "MixinOfflinePlayerSkins",
+      "MixinAccessPlayerModelParts"
     ],
     "injectors": {
       "defaultRequire": 1

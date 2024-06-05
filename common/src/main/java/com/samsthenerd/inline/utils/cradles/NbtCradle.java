@@ -52,9 +52,9 @@ public class NbtCradle implements EntityCradle {
         return ownCachedEntity;
     }
 
-    public static class NbtCradleType implements CradleType<NbtCradle>{
+    private static class NbtCradleType implements CradleType<NbtCradle>{
 
-        public static NbtCradleType INSTANCE = new NbtCradleType();
+        public static NbtCradleType INSTANCE = EntityCradle.addCradleType(new NbtCradleType());
 
         public Identifier getId(){
             return new Identifier(Inline.MOD_ID, "nbt");

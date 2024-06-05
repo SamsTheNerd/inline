@@ -8,7 +8,12 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
+import com.samsthenerd.inline.tooltips.CustomTooltipManager;
+import com.samsthenerd.inline.tooltips.providers.EntityTTProvider;
+import com.samsthenerd.inline.utils.cradles.PlayerCradle;
 
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
 public class PlayerHeadData implements InlineData{
@@ -31,6 +36,19 @@ public class PlayerHeadData implements InlineData{
 
     public IDSerializer<PlayerHeadData> getSerializer(){
         return Serializer.INSTANCE;
+    }
+
+    public HoverEvent getEntityDisplayHoverEvent(){
+        return new HoverEvent(
+            HoverEvent.Action.SHOW_ITEM, 
+            new HoverEvent.ItemStackContent(CustomTooltipManager.getForTooltip(EntityTTProvider.INSTANCE, new PlayerCradle(profile)))
+        ); 
+    }
+
+    public Style getDataStyle(boolean withAdditional){
+        Style superStyle = InlineData.super.getDataStyle(withAdditional);
+        if(!withAdditional) return superStyle;
+        return superStyle.withParent(Style.EMPTY.withHoverEvent(getEntityDisplayHoverEvent()));
     }
 
     public static class Serializer implements InlineData.IDSerializer<PlayerHeadData> {

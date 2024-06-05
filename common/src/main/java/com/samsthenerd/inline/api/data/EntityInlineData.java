@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
+import com.samsthenerd.inline.tooltips.CustomTooltipManager;
+import com.samsthenerd.inline.tooltips.providers.EntityTTProvider;
 import com.samsthenerd.inline.utils.EntityCradle;
 import com.samsthenerd.inline.utils.cradles.EntTypeCradle;
 import com.samsthenerd.inline.utils.cradles.NbtCradle;
@@ -14,6 +16,8 @@ import com.samsthenerd.inline.utils.cradles.NbtCradle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -59,6 +63,19 @@ public class EntityInlineData implements InlineData{
 
     public float getUniqueOffset(){
         return uniqueOffset;
+    }
+
+    public HoverEvent getEntityDisplayHoverEvent(){
+        return new HoverEvent(
+            HoverEvent.Action.SHOW_ITEM, 
+            new HoverEvent.ItemStackContent(CustomTooltipManager.getForTooltip(EntityTTProvider.INSTANCE, cradle))
+        ); 
+    }
+
+    public Style getDataStyle(boolean withAdditional){
+        Style superStyle = InlineData.super.getDataStyle(withAdditional);
+        if(!withAdditional) return superStyle;
+        return superStyle.withParent(Style.EMPTY.withHoverEvent(getEntityDisplayHoverEvent()));
     }
 
     public static class Serializer implements InlineData.IDSerializer<EntityInlineData> {

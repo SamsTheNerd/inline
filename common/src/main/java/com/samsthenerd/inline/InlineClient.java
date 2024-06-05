@@ -63,7 +63,8 @@ public class InlineClient {
         InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<entity:([a-z:\\/_]+)>", entityMatcherID, (MatchResult mr) ->{
             EntityType entType = Registries.ENTITY_TYPE.get(new Identifier(mr.group(1)));
             if(entType == null) return null;
-            return new DataMatch(EntityInlineData.fromType(entType));
+            EntityInlineData entData = EntityInlineData.fromType(entType);
+            return new DataMatch(entData, Style.EMPTY.withHoverEvent(entData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(entityMatcherID)));
 
         Identifier linkMatcherId = new Identifier(Inline.MOD_ID, "link");
@@ -106,7 +107,8 @@ public class InlineClient {
             } catch (IllegalArgumentException e){
                 profile = new GameProfile(null, playerNameOrUUID);
             }
-            return new DataMatch(new PlayerHeadData(profile));
+            PlayerHeadData headData = new PlayerHeadData(profile);
+            return new DataMatch(headData, Style.EMPTY.withHoverEvent(headData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(faceMatcherId)));
     }
 }

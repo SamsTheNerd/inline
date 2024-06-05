@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
-import com.samsthenerd.inline.utils.cradles.NbtCradle.NbtCradleType;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -33,7 +32,7 @@ public class EntTypeCradle<E extends Entity> implements EntityCradle {
     }
 
     public CradleType<?> getType(){
-        return NbtCradleType.INSTANCE;
+        return EntTypeCradleType.INSTANCE;
     }
 
     public Entity getEntity(World world){
@@ -52,9 +51,9 @@ public class EntTypeCradle<E extends Entity> implements EntityCradle {
 
     }
 
-    public static class EntTypeCradleType implements CradleType<EntTypeCradle>{
+    private static class EntTypeCradleType implements CradleType<EntTypeCradle>{
 
-        public static EntTypeCradleType INSTANCE = new EntTypeCradleType();
+        public static EntTypeCradleType INSTANCE = EntityCradle.addCradleType(new EntTypeCradleType());
 
         public Identifier getId(){
             return new Identifier(Inline.MOD_ID, "enttype");

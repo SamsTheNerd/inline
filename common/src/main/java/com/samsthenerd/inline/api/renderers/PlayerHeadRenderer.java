@@ -94,12 +94,18 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
         if(weakProf.getId() != null){
             Optional<GameProfile> maybeProf = UUID_PROFILE_CACHE.get(weakProf.getId());
             if(maybeProf != null){
+                if(maybeProf.isPresent() && maybeProf.get().getId() == null){
+                    Inline.logPrint("null id in UUID cache: " + maybeProf.get().toString());
+                }
                 return maybeProf.orElse(null);
             }
         }
         if(weakProf.getName() != null && !weakProf.getName().equals("")){
             Optional<GameProfile> maybeProf = NAME_PROFILE_CACHE.get(weakProf.getName().toLowerCase());
             if(maybeProf != null){
+                if(maybeProf.isPresent() && maybeProf.get().getId() == null){
+                    Inline.logPrint("null id in name cache: " + maybeProf.get().toString());
+                }
                 return maybeProf.orElse(null);
             }
         }

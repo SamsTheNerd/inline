@@ -8,12 +8,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
+import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
 
-import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 
@@ -50,19 +49,19 @@ public class PlayerCradle implements EntityCradle {
             return null;
         }
         
-        PlayerEntity player = new OtherClientPlayerEntity((ClientWorld)world, profile);
-        if(playerId != null){
-            UUID_PLAYER_CACHE.put(playerId, player);
+        Pair<Entity, Boolean> playerRes = FakeClientPlayerMaker.getPlayerEntity(profile);
+        if(playerRes.getRight() && playerId != null){
+            UUID_PLAYER_CACHE.put(playerId, playerRes.getLeft());
         }
-        if(playerName != null && !playerName.equals("")){
-            NAME_PLAYER_CACHE.put(playerName, player);
+        if(playerRes.getRight() && playerName != null && !playerName.equals("")){
+            NAME_PLAYER_CACHE.put(playerName, playerRes.getLeft());
         }
-        return player;
+        return playerRes.getLeft();
     }
 
-    public static class PlayerCradleType implements CradleType<PlayerCradle>{
+    private static class PlayerCradleType implements CradleType<PlayerCradle>{
 
-        public static PlayerCradleType INSTANCE = new PlayerCradleType();
+        public static PlayerCradleType INSTANCE = EntityCradle.addCradleType(new PlayerCradleType());
 
         public Identifier getId(){
             return new Identifier(Inline.MOD_ID, "nbt");
