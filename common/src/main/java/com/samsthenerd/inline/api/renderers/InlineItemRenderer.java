@@ -62,7 +62,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             } else {
                 DiffuseLighting.enableGuiDepthLighting();
             }
-            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light, OverlayTexture.DEFAULT_UV, bakedModel);
+            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, trContext.vertexConsumers, trContext.light, OverlayTexture.DEFAULT_UV, bakedModel);
             context.draw();
             if (!flat) {
                 DiffuseLighting.disableGuiDepthLighting();
