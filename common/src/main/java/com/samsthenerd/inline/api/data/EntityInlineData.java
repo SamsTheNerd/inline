@@ -3,7 +3,6 @@ package com.samsthenerd.inline.api.data;
 import javax.annotation.Nullable;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
@@ -81,7 +80,7 @@ public class EntityInlineData implements InlineData{
     public static class Serializer implements InlineData.IDSerializer<EntityInlineData> {
         public static Serializer INSTANCE = new Serializer();
 
-        public EntityInlineData deserialize(JsonObject json){
+        public EntityInlineData deserialize(JsonElement json){
             return new EntityInlineData(
                 EntityCradle.CRADLE_CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Inline.LOGGER::error).get()
             );

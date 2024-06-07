@@ -1,5 +1,6 @@
 package com.samsthenerd.inline.api.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
@@ -52,7 +53,8 @@ public class ItemInlineData implements InlineData{
 
         public static Serializer INSTANCE = new Serializer();
 
-        public ItemInlineData deserialize(JsonObject json){
+        public ItemInlineData deserialize(JsonElement jsonElem){
+            JsonObject json = jsonElem.getAsJsonObject();
             ItemStack stack = new ItemStack(Items.AIR);
             if(json.has("item")){
                 Item item = Registries.ITEM.get(new Identifier(json.get("item").getAsString()));

@@ -25,4 +25,10 @@ public interface InlineStyle {
     public Style setGlowyMarker(boolean glowy);
 
     public boolean hasGlowyMarker();
+
+    public Style setHidden(boolean hidden);
+
+    public Style withHidden(boolean hidden);
+
+    public boolean isHidden();
 }

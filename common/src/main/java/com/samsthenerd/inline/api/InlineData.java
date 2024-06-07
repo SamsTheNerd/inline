@@ -1,7 +1,6 @@
 package com.samsthenerd.inline.api;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.text.Style;
@@ -40,15 +39,8 @@ public interface InlineData {
 
     public static interface IDSerializer<D extends InlineData> {
 
-        public D deserialize(JsonObject json);
+        public D deserialize(JsonElement json);
 
         public JsonElement serializeData(D data);
-
-        public default JsonObject serialize(D data){
-            JsonObject json = new JsonObject();
-            json.addProperty("type", data.getDataType().toString());
-            json.add("data", serializeData(data));
-            return json;
-        }
     }
 }

@@ -1,5 +1,6 @@
 package com.samsthenerd.inline.mixin;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,7 +8,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
 
@@ -17,12 +24,14 @@ import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 
 @Mixin(Style.class)
 public class MixinInlineStyle implements InlineStyle {
 
     private InlineData data = null;
-    private boolean _isGlowy = false; // this is purely client so doesn't need to be 
+    private boolean _isGlowy = false; // this is purely client so doesn't need to be serialized
+    private boolean _hidden = false; 
 
     @Override
     public InlineData getInlineData(){
@@ -57,59 +66,21 @@ public class MixinInlineStyle implements InlineStyle {
     }
 
 
+    @Override
+    public Style setHidden(boolean hidden){
+        this._hidden = hidden;
+        return (Style)(Object)this;
+    }
 
-    // @Override
-    // public Style setPattern(HexPattern pattern) {
-    //     // yoinked from PatternTooltipComponent
-    //     this.pattern = pattern;
-    //     Pair<Float, List<Vec2f> > pair = RenderLib.getCenteredPattern(pattern, RENDER_SIZE, RENDER_SIZE, 16f);
-    //     this.patScale = pair.getFirst();
-    //     List<Vec2f> dots = pair.getSecond();
-    //     this.zappyPoints = RenderLib.makeZappy(
-    //         dots, RenderLib.findDupIndices(pattern.positions()),
-    //         10, 0.8f, 0f, 0f, RenderLib.DEFAULT_READABILITY_OFFSET, RenderLib.DEFAULT_LAST_SEGMENT_LEN_PROP,
-    //         0.0);
-    //     this.pathfinderDots = dots;
-    //     return (Style)(Object)this;
-    // }
+    @Override
+    public Style withHidden(boolean hidden){
+        return ((Style)(Object)this).withParent(((InlineStyle)Style.EMPTY.withBold(null)).setHidden(hidden));
+    }
 
-    // @Override
-    // public Style withPattern(HexPattern pattern, boolean withPatternHoverEvent, boolean withPatternClickEvent) {
-    //     Style style = (Style)(Object)this;
-
-    //     if (withPatternHoverEvent) {
-    //         StringBuilder bob = new StringBuilder();
-    //         bob.append(pattern.getStartDir());
-    //         var sig = pattern.anglesSignature();
-    //         if (!sig.isEmpty()) {
-    //             bob.append(" ");
-    //             bob.append(sig);
-    //         }
-    //         Text hoverText = Text.translatable("hexcasting.tooltip.pattern_iota",
-    //             Text.literal(bob.toString())).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GOLD));
-    //         ItemStack scrollStack = new ItemStack(HexItems.SCROLL_LARGE);
-    //         scrollStack.setCustomName(hoverText);
-    //         HexItems.SCROLL_LARGE.writeDatum(scrollStack, new PatternIota(pattern));
-    //         style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(scrollStack)));
-    //     }
-    //     if(withPatternClickEvent){
-    //         style = style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "<" + 
-    //             pattern.getStartDir().toString().replace("_", "").toLowerCase() + "," + pattern.anglesSignature() + ">"));
-    //     }
-    //     return style.withParent(PatternStyle.fromPattern(pattern));
-    // }
-
-    
-    // @Override
-    // public Style setHidden(boolean hidden){
-    //     this._isHidden = hidden;
-    //     return (Style)(Object)this;
-    // }
-
-    // @Override
-    // public Style withHidden(boolean hidden){
-    //     return ((Style)(Object)this).withParent(((PatternStyle)Style.EMPTY.withBold(null)).setHidden(hidden));
-    // }
+    @Override
+    public boolean isHidden(){
+        return _hidden;
+    }
 
     @ModifyReturnValue(method = "withParent(Lnet/minecraft/text/Style;)Lnet/minecraft/text/Style;", at = @At("RETURN"))
 	private Style InlineStyWithParent(Style original, Style parent) {
@@ -121,79 +92,68 @@ public class MixinInlineStyle implements InlineStyle {
                 original = ((InlineStyle) original).withInlineData(parentData);
             }
         }
-        // if(this.isHidden() || ((PatternStyle) parent).isHidden()){
-        //     ((PatternStyle) original).setHidden(true);
-        // }
+        if(this.isHidden() || ((InlineStyle) parent).isHidden()){
+            ((InlineStyle) original).setHidden(true);
+        }
 		return original;
 	}
-
 	@Inject(method = "equals(Ljava/lang/Object;)Z", at = @At("HEAD"), cancellable = true)
 	private void InlineStyEquals(Object obj, CallbackInfoReturnable<Boolean> cir) {
 		if (this != obj && (obj instanceof InlineStyle style)) {
 			if (!Objects.equals(this.getInlineData(), style.getInlineData())) {
 				cir.setReturnValue(false);
 			}
-            // if(this.isHidden() != style.isHidden()){
-            //     cir.setReturnValue(false);
-            // }
+            if(this.isHidden() != style.isHidden()){
+                cir.setReturnValue(false);
+            }
 		}
 	}
 
     private static final String DATA_KEY = "inlineData";
     private static final String HIDDEN_KEY = "isHidden";
 
-	// @Mixin(Style.Serializer.class)
-	// public static class MixinPatternStyleSerializer {
-	// 	@ModifyReturnValue(method = "deserialize", at = @At("RETURN"))
-	// 	private Style InlineStyDeserialize(Style initialStyle, JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
-	// 		if (!jsonElement.isJsonObject() || initialStyle == null) {
-	// 			return initialStyle;
-	// 		}
-	// 		JsonObject json = jsonElement.getAsJsonObject();
-	// 		if (!json.has(DATA_KEY)) {
-	// 			return initialStyle;
-	// 		}
-    //         Boolean hiddenFromJson = JsonHelper.hasBoolean(json, HIDDEN_KEY) ? JsonHelper.getBoolean(json, HIDDEN_KEY) : false;
-    //         InlineData data = InlineData.fromJson(json.get(DATA_KEY));
+	@Mixin(Style.Serializer.class)
+	public static class MixinInlineStyleSerializer {
+		@ModifyReturnValue(method = "deserialize", at = @At("RETURN"))
+		private Style InlineStyDeserialize(Style initialStyle, JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
+			if (!jsonElement.isJsonObject() || initialStyle == null) {
+				return initialStyle;
+			}
+			JsonObject json = jsonElement.getAsJsonObject();
+			if (!json.has(DATA_KEY)) {
+				return initialStyle;
+			}
+            Boolean hiddenFromJson = JsonHelper.hasBoolean(json, HIDDEN_KEY) ? JsonHelper.getBoolean(json, HIDDEN_KEY) : false;
+            InlineData data = InlineAPI.INSTANCE.deserializeData(json.get(DATA_KEY).getAsJsonObject());
 
+            return initialStyle.withInlineData(data).setHidden(hiddenFromJson);
+		}
 
-    //         HexDir startDir = HexDir.fromString(startDirString);
-    //         HexPattern pattern = HexPattern.fromAngles(angleSigString, startDir);
-    //         return initialStyle.withPattern(pattern).setHidden(hiddenFromJson);
-	// 	}
-
-	// 	@ModifyReturnValue(method = "serialize", at = @At("RETURN"))
-	// 	private JsonElement HexPatStySerialize(JsonElement jsonElement, Style style, Type type, JsonSerializationContext jsonSerializationContext) {
-	// 		PatternStyle pStyle = (PatternStyle) style;
-	// 		if (jsonElement == null || !jsonElement.isJsonObject() || pStyle.getPattern() == null) {
-	// 			return jsonElement;
-	// 		}
-	// 		JsonObject json = jsonElement.getAsJsonObject();
-    //         json.add(PATTERN_HIDDEN_KEY, new JsonPrimitive(pStyle.isHidden()));
-    //         JsonObject patternObj = new JsonObject();
-    //         patternObj.addProperty(PATTERN_START_DIR_KEY, pStyle.getPattern().getStartDir().toString());
-    //         patternObj.addProperty(PATTERN_ANGLE_SIG_KEY, pStyle.getPattern().anglesSignature());
-	// 		json.add(PATTERN_KEY, patternObj);
-    //         return json;
-	// 	}
-	// }
-
-    // // meant to be called at the 
-    // private Style keepPattern(Style returnedStyle){
-    //     PatternStyle pStyle = (PatternStyle)(Object)this;
-    //     if(pStyle.getPattern() != null){
-    //         ((PatternStyle) returnedStyle).setPattern(pStyle.getPattern());
-    //     }
-    //     if(pStyle.isHidden()){
-    //         ((PatternStyle) returnedStyle).setHidden(true);
-    //     }
-    //     return returnedStyle;
-    // }
+		@ModifyReturnValue(method = "serialize", at = @At("RETURN"))
+		private JsonElement HexPatStySerialize(JsonElement jsonElement, Style style, Type type, JsonSerializationContext jsonSerializationContext) {
+			InlineStyle iStyle = (InlineStyle) style;
+			if (jsonElement == null || !jsonElement.isJsonObject()) {
+				return jsonElement;
+			}
+			JsonObject json = jsonElement.getAsJsonObject();
+            if(iStyle.isHidden()){
+                json.add(HIDDEN_KEY, new JsonPrimitive(true));
+            }
+            InlineData data = iStyle.getInlineData();
+            if(data != null){
+                json.add(DATA_KEY, InlineAPI.INSTANCE.serializeData(data));
+            }
+            return json;
+		}
+	}
 
     private Style keepData(Style newStyle){
         if(this.getInlineData() != null){
             ((InlineStyle) newStyle).setData(this.getInlineData());
             ((InlineStyle) newStyle).setGlowyMarker((this.hasGlowyMarker()));
+        }
+        if(this.isHidden()){
+            ((InlineStyle) newStyle).setHidden(true);
         }
         return newStyle;
     }

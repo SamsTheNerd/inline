@@ -34,7 +34,7 @@ public class SpriteInlineData implements InlineData{
     public static class Serializer implements InlineData.IDSerializer<SpriteInlineData> {
         public static Serializer INSTANCE = new Serializer();
 
-        public SpriteInlineData deserialize(JsonObject json){
+        public SpriteInlineData deserialize(JsonElement json){
             return new SpriteInlineData(Spritelike.fromJson(json));
         }
 

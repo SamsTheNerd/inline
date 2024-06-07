@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
@@ -96,14 +96,12 @@ public class ModIconData extends SpriteInlineData{
     public static class Serializer implements InlineData.IDSerializer<SpriteInlineData> {
         public static Serializer INSTANCE = new Serializer();
 
-        public SpriteInlineData deserialize(JsonObject json){
-            return new ModIconData(json.get("modid").getAsString());
+        public SpriteInlineData deserialize(JsonElement json){
+            return new ModIconData(json.getAsString());
         }
 
         public JsonElement serializeData(SpriteInlineData data){
-            JsonObject obj = new JsonObject();
-            obj.addProperty("modid", ((ModIconData)data).modid);
-            return obj;
+            return new JsonPrimitive(((ModIconData)data).modid);
         }
     }
 }
