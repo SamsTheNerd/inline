@@ -14,8 +14,8 @@ import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
-import com.samsthenerd.inline.mixin.MixinClientAccessor;
-import com.samsthenerd.inline.mixin.MixinClientHeadChecker;
+import com.samsthenerd.inline.mixin.feature.playerskins.MixinClientAccessor;
+import com.samsthenerd.inline.mixin.feature.playerskins.MixinClientHeadChecker;
 import com.samsthenerd.inline.utils.TextureSprite;
 
 import net.minecraft.block.entity.SkullBlockEntity;

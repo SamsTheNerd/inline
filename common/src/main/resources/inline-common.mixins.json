@@ -4,20 +4,20 @@
     "package": "com.samsthenerd.inline.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-      "MixinInlineStyle"
+      "core.MixinInlineStyle"
     ],
     "client": [
-      "MixinInlineRendering",
-      "MixinInlineParsing",
-      "MixinSetTessBuffer",
-      "MixinTextWiden",
-      "MixinClientHeadChecker",
-      "MixinClientAccessor",
-      "prompts/MixinSuggestInChat",
-      "MixinAddModIconToTooltip",
-      "MixinHijackFeatherForTooltip",
-      "MixinOfflinePlayerSkins",
-      "MixinAccessPlayerModelParts"
+      "core.MixinInlineRendering",
+      "core.MixinInlineParsing",
+      "core.MixinSetTessBuffer",
+      "core.MixinTextWiden",
+      "prompts.MixinSuggestInChat",
+      "feature.MixinHijackFeatherForTooltip",
+      "feature.MixinAddModIconToTooltip",
+      "feature.playerskins.MixinClientHeadChecker",
+      "feature.playerskins.MixinClientAccessor",
+      "feature.playerskins.MixinOfflinePlayerSkins",
+      "feature.playerskins.MixinAccessPlayerModelParts"
     ],
     "injectors": {
       "defaultRequire": 1

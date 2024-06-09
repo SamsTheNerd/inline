@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.mixin;
+package com.samsthenerd.inline.mixin.core;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;

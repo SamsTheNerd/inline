@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.mixin;
+package com.samsthenerd.inline.mixin.feature;
 
 import java.util.List;
 import java.util.Optional;

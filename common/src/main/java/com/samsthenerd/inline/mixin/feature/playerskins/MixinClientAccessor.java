@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.mixin;
+package com.samsthenerd.inline.mixin.feature.playerskins;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

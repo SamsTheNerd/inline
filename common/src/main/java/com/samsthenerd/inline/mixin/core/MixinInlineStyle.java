@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.mixin;
+package com.samsthenerd.inline.mixin.core;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
