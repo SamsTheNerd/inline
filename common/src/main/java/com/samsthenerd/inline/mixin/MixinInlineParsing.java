@@ -11,11 +11,11 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import com.samsthenerd.inline.api.InlineClientAPI;
-import com.samsthenerd.inline.api.InlineClientConfig;
-import com.samsthenerd.inline.api.InlineMatch;
-import com.samsthenerd.inline.api.InlineMatcher;
-import com.samsthenerd.inline.api.MatchContext;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineClientConfig;
+import com.samsthenerd.inline.api.client.InlineMatch;
+import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.client.MatchContext;
 
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;

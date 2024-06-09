@@ -1,4 +1,6 @@
-package com.samsthenerd.inline.api;
+package com.samsthenerd.inline.api.client;
+
+import com.samsthenerd.inline.api.InlineData;
 
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;

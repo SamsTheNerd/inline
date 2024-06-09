@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineClientConfig;
+import com.samsthenerd.inline.api.client.InlineClientConfig;
 
 import me.shedaniel.cloth.clothconfig.shadowed.com.moandjiezana.toml.Toml;
 import me.shedaniel.cloth.clothconfig.shadowed.com.moandjiezana.toml.TomlWriter;

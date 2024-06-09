@@ -1,10 +1,10 @@
-package com.samsthenerd.inline.api.renderers;
+package com.samsthenerd.inline.api.client.renderers;
 
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
 
 import net.minecraft.client.MinecraftClient;

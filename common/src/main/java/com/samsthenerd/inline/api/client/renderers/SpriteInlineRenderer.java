@@ -1,8 +1,8 @@
-package com.samsthenerd.inline.api.renderers;
+package com.samsthenerd.inline.api.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
 import com.samsthenerd.inline.utils.SpritelikeRenderers;
 

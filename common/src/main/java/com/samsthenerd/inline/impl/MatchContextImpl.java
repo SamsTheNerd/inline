@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.samsthenerd.inline.api.InlineMatch;
-import com.samsthenerd.inline.api.MatchContext;
+import com.samsthenerd.inline.api.client.InlineMatch;
+import com.samsthenerd.inline.api.client.MatchContext;
 
 public class MatchContextImpl implements MatchContext{
     private String fullInput;

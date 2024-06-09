@@ -1,6 +1,7 @@
 package com.samsthenerd.inline.api;
 
 import com.google.gson.JsonElement;
+import com.samsthenerd.inline.api.client.InlineMatcher;
 import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.text.Style;

@@ -1,8 +1,8 @@
 package com.samsthenerd.inline.config;
 
-import com.samsthenerd.inline.api.InlineClientAPI;
-import com.samsthenerd.inline.api.InlineMatcher;
-import com.samsthenerd.inline.api.MatcherInfo;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.client.MatcherInfo;
 
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;

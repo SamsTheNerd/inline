@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.api.matchers;
+package com.samsthenerd.inline.api.client.matchers;
 
 import java.util.function.Function;
 import java.util.regex.MatchResult;
@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.samsthenerd.inline.api.InlineMatch;
-import com.samsthenerd.inline.api.MatcherInfo;
+import com.samsthenerd.inline.api.client.InlineMatch;
+import com.samsthenerd.inline.api.client.MatcherInfo;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;

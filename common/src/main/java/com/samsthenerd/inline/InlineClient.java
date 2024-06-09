@@ -5,19 +5,19 @@ import java.util.UUID;
 import java.util.regex.MatchResult;
 
 import com.mojang.authlib.GameProfile;
-import com.samsthenerd.inline.api.InlineClientAPI;
-import com.samsthenerd.inline.api.InlineMatch.DataMatch;
-import com.samsthenerd.inline.api.InlineMatch.TextMatch;
-import com.samsthenerd.inline.api.MatcherInfo;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.client.InlineMatch.TextMatch;
+import com.samsthenerd.inline.api.client.MatcherInfo;
+import com.samsthenerd.inline.api.client.matchers.RegexMatcher;
+import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
+import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
+import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
+import com.samsthenerd.inline.api.client.renderers.SpriteInlineRenderer;
 import com.samsthenerd.inline.api.data.EntityInlineData;
 import com.samsthenerd.inline.api.data.ItemInlineData;
 import com.samsthenerd.inline.api.data.ModIconData;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
-import com.samsthenerd.inline.api.matchers.RegexMatcher;
-import com.samsthenerd.inline.api.renderers.InlineEntityRenderer;
-import com.samsthenerd.inline.api.renderers.InlineItemRenderer;
-import com.samsthenerd.inline.api.renderers.PlayerHeadRenderer;
-import com.samsthenerd.inline.api.renderers.SpriteInlineRenderer;
 import com.samsthenerd.inline.xplat.IModMeta;
 
 import net.minecraft.entity.EntityType;

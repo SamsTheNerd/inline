@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.samsthenerd.inline.api.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.data.ModIconData;
 import com.samsthenerd.inline.xplat.IModMeta;
 

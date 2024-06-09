@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.api;
+package com.samsthenerd.inline.api.client;
 
 import java.util.Set;
 

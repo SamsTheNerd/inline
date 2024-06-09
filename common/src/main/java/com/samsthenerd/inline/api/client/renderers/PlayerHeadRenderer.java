@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.api.renderers;
+package com.samsthenerd.inline.api.client.renderers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
 import com.samsthenerd.inline.mixin.MixinClientAccessor;

@@ -1,15 +1,15 @@
-package com.samsthenerd.inline.api.matchers;
+package com.samsthenerd.inline.api.client.matchers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.InlineMatch;
-import com.samsthenerd.inline.api.InlineMatch.DataMatch;
-import com.samsthenerd.inline.api.InlineMatch.TextMatch;
-import com.samsthenerd.inline.api.InlineMatcher;
-import com.samsthenerd.inline.api.MatchContext;
+import com.samsthenerd.inline.api.client.InlineMatch;
+import com.samsthenerd.inline.api.client.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.client.InlineMatch.TextMatch;
+import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.client.MatchContext;
 
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;

@@ -2,7 +2,7 @@ package com.samsthenerd.inline.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.renderers.PlayerHeadRenderer;
+import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
 import com.samsthenerd.inline.mixin.MixinAccessPlayerModelParts;
 
 import net.minecraft.client.MinecraftClient;

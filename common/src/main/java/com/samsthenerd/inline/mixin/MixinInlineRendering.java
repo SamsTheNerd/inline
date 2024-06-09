@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.InlineRenderer;
-import com.samsthenerd.inline.api.InlineRenderer.TextRenderingContext;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineRenderer.TextRenderingContext;
 import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.client.MinecraftClient;

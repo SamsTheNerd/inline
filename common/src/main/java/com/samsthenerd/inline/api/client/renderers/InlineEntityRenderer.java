@@ -1,7 +1,7 @@
-package com.samsthenerd.inline.api.renderers;
+package com.samsthenerd.inline.api.client.renderers;
 
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.EntityInlineData;
 
 import net.minecraft.client.MinecraftClient;

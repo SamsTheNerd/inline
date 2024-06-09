@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.InlineRenderer;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.client.font.Glyph;
