@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.samsthenerd.inline.api.InlineClientAPI;
 import com.samsthenerd.inline.api.data.ModIconData;
 import com.samsthenerd.inline.xplat.IModMeta;
 
@@ -22,6 +23,7 @@ public class MixinAddModIconToTooltip {
         at = @At("RETURN")
     )
     private List<Text> findAndAddModIcon(List<Text> originalTT){
+        if(!InlineClientAPI.INSTANCE.getConfig().shouldRenderModIcons()) return originalTT;
         ItemStack thisStack = (ItemStack)((Object)this);
         // probably modid !
         String modNamespace = Registries.ITEM.getId(thisStack.getItem()).getNamespace();
