@@ -2,7 +2,7 @@ package com.samsthenerd.inline.forge;
 
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.InlineClient;
-import com.samsthenerd.inline.config.InlineConfig;
+import com.samsthenerd.inline.config.InlineConfigHandler;
 import com.samsthenerd.inline.forge.xplat.ForgeAbstractions;
 import com.samsthenerd.inline.forge.xplat.ForgeModMeta;
 import com.samsthenerd.inline.xplat.XPlatInstances;
@@ -25,7 +25,7 @@ public class InlineForge {
         
         // note, technically double nested lambdas, so should be fine ?
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, 
-            () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> InlineConfig.getConfigScreen(parent)));
+            () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> InlineConfigHandler.getConfigScreen(parent)));
 
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modBus.register(InlineForgeClient.class));

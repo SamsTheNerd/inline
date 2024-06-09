@@ -9,20 +9,21 @@ import net.minecraft.util.Identifier;
 /**
  * This API is primarily for adding and getting renderers and matchers. 
  */
-public abstract class InlineClientAPI {
+public interface InlineClientAPI {
 
-    public static final InlineClientAPI INSTANCE = new InlineClientImpl();
+    static final InlineClientAPI INSTANCE = new InlineClientImpl();
 
-    public abstract void addRenderer(InlineRenderer<?> renderer);
+    void addRenderer(InlineRenderer<?> renderer);
 
-    public abstract InlineRenderer<?> getRenderer(Identifier id);
+    InlineRenderer<?> getRenderer(Identifier id);
 
-    public abstract Set<InlineRenderer<?>> getAllRenderers();
+    Set<InlineRenderer<?>> getAllRenderers();
 
-    public abstract void addMatcher(InlineMatcher matcher);
+    void addMatcher(InlineMatcher matcher);
 
-    public abstract InlineMatcher getMatcher(Identifier id);
+    InlineMatcher getMatcher(Identifier id);
 
-    public abstract Set<InlineMatcher> getAllMatchers();
+    Set<InlineMatcher> getAllMatchers();
 
+    InlineClientConfig getConfig();
 }

@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.samsthenerd.inline.api.InlineClientAPI;
+import com.samsthenerd.inline.api.InlineClientConfig;
 import com.samsthenerd.inline.api.InlineMatch;
 import com.samsthenerd.inline.api.InlineMatcher;
 import com.samsthenerd.inline.api.MatchContext;
@@ -47,8 +48,11 @@ public class MixinInlineParsing {
         
         MatchContext matchContext = MatchContext.forInput(text);
 
+        InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
+
         // run all the matchers
         for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
+            if(!config.isMatcherEnabled(matcher.getId())) continue;
             matcher.match(matchContext);
         }
 

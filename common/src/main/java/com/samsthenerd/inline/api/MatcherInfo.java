@@ -4,12 +4,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class MatcherInfo {
-    private final Text title;
+    private final Text rawTitle;
+    private final Text styledTitle;
     private final Text example;
     private final Text description;
 
-    public MatcherInfo(Text title, Text example, Text description){
-        this.title = title;
+    public MatcherInfo(Text rawTitle, Text styledTitle, Text example, Text description){
+        this.rawTitle = rawTitle;
+        this.styledTitle = styledTitle;
         this.example = example;
         this.description = description;
     }
@@ -17,13 +19,17 @@ public class MatcherInfo {
     public static MatcherInfo fromId(Identifier id){
         return new MatcherInfo(
             Text.translatable("matcher." + id.getNamespace() + "." + id.getPath() + ".title"),
+            Text.translatable("matcher." + id.getNamespace() + "." + id.getPath() + ".title.styled"),
             Text.translatable("matcher." + id.getNamespace() + "." + id.getPath() + ".example"),
             Text.translatable("matcher." + id.getNamespace() + "." + id.getPath() + ".description")
         );
     }
 
-    public Text getTitle(){
-        return title;
+    public Text getTitle(boolean styled){
+        if(styled){
+            return styledTitle;
+        }
+        return rawTitle;
     }
 
     public Text getExample(){

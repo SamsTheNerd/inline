@@ -6,11 +6,11 @@ import net.minecraft.text.Style;
 
 // duck interface to carry added style data
 public interface InlineStyle {
-    public InlineData getInlineData();
+    default InlineData getInlineData(){return null;}
 
-    public Style withInlineData(InlineData data);
+    default Style withInlineData(InlineData data){return null;}
 
-    public static Style fromInlineData(InlineData data){
+    static Style fromInlineData(InlineData data){
         if(((Object)Style.EMPTY) instanceof InlineStyle){
             return ((InlineStyle)Style.EMPTY).withInlineData(data);
         } else {
@@ -18,17 +18,17 @@ public interface InlineStyle {
         }
     }
 
-    public Style setData(InlineData data);
+    default Style setData(InlineData data){return null;}
 
-    public Style withGlowyMarker(boolean glowy);
+    default Style withGlowyMarker(boolean glowy){return null;}
 
-    public Style setGlowyMarker(boolean glowy);
+    default Style setGlowyMarker(boolean glowy){return null;}
 
-    public boolean hasGlowyMarker();
+    default boolean hasGlowyMarker(){ return false;}
 
-    public Style setHidden(boolean hidden);
+    default Style setHidden(boolean hidden){return null;}
 
-    public Style withHidden(boolean hidden);
+    default Style withHidden(boolean hidden){return null;}
 
-    public boolean isHidden();
+    default boolean isHidden(){return false;}
 }

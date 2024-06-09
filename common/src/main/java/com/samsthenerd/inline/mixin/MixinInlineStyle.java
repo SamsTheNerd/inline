@@ -126,7 +126,7 @@ public class MixinInlineStyle implements InlineStyle {
             Boolean hiddenFromJson = JsonHelper.hasBoolean(json, HIDDEN_KEY) ? JsonHelper.getBoolean(json, HIDDEN_KEY) : false;
             InlineData data = InlineAPI.INSTANCE.deserializeData(json.get(DATA_KEY).getAsJsonObject());
 
-            return initialStyle.withInlineData(data).setHidden(hiddenFromJson);
+            return ((InlineStyle)initialStyle).withInlineData(data).setHidden(hiddenFromJson);
 		}
 
 		@ModifyReturnValue(method = "serialize", at = @At("RETURN"))
