@@ -27,7 +27,9 @@ build {
     dependsOn tasks.named("jenkinsArtifacts")
 }
 
-
+javadoc{
+    options.stylesheetFile = new File("${rootDir.toPath()}/javadocstyle.css");
+}
 
 publishing {
     publications {

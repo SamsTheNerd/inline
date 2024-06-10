@@ -50,6 +50,7 @@ public interface InlineMatch {
         }
 
         public int accept(CharacterVisitor visitor, int index, Style currentStyle){
+            if(text.getString().equals("")) return 1;
             AtomicInteger offset = new AtomicInteger(0);
             text.visit((Style style, String str)->{
                 for(char c : str.toCharArray()){
@@ -62,7 +63,7 @@ public interface InlineMatch {
         }
 
         public int charLength(){
-            return text.getString().length();
+            return Math.max(text.getString().length(), 1);
         }
     }
 }

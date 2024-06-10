@@ -2,14 +2,13 @@ package com.samsthenerd.inline;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.MatchResult;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineMatch.DataMatch;
-import com.samsthenerd.inline.api.client.InlineMatch.TextMatch;
 import com.samsthenerd.inline.api.client.MatcherInfo;
 import com.samsthenerd.inline.api.client.matchers.RegexMatcher;
+import com.samsthenerd.inline.api.client.matchers.RegexMatcher.Standard;
 import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
@@ -24,13 +23,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.HoverEvent.ItemStackContent;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class InlineClient {
@@ -51,8 +46,9 @@ public class InlineClient {
 
     private static void addDefaultMatchers(){
         Identifier itemMatcherID = new Identifier(Inline.MOD_ID, "item");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<item:([a-z:\\/_]+)>", itemMatcherID, (MatchResult mr) ->{
-            Item item = Registries.ITEM.get(new Identifier(mr.group(1)));
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("item", Standard.IDENTIFIER_REGEX, itemMatcherID, 
+        (String itemId) ->{
+            Item item = Registries.ITEM.get(new Identifier(itemId));
             if(item == null) return null;
             ItemStack stack = new ItemStack(item);
             HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ItemStackContent(stack));
@@ -60,13 +56,15 @@ public class InlineClient {
         }, MatcherInfo.fromId(itemMatcherID)));
 
         Identifier entityMatcherID = new Identifier(Inline.MOD_ID, "entity");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<entity:([a-z:\\/_]+)>", entityMatcherID, (MatchResult mr) ->{
-            EntityType entType = Registries.ENTITY_TYPE.get(new Identifier(mr.group(1)));
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("entity", Standard.IDENTIFIER_REGEX, entityMatcherID, 
+        (String entityTypeId) ->{
+            EntityType entType = Registries.ENTITY_TYPE.get(new Identifier(entityTypeId));
             if(entType == null) return null;
             EntityInlineData entData = EntityInlineData.fromType(entType);
             return new DataMatch(entData, Style.EMPTY.withHoverEvent(entData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(entityMatcherID)));
 
+        /*
         Identifier linkMatcherId = new Identifier(Inline.MOD_ID, "link");
         InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("\\[(.*)\\]\\((.*)\\)", linkMatcherId, (MatchResult mr) ->{
             String text = mr.group(1);
@@ -77,7 +75,7 @@ public class InlineClient {
             linkText.setStyle(Style.EMPTY.withClickEvent(ce).withHoverEvent(he).withUnderline(true).withColor(Formatting.BLUE));
             return new TextMatch(linkText);
         }, MatcherInfo.fromId(linkMatcherId)));
-
+        */
 
         // InlineClientAPI.INSTANCE.addMatcher(new Identifier(Inline.MOD_ID, "bolditalic"), new RegexMatcher.Simple("(?<ast>\\*{1,3})\\b([^*]+)(\\k<ast>)", (MatchResult mr) ->{
         //     String text = mr.group(2);
@@ -88,19 +86,19 @@ public class InlineClient {
         // }));
 
         Identifier modMatcherId = new Identifier(Inline.MOD_ID, "modicon");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<mod:([a-z:\\/_-]+)>", modMatcherId, (MatchResult mr) -> {
-            String modid = mr.group(1);
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("mod", "[0-9a-z._-]+", modMatcherId, 
+        (String modid) -> {
             Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
             if(maybeMod.isEmpty()){
                 return null;
             }
-            IModMeta mod = maybeMod.get();
+            // IModMeta mod = maybeMod.get();
             return new DataMatch(new ModIconData(modid), ModIconData.getTooltipStyle(modid));
         }, MatcherInfo.fromId(modMatcherId)));
 
         Identifier faceMatcherId = new Identifier(Inline.MOD_ID, "playerface");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Simple("<face:([a-z:A-Z0-9\\/_-]+)>", faceMatcherId, (MatchResult mr) -> {
-            String playerNameOrUUID = mr.group(1);
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("face", "[a-zA-Z0-9_]{1,16}", faceMatcherId, 
+        (String playerNameOrUUID) -> {
             GameProfile profile;
             try{
                 profile = new GameProfile(UUID.fromString(playerNameOrUUID), null);
