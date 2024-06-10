@@ -13,23 +13,23 @@
     "matcher.inline.link.example": "[Inline's Repo](https://github.com/SamsTheNerd/inline)",
     
     "matcher.inline.modicon.title": "Mod Icon",
-    "matcher.inline.modicon.title.styled": "Mod Icon <mod:inline>",
+    "matcher.inline.modicon.title.styled": "Mod Icon [mod:inline]",
     "matcher.inline.modicon.description": "Displays the mod icon",
-    "matcher.inline.modicon.example": "<mod:inline>",
+    "matcher.inline.modicon.example": "[mod:inline]",
 
     "matcher.inline.item.title": "Item",
-    "matcher.inline.item.title.styled": "Item <item:writable_book>",
+    "matcher.inline.item.title.styled": "Item [item:writable_book]",
     "matcher.inline.item.description": "Displays an item based on its id",
-    "matcher.inline.item.example": "<item:diamond_sword><item:book>",
+    "matcher.inline.item.example": "[item:diamond_sword][item:book]",
 
     "matcher.inline.entity.title": "Entity",
-    "matcher.inline.entity.title.styled": "Entity <entity:pig>",
+    "matcher.inline.entity.title.styled": "Entity [entity:pig]",
     "matcher.inline.entity.description": "Displays an entity based on its type id",
-    "matcher.inline.entity.example": "<entity:pig>",
+    "matcher.inline.entity.example": "[entity:pig]",
 
     "matcher.inline.playerface.title": "Player Head",
-    "matcher.inline.playerface.title.styled": "Player Head <face:MHF_Steve>",
+    "matcher.inline.playerface.title.styled": "Player Head [face:MHF_Steve]",
     "matcher.inline.playerface.description": "Displays a player's head",
-    "matcher.inline.playerface.example": "<face:MHF_Steve>"
+    "matcher.inline.playerface.example": "[face:MHF_Steve]"
 
 }
