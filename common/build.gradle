@@ -27,9 +27,17 @@ build {
     dependsOn tasks.named("jenkinsArtifacts")
 }
 
+
+tasks.register("javadocExtras", Copy){
+    from "${rootDir.toPath()}/javadocextras"
+    into "${rootDir.toPath()}/common/build/docs/javadoc"
+}
+
 javadoc{
     options.stylesheetFile = new File("${rootDir.toPath()}/javadocstyle.css");
+    finalizedBy = [tasks.named("javadocExtras")];
 }
+
 
 publishing {
     publications {
