@@ -16,7 +16,7 @@ public interface MatchContext {
     /**
      * Creates a MatchContext with the given input as its base.
      * @param inputText
-     * @return
+     * @return a MatchContext for the input.
      */
     public static MatchContext forInput(String inputText){
         return new MatchContextImpl(inputText);
@@ -60,16 +60,22 @@ public interface MatchContext {
      */
     public Map<Integer, String> getUnmatchedSequences();
 
-    // TODO: finish this page
-
     /**
-     * Gets the text with all matches replaced by placeholders 
+     * Gets the text with all matched characters replaced by placeholders for 
+     * the length of the match. This is mostly for internal use.
+     * <p>
+     * For example, {@code "texta :emote: textb"} with a single length match on 
+     * {@code ":emote:"} would return {@code "texta . textb"}
      * @return
      */
     public String getFinalText();
 
     /**
-     * 
+     * Gets a map of all matches added. The key is the start index of the match 
+     * in the string returned by {@link MatchContext#getFinalText()}, the value is the match.
+     * This is mostly for internal use.
+     * <p>
+     * Note again that the same match object on consecutive characters will count as a single match.
      * @return
      */
     public Map<Integer, InlineMatch> getFinalMatches();
