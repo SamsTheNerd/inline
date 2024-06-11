@@ -15,7 +15,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
-public interface ContinousMatcher extends InlineMatcher{
+public interface ContinuousMatcher extends InlineMatcher{
 
     public ContinuousMatchResult match(String input);
 

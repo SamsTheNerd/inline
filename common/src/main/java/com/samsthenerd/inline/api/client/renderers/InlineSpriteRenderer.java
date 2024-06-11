@@ -13,9 +13,9 @@ import net.minecraft.util.Identifier;
 
 // this is generic-d weirdly so that other renderers can extend and use its render method while keeping their own data types
 // ultimately the generics don't matter all that much since it's all called based on trust that the renderer a data says it should use can actually use it
-public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineRenderer<T>{
+public class InlineSpriteRenderer<T extends SpriteInlineData> implements InlineRenderer<T>{
 
-    public static final SpriteInlineRenderer<SpriteInlineData> INSTANCE = new SpriteInlineRenderer<SpriteInlineData>();
+    public static final InlineSpriteRenderer<SpriteInlineData> INSTANCE = new InlineSpriteRenderer<SpriteInlineData>();
 
     public Identifier getId(){
         return new Identifier(Inline.MOD_ID, "spritelike");
@@ -31,13 +31,8 @@ public class SpriteInlineRenderer<T extends SpriteInlineData> implements InlineR
         float width = data.sprite.getSpriteWidth();
         float whRatio = (width / (float)height);
         MatrixStack matrices = context.getMatrices();
-        // matrices.scale(scale, scale, 1);
         matrices.translate(0, 0, 1);
         RenderSystem.enableDepthTest();
-        // context.drawTexture(data.sprite.getTextureId(), 0, 0 , 0, 0, 0, width, height, width, height);
-        // if(MinecraftClient.getInstance().getTickDelta() < 0.1){
-        //     Inline.logPrint("Drawing sprite with light " + trContext.light + " (" + LightmapTextureManager.getBlockLightCoordinates(trContext.light) + ", " + LightmapTextureManager.getSkyLightCoordinates(trContext.light) + ")");
-        // }
         SpritelikeRenderers.getRenderer(data.sprite).drawSpriteWithLight(data.sprite, context, 0, 0, 0, 8 * width / height,8, trContext.light, 0xFFFFFFFF);
         return (int)Math.ceil(whRatio * 8);
     }

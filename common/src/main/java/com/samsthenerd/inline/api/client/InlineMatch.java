@@ -10,22 +10,53 @@ import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
+/**
+ * Represents some match from a matcher. 
+ * <p>
+ * A match is attached to some input text by a matcher and is expected to 
+ * provide styled characters to the CharacterVisitor in place of the text segment 
+ * it's attached to.
+ * <p>
+ * {@link DataMatch} will work for most use cases.
+ */
 public interface InlineMatch {
-    // returns the number of characters consumed
+    /**
+     * Supplies styled characters
+     * @param visitor accepts the styled characters
+     * @param index the number of characters given to this visitor so far
+     * @param currentStyle the style that this text would otherwise have.
+     * @return the number of characters supplied to the visitor.
+     */
     public int accept(CharacterVisitor visitor, int index, Style currentStyle);
 
+    /**
+     * Gets the length of this match
+     * @return the number of characters we plan to give the visitor.
+     */
     public int charLength();
 
+    /**
+     * A match representing some data.
+     */
     public static class DataMatch implements InlineMatch{
 
         private InlineData data;
         private Style style;
 
+        /**
+         * Makes a DataMatch with the given data and style
+         * @param data
+         * @param style
+         */
         public DataMatch(InlineData data, Style style){
             this.data = data;
             this.style = style;
         }
 
+        /**
+         * Makes a DataMatch with the given data
+         * @param data
+         */
         public DataMatch(InlineData data){
             this(data, Style.EMPTY);
         }
@@ -41,10 +72,17 @@ public interface InlineMatch {
         }
     }
 
+    /**
+     * A match representing some text.
+     */
     public static class TextMatch implements InlineMatch{
 
         private Text text;
 
+        /**
+         * Makes a TextMatch with the given text
+         * @param text
+         */
         public TextMatch(Text text){
             this.text = text;
         }

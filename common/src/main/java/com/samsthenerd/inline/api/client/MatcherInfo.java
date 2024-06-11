@@ -3,6 +3,10 @@ package com.samsthenerd.inline.api.client;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+/**
+ * User-facing information about a matcher. For most cases you can just use
+ * {@link MatcherInfo#fromId(id)} and add the translations in your lang files.
+ */
 public class MatcherInfo {
     private final Text rawTitle;
     private final Text styledTitle;

@@ -11,8 +11,8 @@ import com.samsthenerd.inline.api.client.matchers.RegexMatcher;
 import com.samsthenerd.inline.api.client.matchers.RegexMatcher.Standard;
 import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
+import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
-import com.samsthenerd.inline.api.client.renderers.SpriteInlineRenderer;
 import com.samsthenerd.inline.api.data.EntityInlineData;
 import com.samsthenerd.inline.api.data.ItemInlineData;
 import com.samsthenerd.inline.api.data.ModIconData;
@@ -40,7 +40,7 @@ public class InlineClient {
     private static void addDefaultRenderers(){
         InlineClientAPI.INSTANCE.addRenderer(InlineItemRenderer.INSTANCE);
         InlineClientAPI.INSTANCE.addRenderer(InlineEntityRenderer.INSTANCE);
-        InlineClientAPI.INSTANCE.addRenderer(SpriteInlineRenderer.INSTANCE);
+        InlineClientAPI.INSTANCE.addRenderer(InlineSpriteRenderer.INSTANCE);
         InlineClientAPI.INSTANCE.addRenderer(PlayerHeadRenderer.INSTANCE);
     }
 

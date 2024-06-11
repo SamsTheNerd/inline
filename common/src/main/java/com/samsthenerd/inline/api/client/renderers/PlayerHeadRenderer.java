@@ -69,12 +69,12 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
         matrices.push();
         matrices.translate(0.25, 0.25, 0);
         matrices.scale(8/(float)8.5, 8/(float)8.5,1);
-        SpriteInlineRenderer.INSTANCE.render(faceSpriteData, context, index, style, codepoint, trContext);
+        InlineSpriteRenderer.INSTANCE.render(faceSpriteData, context, index, style, codepoint, trContext);
         matrices.pop();
         SpriteInlineData outerSpriteData = getOuter(data);
         matrices.push();
         matrices.translate(0, 0, 10);
-        int res = SpriteInlineRenderer.INSTANCE.render(outerSpriteData, context, index, style, codepoint, trContext);
+        int res = InlineSpriteRenderer.INSTANCE.render(outerSpriteData, context, index, style, codepoint, trContext);
         matrices.pop();
         return res;
     }

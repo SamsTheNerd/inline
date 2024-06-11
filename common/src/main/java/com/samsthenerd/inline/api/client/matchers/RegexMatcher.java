@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-public interface RegexMatcher extends ContinousMatcher {
+public interface RegexMatcher extends ContinuousMatcher {
     public default ContinuousMatchResult match(String input){
         Matcher regexMatcher = getRegex().matcher(input);
         ContinuousMatchResult result = new ContinuousMatchResult();
