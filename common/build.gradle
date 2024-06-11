@@ -35,6 +35,9 @@ tasks.register("javadocExtras", Copy){
 
 javadoc{
     options.stylesheetFile = new File("${rootDir.toPath()}/javadocstyle.css");
+    include "com/samsthenerd/inline/api/**/*.java"
+    include "com/samsthenerd/inline/tooltips/**/*.java"
+    include "com/samsthenerd/inline/utils/**/*.java"
     finalizedBy = [tasks.named("javadocExtras")];
 }
 
