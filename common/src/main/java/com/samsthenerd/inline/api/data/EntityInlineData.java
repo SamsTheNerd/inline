@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class EntityInlineData implements InlineData{
+public class EntityInlineData implements InlineData<EntityInlineData>{
 
     protected static final Random random = Random.create();
     protected float uniqueOffset = 0;
@@ -43,14 +43,12 @@ public class EntityInlineData implements InlineData{
         return new EntityInlineData(new EntTypeCradle(type));
     }
 
-    public IDSerializer<EntityInlineData> getSerializer(){
-        return Serializer.INSTANCE;
+    @Override
+    public EntityDataType getType(){
+        return EntityDataType.INSTANCE;
     }
 
-    public Identifier getDataType(){
-        return new Identifier(Inline.MOD_ID, "entity");
-    }
-
+    @Override
     public Identifier getRendererId(){
         return new Identifier(Inline.MOD_ID, "entity");
     }
@@ -72,20 +70,27 @@ public class EntityInlineData implements InlineData{
     }
 
     public Style getDataStyle(boolean withAdditional){
-        Style superStyle = InlineData.super.getDataStyle(withAdditional);
+        Style superStyle = InlineData.super.asStyle(withAdditional);
         if(!withAdditional) return superStyle;
         return superStyle.withParent(Style.EMPTY.withHoverEvent(getEntityDisplayHoverEvent()));
     }
 
-    public static class Serializer implements InlineData.IDSerializer<EntityInlineData> {
-        public static Serializer INSTANCE = new Serializer();
+    public static class EntityDataType implements InlineDataType<EntityInlineData> {
+        public static EntityDataType INSTANCE = new EntityDataType();
 
+        @Override
+        public Identifier getId(){
+            return new Identifier(Inline.MOD_ID, "entity");
+        }
+
+        @Override
         public EntityInlineData deserialize(JsonElement json){
             return new EntityInlineData(
                 EntityCradle.CRADLE_CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Inline.LOGGER::error).get()
             );
         }
 
+        @Override
         public JsonElement serializeData(EntityInlineData data){
             return EntityCradle.CRADLE_CODEC.encodeStart(JsonOps.INSTANCE, data.cradle).resultOrPartial(Inline.LOGGER::error).orElseThrow();
         }

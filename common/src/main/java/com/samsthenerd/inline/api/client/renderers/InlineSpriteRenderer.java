@@ -11,11 +11,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
-// this is generic-d weirdly so that other renderers can extend and use its render method while keeping their own data types
-// ultimately the generics don't matter all that much since it's all called based on trust that the renderer a data says it should use can actually use it
-public class InlineSpriteRenderer<T extends SpriteInlineData> implements InlineRenderer<T>{
+public class InlineSpriteRenderer implements InlineRenderer<SpriteInlineData>{
 
-    public static final InlineSpriteRenderer<SpriteInlineData> INSTANCE = new InlineSpriteRenderer<SpriteInlineData>();
+    public static final InlineSpriteRenderer INSTANCE = new InlineSpriteRenderer();
 
     public Identifier getId(){
         return new Identifier(Inline.MOD_ID, "spritelike");

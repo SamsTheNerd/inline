@@ -11,7 +11,7 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
-public class InlineErrorRenderer implements InlineRenderer<InlineData>{
+public class InlineErrorRenderer implements InlineRenderer{
 
     public static final InlineErrorRenderer INSTANCE = new InlineErrorRenderer();
     public static final ItemInlineData ERROR_DATA = new ItemInlineData(new ItemStack(Items.BARRIER));

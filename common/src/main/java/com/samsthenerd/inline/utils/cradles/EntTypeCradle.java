@@ -13,6 +13,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+/**
+ * An entity cradle backed by an EntityType identifier.
+ */
 public class EntTypeCradle<E extends Entity> implements EntityCradle {
 
     private static final HashMap<Identifier, Entity> ENTITY_CACHE = new HashMap<>();

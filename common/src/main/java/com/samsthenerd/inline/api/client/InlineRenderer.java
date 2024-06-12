@@ -32,7 +32,7 @@ import net.minecraft.util.Identifier;
  * Check out {@link PlayerHeadRenderer} for an example of extending by composition and 
  * {@link ModIconData} for an example of re-using an existing renderer by extending the data class.
  */
-public interface InlineRenderer<D extends InlineData> {
+public interface InlineRenderer<D extends InlineData<D>> {
 
     /**
      * Gets this renderer's ID. Used primarily by the InlineData to specify

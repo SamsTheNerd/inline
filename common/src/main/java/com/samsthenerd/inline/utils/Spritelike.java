@@ -14,6 +14,15 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
 
+/**
+ * A wrapper around various texture sources. 
+ * <p>
+ * Spritelike is server safe, on the client it renders with a SpritelikeRenderer.
+ * You shouldn't need to make new Spritelike types. 
+ * 
+ * @see URLSprite
+ * @see TextureSprite
+ */
 public abstract class Spritelike {
 
     public abstract SpritelikeType getType();

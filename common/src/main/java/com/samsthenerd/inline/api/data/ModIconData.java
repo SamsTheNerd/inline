@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager;
 import com.samsthenerd.inline.tooltips.providers.ModDataTTProvider;
@@ -25,8 +24,8 @@ import net.minecraft.util.Identifier;
 
 // mostly just extending so we can still use the renderer
 public class ModIconData extends SpriteInlineData{
-    public Identifier getDataType(){
-        return new Identifier(Inline.MOD_ID, "modicon");
+    public ModIconDataType getType(){
+        return ModIconDataType.INSTANCE;
     }
 
     public Identifier getRendererId(){
@@ -89,19 +88,23 @@ public class ModIconData extends SpriteInlineData{
         return Text.literal(".").setStyle(dataStyle.withParent(getTooltipStyle(mod.getModId())));
     }
 
-    public IDSerializer<SpriteInlineData> getSerializer(){
-        return Serializer.INSTANCE;
-    }
+    public static class ModIconDataType extends SpriteDataType {
+        public static ModIconDataType INSTANCE = new ModIconDataType();
 
-    public static class Serializer implements InlineData.IDSerializer<SpriteInlineData> {
-        public static Serializer INSTANCE = new Serializer();
+        @Override
+        public Identifier getId(){
+            return new Identifier(Inline.MOD_ID, "modicon");
+        }
 
-        public SpriteInlineData deserialize(JsonElement json){
+        @Override
+        public ModIconData deserialize(JsonElement json){
             return new ModIconData(json.getAsString());
         }
 
+        @Override
         public JsonElement serializeData(SpriteInlineData data){
-            return new JsonPrimitive(((ModIconData)data).modid);
+            if(!(data instanceof ModIconData mData)) return new JsonPrimitive("");
+            return new JsonPrimitive(mData.modid);
         }
     }
 }

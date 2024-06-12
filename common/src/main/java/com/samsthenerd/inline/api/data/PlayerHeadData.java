@@ -15,11 +15,11 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
-public class PlayerHeadData implements InlineData{
+public class PlayerHeadData implements InlineData<PlayerHeadData>{
 
     @Override
-    public Identifier getDataType(){
-        return new Identifier(Inline.MOD_ID, "playerhead");
+    public PlayerHeadDataType getType(){
+        return PlayerHeadDataType.INSTANCE;
     }
 
     @Override
@@ -27,14 +27,10 @@ public class PlayerHeadData implements InlineData{
         return new Identifier(Inline.MOD_ID, "playerhead");
     }
 
-    public GameProfile profile;
+    public final GameProfile profile;
 
     public PlayerHeadData(GameProfile profile){
         this.profile = profile;
-    }
-
-    public IDSerializer<PlayerHeadData> getSerializer(){
-        return Serializer.INSTANCE;
     }
 
     public HoverEvent getEntityDisplayHoverEvent(){
@@ -45,13 +41,18 @@ public class PlayerHeadData implements InlineData{
     }
 
     public Style getDataStyle(boolean withAdditional){
-        Style superStyle = InlineData.super.getDataStyle(withAdditional);
+        Style superStyle = InlineData.super.asStyle(withAdditional);
         if(!withAdditional) return superStyle;
         return superStyle.withParent(Style.EMPTY.withHoverEvent(getEntityDisplayHoverEvent()));
     }
 
-    public static class Serializer implements InlineData.IDSerializer<PlayerHeadData> {
-        public static Serializer INSTANCE = new Serializer();
+    public static class PlayerHeadDataType implements InlineDataType<PlayerHeadData> {
+        public static PlayerHeadDataType INSTANCE = new PlayerHeadDataType();
+
+        @Override
+        public Identifier getId(){
+            return new Identifier(Inline.MOD_ID, "playerhead");
+        }
 
         private static Gson GSON = new GsonBuilder().create();
 

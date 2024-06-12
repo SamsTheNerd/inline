@@ -18,20 +18,18 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class ItemInlineData implements InlineData{
+public class ItemInlineData implements InlineData<ItemInlineData>{
 
     private ItemStack stack;
 
-    public Identifier getDataType(){
-        return new Identifier(Inline.MOD_ID, "item");
+    @Override
+    public ItemDataType getType(){
+        return ItemDataType.INSTANCE;
     }
 
+    @Override
     public Identifier getRendererId(){
         return new Identifier(Inline.MOD_ID, "item");
-    }
-
-    public IDSerializer<ItemInlineData> getSerializer(){
-        return Serializer.INSTANCE;
     }
 
     public ItemStack getStack(){
@@ -49,10 +47,15 @@ public class ItemInlineData implements InlineData{
         return Text.literal("#").setStyle(style);
     }
 
-    public static class Serializer implements InlineData.IDSerializer<ItemInlineData> {
+    public static class ItemDataType implements InlineDataType<ItemInlineData> {
+        public static ItemDataType INSTANCE = new ItemDataType();
 
-        public static Serializer INSTANCE = new Serializer();
+        @Override
+        public Identifier getId(){
+            return new Identifier(Inline.MOD_ID, "item");
+        }
 
+        @Override
         public ItemInlineData deserialize(JsonElement jsonElem){
             JsonObject json = jsonElem.getAsJsonObject();
             ItemStack stack = new ItemStack(Items.AIR);
@@ -71,6 +74,7 @@ public class ItemInlineData implements InlineData{
             return new ItemInlineData(stack);
         }
 
+        @Override
         public JsonObject serializeData(ItemInlineData data){
             JsonObject json = new JsonObject();
             json.addProperty("item", Registries.ITEM.getId(data.stack.getItem()).toTranslationKey());

@@ -16,6 +16,9 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 
+/**
+ * An entity cradle backed by a player GameProfile
+ */
 public class PlayerCradle implements EntityCradle {
 
     private static final HashMap<UUID, Entity> UUID_PLAYER_CACHE = new HashMap<>();

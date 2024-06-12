@@ -12,6 +12,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+/**
+ * An entity cradle backed by the entity's full nbt data
+ */
 public class NbtCradle implements EntityCradle {
 
     private static final HashMap<NbtCompound, Entity> ENTITY_CACHE = new HashMap<>();

@@ -2,6 +2,7 @@ package com.samsthenerd.inline.api;
 
 import com.google.gson.JsonElement;
 import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.text.Style;
@@ -22,26 +23,82 @@ import net.minecraft.util.Identifier;
  * Unlike most other Inline API classes, InlineData exists on both the client
  * and the server. 
  */
-public interface InlineData {
+public interface InlineData<Self extends InlineData<Self>> {
 
-    public Identifier getDataType();
+    /**
+     * Gets the InlineDataType of this data.
+     * Used mostly for serialization.
+     * @return type of this data.
+     */
+    public InlineDataType<Self> getType();
 
+    /**
+     * Gets which {@link InlineRenderer} should be used for rendering this data.
+     * @return id of renderer
+     */
     public Identifier getRendererId();
 
-    public IDSerializer<? extends InlineData> getSerializer();
-
-    public default Style getDataStyle(boolean withAdditional){
-        return InlineStyle.fromInlineData(this);
+    /**
+     * Gets a suitable Style for this data, without the data itself.
+     * <p>
+     * This is primarily used for adding hover or click events.
+     * @return Style with no attached data
+     */
+    public default Style getExtraStyle(){
+        return Style.EMPTY;
     }
 
-    public default Text getAsText(boolean withAdditional){
-        return Text.literal(".").setStyle(getDataStyle(withAdditional));
+    /**
+     * Gets a Style with this data attached.
+     * @param withExtra whether or not extra styling, such as hover or click events, should be added.
+     * @return Style with attached data and extra styling if withExtra is true
+     */
+    public default Style asStyle(boolean withExtra){
+        Style dataStyle = InlineStyle.fromInlineData(this);
+        if(withExtra){
+            dataStyle = dataStyle.withParent(getExtraStyle());
+        }
+        return dataStyle;
     }
 
-    public static interface IDSerializer<D extends InlineData> {
+    /**
+     * Gets Text with this data attached.
+     * <p>
+     * The actual Text string is left up to the implementation.
+     * @param withExtra whether or not extra styling, such as hover or click events, should be added.
+     * @return Text with attached data and extra styling if withExtra is true
+     */
+    public default Text asText(boolean withExtra){
+        return Text.literal(".").setStyle(asStyle(withExtra));
+    }
 
+    /**
+     * The type of some InlineData.
+     * Used mostly for deserialization. 
+     * <p>
+     * Make sure to register each type with {@link InlineAPI#addDataType(InlineDataType)}
+     */
+    public static interface InlineDataType<D extends InlineData<D>> {
+
+        /**
+         * Gets a unique identifier for this data type. 
+         * Used for deserialization
+         * @return id
+         */
+        public Identifier getId();
+
+        /**
+         * Parses an object of type {@link D} from the provided json
+         * @param json
+         * @return parsed object
+         */
         public D deserialize(JsonElement json);
 
+        /**
+         * Serializes the provided data. Should not include type information.
+         * @param data
+         * @return serialized data.
+         */
         public JsonElement serializeData(D data);
     }
 }

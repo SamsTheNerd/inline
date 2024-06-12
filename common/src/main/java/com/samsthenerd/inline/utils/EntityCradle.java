@@ -7,14 +7,35 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.samsthenerd.inline.utils.cradles.EntTypeCradle;
+import com.samsthenerd.inline.utils.cradles.NbtCradle;
+import com.samsthenerd.inline.utils.cradles.PlayerCradle;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+/**
+ * A fancy entity supplier with serialization.
+ * <p>
+ * EntityCradle is generally server safe, although calls to {@link EntityCradle#getEntity(World)}
+ * aren't guaranteed to be.
+ * 
+ * @see EntTypeCradle
+ * @see NbtCradle
+ * @see PlayerCradle 
+ */
 public interface EntityCradle {
     public CradleType<?> getType();
 
+    /**
+     * Supplies an entity wrapped by the cradle. 
+     * This isn't guaranteed to be server-safe.
+     * <p>
+     * Implementations should try to cache their entity if possible.
+     * @param world
+     * @return an entity based on this cradle
+     */
     @Nullable
     public Entity getEntity(World world);
 
