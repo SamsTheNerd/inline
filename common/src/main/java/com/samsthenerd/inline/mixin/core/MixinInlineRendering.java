@@ -93,7 +93,8 @@ public class MixinInlineRendering {
         matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
         matrices.translate(x, y, needsGlowHelp ? 0 : 500);
 
-        TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, red, green, blue, alpha, layerType, vertexConsumers);
+        TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
+            red, green, blue, alpha, layerType, vertexConsumers, inlStyle.hasGlowyMarker());
         x += renderer.render(inlData, drawContext, index, style, codepoint, trContext);
 
         matrices.pop();

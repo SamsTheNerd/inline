@@ -95,8 +95,10 @@ public interface InlineRenderer<D extends InlineData<D>> {
         public float alpha;
         public TextLayerType layerType;
         public VertexConsumerProvider vertexConsumers;
+        // whether or not this render is part of the sign glow outline.
+        public boolean isGlowy;
 
-        public TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue, float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers){
+        public TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue, float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers, boolean isGlowy){
             this.light = light;
             this.shadow = shadow;
             this.brightnessMultiplier = brightnessMultiplier;
@@ -106,6 +108,7 @@ public interface InlineRenderer<D extends InlineData<D>> {
             this.alpha = alpha;
             this.layerType = layerType;
             this.vertexConsumers = vertexConsumers;
+            this.isGlowy = isGlowy;
         }
     }
 }
