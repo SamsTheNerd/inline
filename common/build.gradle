@@ -13,7 +13,7 @@ dependencies {
 
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2' // for @Nonnull
 
-    compileOnly(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixinExtrasVersion}"))
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinExtrasVersion}"))
     
     
 }
@@ -31,6 +31,11 @@ build {
 tasks.register("javadocExtras", Copy){
     from "${rootDir.toPath()}/javadocextras"
     into "${rootDir.toPath()}/common/build/docs/javadoc"
+}
+
+// gradle yells at me without this
+javadocJar{
+    dependsOn tasks.named("javadocExtras")
 }
 
 javadoc{
