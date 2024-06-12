@@ -47,42 +47,22 @@ allprojects {
 
     archivesBaseName = rootProject.archives_base_name
     version = rootProject.mod_version
-    if (System.getenv('BUILD_NUMBER') != null) {
-        version += "-" + System.getenv('BUILD_NUMBER')
+
+    boolean publishMavenRelease = System.getenv("PUBLISH_MAVEN_RELEASE") == "true"
+    String buildNum = System.getenv('BUILD_NUMBER')
+    if (!publishMavenRelease && buildNum != null) {
+        version += "-" + buildNum
     }
     group = rootProject.maven_group
 
     repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
         flatDir {
             name="localModLibs"
             dir 'libs'
         }
-        maven { url 'https://jitpack.io' }
-        maven {
-            url "https://squiddev.cc/maven/"
-        }
         maven { url "https://maven.terraformersmc.com/" }
         maven { url "https://maven.terraformersmc.com/releases" }
-        maven { url = "https://maven.theillusivec4.top" }
         maven { url "https://maven.shedaniel.me/" }
-        // Hex Casting Dependencies
-        maven { url "https://maven.blamejared.com/"}
-        exclusiveContent {
-            forRepository {
-                maven {
-                    name = "Modrinth"
-                    url = "https://api.modrinth.com/maven"
-                }
-            }
-            filter {
-                includeGroup "maven.modrinth"
-            }
-        }
     }
 
     tasks.withType(JavaCompile) {
