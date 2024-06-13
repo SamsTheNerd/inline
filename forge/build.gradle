@@ -1,6 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "me.modmuss50.mod-publish-plugin" version "0.3.3"
+    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
 archivesBaseName = "${archivesBaseName}-forge"
@@ -12,17 +12,10 @@ architectury {
 }
 
 loom {
-    // accessWidenerPath = project(":common").loom.accessWidenerPath
-
-
     forge {
-        // convertAccessWideners = true
-        // extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-        // uncomment *and add the file* if we want forge-only mixins?
         mixinConfig "inline-fabric.mixins.json"
         mixinConfig "inline-common.mixins.json"
     }
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
 
 tasks {
@@ -50,9 +43,6 @@ configurations {
     developmentForge.extendsFrom common
 }
 
-// kotlin for forge - needed for hex
-// apply from: "https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-${kotlinForForgeVersion}.gradle"
-
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
@@ -68,15 +58,6 @@ dependencies {
     runtimeOnly(include("io.github.llamalad7:mixinextras-forge:${mixinExtrasVersion}"))
 
 }
-
-// breaks mixins
-// sourceSets {
-//     main {
-//         resources {
-//             source(project(":common").sourceSets.main.resources)
-//         }
-//     }
-// }
 
 processResources {
     inputs.property "mod_version", project.mod_version
@@ -139,13 +120,28 @@ publishMods {
  
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-        projectId = "971167"
-        minecraftVersions.add("1.20.1")
+        projectId = project.inline_curseforge_id
+        minecraftVersions.add(project.minecraft_version)
+
+        requires{
+            slug = "cloth-config"
+        }
     }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
-        projectId = "fin1PX4m"
-        minecraftVersions.add("1.20.1")
+        projectId = project.inline_modrinth_slug
+        minecraftVersions.add(project.minecraft_version)
+
+        requires{
+            slug = "cloth-config"
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = providers.environmentVariable("GITHUB_REPOSITORY")
+        commitish = providers.environmentVariable("GIT_COMMIT")
+        tagName = "release/${project.version}"
     }
 }

@@ -1,14 +1,7 @@
 plugins {
-	// id 'fabric-loom' version '1.1-SNAPSHOT'
-	// id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "me.modmuss50.mod-publish-plugin" version "0.3.3"
+    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
-
-// sourceCompatibility = JavaVersion.VERSION_17
-// targetCompatibility = JavaVersion.VERSION_17
-
-// apply from: '../common/build.gradle'
 
 archivesBaseName = "${archivesBaseName}-fabric"
 
@@ -52,9 +45,6 @@ configurations {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-	// minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	// mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -70,15 +60,6 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
-
-// breaks mixins
-// sourceSets {
-//     main {
-//         resources {
-//             source(project(":common").sourceSets.main.resources)
-//         }
-//     }
-// }
 
 processResources {
     inputs.property "version", project.version
@@ -96,7 +77,6 @@ shadowJar {
 }
 
 remapJar {
-    // injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
 }
@@ -142,20 +122,33 @@ publishMods {
  
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-        projectId = "971167"
-        minecraftVersions.add("1.20.1")
+        projectId = project.inline_curseforge_id
+        minecraftVersions.add(project.minecraft_version)
         requires{
             slug = "fabric-api"
+        }
+        requires{
+            slug = "cloth-config"
         }
     }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
-        projectId = "fin1PX4m"
-        minecraftVersions.add("1.20.1")
+        projectId = project.inline_modrinth_slug
+        minecraftVersions.add(project.minecraft_version)
         
         requires{
             slug = "fabric-api"
         }
+        requires{
+            slug = "cloth-config"
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = providers.environmentVariable("GITHUB_REPOSITORY")
+        commitish = providers.environmentVariable("GIT_COMMIT")
+        tagName = "release/${project.version}"
     }
 }
