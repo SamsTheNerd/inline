@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.data.ModIconData;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager.CustomTooltipProvider;
@@ -16,7 +15,6 @@ import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.xplat.IModMeta;
 
 import net.minecraft.client.item.TooltipData;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -27,14 +25,15 @@ public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
 
     public static final ModDataTTProvider INSTANCE = new ModDataTTProvider();
 
+    @Override
     public Identifier getId(){
         return new Identifier(Inline.MOD_ID, "moddata");
     }
 
+    @Override
     @NotNull
-    public List<Text> getTooltipText(NbtCompound tag){
+    public List<Text> getTooltipText(IModMeta mod){
         List<Text> modInfo = new ArrayList<>();
-        IModMeta mod = fromTag(tag);
         if(mod == null) return modInfo;
         MutableText title = Text.literal(mod.getName()).setStyle(Style.EMPTY.withBold(true));
         MutableText description = Text.literal(mod.getDescription()).setStyle(Style.EMPTY.withColor(Formatting.GRAY));
@@ -43,9 +42,9 @@ public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
         return modInfo;
     }
 
+    @Override
     @NotNull
-    public Optional<TooltipData> getTooltipData(NbtCompound tag){
-        IModMeta mod = fromTag(tag);
+    public Optional<TooltipData> getTooltipData(IModMeta mod){
         if(mod == null) return Optional.empty();
 
         Spritelike iconSprite = ModIconData.spriteFromModid(mod.getModId(), false);
@@ -53,19 +52,12 @@ public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
         return Optional.of(new SpriteTooltipData(iconSprite, (w, h) -> 32));
     }
 
-    @Nullable
-    private IModMeta fromTag(NbtCompound tag){
-        try{
-            String modid = tag.getString("modid");
-            return IModMeta.getMod(modid).orElse(null);
-        } catch (Exception e){
-            return null;
-        }
-    }
-
-    public NbtCompound getTag(IModMeta mod){
-        NbtCompound tag = new NbtCompound();
-        tag.putString("modid", mod.getModId());
-        return tag;
+    @Override
+    @NotNull
+    public Codec<IModMeta> getCodec(){
+        return Codec.STRING.xmap(
+            modid -> IModMeta.getMod(modid).orElse(null),
+            IModMeta::getModId
+        );
     }
 }

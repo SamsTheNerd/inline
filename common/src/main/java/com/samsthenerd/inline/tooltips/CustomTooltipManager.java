@@ -9,12 +9,17 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.samsthenerd.inline.Inline;
+
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -51,7 +56,7 @@ public class CustomTooltipManager {
         ItemStack stack = new ItemStack(HIJACKED_ITEM);
         NbtCompound tag = new NbtCompound();
         tag.putString("id", provider.getId().toString());
-        tag.put("data", provider.getTag(content));
+        tag.put("data", provider.getCodec().encodeStart(NbtOps.INSTANCE, content).getOrThrow(false, Inline.LOGGER::error));
         stack.setSubNbt("inlinecustomtooltip", tag);
         return stack;
     }
@@ -68,20 +73,26 @@ public class CustomTooltipManager {
     }
 
     @Nullable
-    public static List<Text> getTooltipText(ItemStack stack){
+    public static <T> List<Text> getTooltipText(ItemStack stack){
         try{
             NbtCompound tag = stack.getSubNbt("inlinecustomtooltip");
-            return getProvider(stack).getTooltipText(tag.getCompound("data"));
+            CustomTooltipProvider<T> provider = (CustomTooltipProvider<T>)getProvider(stack);
+            DataResult<T> contentRes = provider.getCodec().parse(NbtOps.INSTANCE, tag.get("data"));
+            T content = contentRes.resultOrPartial(Inline.LOGGER::error).orElseThrow();
+            return provider.getTooltipText(content);
         } catch(Exception e) {
             return null;
         }
     }
 
     @Nullable
-    public static Optional<TooltipData> getTooltipData(ItemStack stack){
+    public static <T> Optional<TooltipData> getTooltipData(ItemStack stack){
         try{
             NbtCompound tag = stack.getSubNbt("inlinecustomtooltip");
-            return getProvider(stack).getTooltipData(tag.getCompound("data"));
+            CustomTooltipProvider<T> provider = (CustomTooltipProvider<T>)getProvider(stack);
+            DataResult<T> contentRes = provider.getCodec().parse(NbtOps.INSTANCE, tag.get("data"));
+            T content = contentRes.resultOrPartial(Inline.LOGGER::error).orElseThrow();
+            return provider.getTooltipData(content);
         } catch(Exception e) {
             return null;
         }
@@ -103,12 +114,6 @@ public class CustomTooltipManager {
     /**
      * Makes a tooltip out of some arbitrary data of type T.
      * <p>
-     * This works in two main steps:
-     * <ol>
-     *      <li>content -> nbt -- to get the data into the hijacked itemstack</li>
-     *      <li>nbt -> tooltip -- to get the tooltip from the itemstack</li>
-     * </ol>
-     * Note that the in between nbt here is just what's needed for the content. 
      * Delegating between providers is handled by the manager.
      */
     public static interface CustomTooltipProvider<T>{
@@ -116,11 +121,12 @@ public class CustomTooltipManager {
         public Identifier getId();
 
         @NotNull
-        public List<Text> getTooltipText(NbtCompound tag);
+        public List<Text> getTooltipText(T content);
 
         @NotNull
-        public Optional<TooltipData> getTooltipData(NbtCompound tag);
+        public Optional<TooltipData> getTooltipData(T content);
 
-        public NbtCompound getTag(T content);
+        @NotNull
+        public Codec<T> getCodec();
     }
 }

@@ -25,8 +25,8 @@ import net.minecraft.world.World;
  * @see NbtCradle
  * @see PlayerCradle 
  */
-public interface EntityCradle {
-    public CradleType<?> getType();
+public abstract class EntityCradle {
+    public abstract CradleType<?> getType();
 
     /**
      * Supplies an entity wrapped by the cradle. 
@@ -37,7 +37,7 @@ public interface EntityCradle {
      * @return an entity based on this cradle
      */
     @Nullable
-    public Entity getEntity(World world);
+    public abstract Entity getEntity(World world);
 
     public static interface CradleType<C extends EntityCradle>{
 
@@ -46,14 +46,14 @@ public interface EntityCradle {
         public Codec<C> getCodec();
     }
 
-    public static final Map<Identifier, CradleType<? extends EntityCradle>> CRADLES = new HashMap<>();
+    private static final Map<Identifier, CradleType<? extends EntityCradle>> CRADLES = new HashMap<>();
 
     public static <T extends CradleType> T addCradleType(T cradleType){
         CRADLES.put(cradleType.getId(), cradleType);
         return cradleType;
     }
 
-    public static final Codec<CradleType<?>> TYPE_CODEC = Identifier.CODEC.comapFlatMap(
+    private static final Codec<CradleType<?>> TYPE_CODEC = Identifier.CODEC.comapFlatMap(
         (id) -> {
             if(CRADLES.containsKey(id)){
                 return DataResult.success(CRADLES.get(id));

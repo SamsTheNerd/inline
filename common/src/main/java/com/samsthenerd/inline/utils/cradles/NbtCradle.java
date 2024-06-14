@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 /**
  * An entity cradle backed by the entity's full nbt data
  */
-public class NbtCradle implements EntityCradle {
+public class NbtCradle extends EntityCradle {
 
     private static final HashMap<NbtCompound, Entity> ENTITY_CACHE = new HashMap<>();
 

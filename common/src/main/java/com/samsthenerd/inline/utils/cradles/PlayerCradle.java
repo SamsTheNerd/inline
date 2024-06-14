@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 /**
  * An entity cradle backed by a player GameProfile
  */
-public class PlayerCradle implements EntityCradle {
+public class PlayerCradle extends EntityCradle {
 
     private static final HashMap<UUID, Entity> UUID_PLAYER_CACHE = new HashMap<>();
     private static final HashMap<String, Entity> NAME_PLAYER_CACHE = new HashMap<>();
