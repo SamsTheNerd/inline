@@ -119,7 +119,7 @@ publishMods {
     displayName = "Inline" + " " + project.version + " [Forge]"
  
     curseforge {
-        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+        accessToken = System.getenv("CURSEFORGE_API_KEY")
         projectId = project.inline_curseforge_id
         minecraftVersions.add(project.minecraft_version)
 
@@ -129,19 +129,12 @@ publishMods {
     }
 
     modrinth {
-        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+        accessToken = System.getenv("MODRINTH_API_KEY")
         projectId = project.inline_modrinth_slug
         minecraftVersions.add(project.minecraft_version)
 
         requires{
             slug = "cloth-config"
         }
-    }
-
-    github {
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        repository = providers.environmentVariable("GITHUB_REPOSITORY")
-        commitish = providers.environmentVariable("GIT_COMMIT")
-        tagName = "release/${project.version}"
     }
 }

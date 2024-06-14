@@ -121,7 +121,7 @@ publishMods {
     displayName = "Inline" + " " + project.version + " [Fabric]"
  
     curseforge {
-        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+        accessToken = System.getenv("CURSEFORGE_API_KEY")
         projectId = project.inline_curseforge_id
         minecraftVersions.add(project.minecraft_version)
         requires{
@@ -133,7 +133,7 @@ publishMods {
     }
 
     modrinth {
-        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+        accessToken = System.getenv("MODRINTH_API_KEY")
         projectId = project.inline_modrinth_slug
         minecraftVersions.add(project.minecraft_version)
         
@@ -146,9 +146,29 @@ publishMods {
     }
 
     github {
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        repository = providers.environmentVariable("GITHUB_REPOSITORY")
-        commitish = providers.environmentVariable("GIT_COMMIT")
+        accessToken = System.getenv("GITHUB_TOKEN") ?: ""
+        repository = System.getenv("GITHUB_REPOSITORY") ?: ""
+        commitish = System.getenv("GIT_COMMIT") ?: ""
         tagName = "release/${project.version}"
+    }
+}
+
+tasks {
+    publishGithub {
+        dependsOn(
+            project(":common").tasks.remapJar,
+            project(":forge").tasks.remapJar,
+        )
+
+        // we need to do this here so that it waits until Forge is already configured
+        // otherwise tasks.remapJar doesn't exist yet
+        publishMods {
+            github {
+                additionalFiles.from(
+                    project(":common").tasks.remapJar.archiveFile,
+                    project(":forge").tasks.remapJar.archiveFile,
+                )
+            }
+        }
     }
 }
