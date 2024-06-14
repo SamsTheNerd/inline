@@ -36,7 +36,7 @@ public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
         List<Text> modInfo = new ArrayList<>();
         if(mod == null) return modInfo;
         MutableText title = Text.literal(mod.getName()).setStyle(Style.EMPTY.withBold(true));
-        MutableText description = Text.literal(mod.getDescription()).setStyle(Style.EMPTY.withColor(Formatting.GRAY));
+        MutableText description = Text.literal(mod.getDescription().replace("\n", "")).setStyle(Style.EMPTY.withColor(Formatting.GRAY));
         modInfo.add(title);
         modInfo.add(description);
         return modInfo;
