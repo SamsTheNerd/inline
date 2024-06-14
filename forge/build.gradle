@@ -13,7 +13,7 @@ architectury {
 
 loom {
     forge {
-        mixinConfig "inline-fabric.mixins.json"
+        mixinConfig "inline-forge.mixins.json"
         mixinConfig "inline-common.mixins.json"
     }
 }

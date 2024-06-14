@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[43,)"
-license = "LGPL-3.0-only"
+license = "LGPL-3.0"
 issueTrackerURL = "https://github.com/SamsTheNerd/inline/issues"
 showAsResourcePack = false
 
@@ -26,3 +26,10 @@ description = "A library for rendering in line with text"
     versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
+
+  [[dependencies.inline]]
+    modId="cloth_config"
+    mandatory=true
+    versionRange="[11.0.0,)"
+    ordering="NONE"
+    side="CLIENT"
