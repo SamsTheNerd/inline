@@ -1,7 +1,6 @@
 package com.samsthenerd.inline.utils;
 
 import com.mojang.authlib.GameProfile;
-import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinAccessPlayerModelParts;
 
@@ -14,7 +13,6 @@ import net.minecraft.util.Pair;
 public class FakeClientPlayerMaker {
     public static Pair<Entity, Boolean> getPlayerEntity(GameProfile profile){
         GameProfile betterProfile = PlayerHeadRenderer.getBetterProfile(profile);
-        Inline.logPrint("betterProfile: " + betterProfile.toString());
         boolean isActuallyBetter = false;
         GameProfile profileToUse = profile;
         if(betterProfile != null){
@@ -27,6 +25,9 @@ public class FakeClientPlayerMaker {
                 return false;
             }
         };
+        player.prevCapeY = player.capeY = (player.getY() - 0.5);
+        player.prevCapeX = player.capeX = player.getX();
+        player.prevCapeZ = player.capeZ = player.getZ();
         player.getDataTracker().set(MixinAccessPlayerModelParts.getPlayerModelParts(), (byte)0b11111111);
         return new Pair<>(
             player,

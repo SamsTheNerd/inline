@@ -13,6 +13,7 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
 
 public class EntityDisplayTTComp implements TooltipComponent {
@@ -32,12 +33,11 @@ public class EntityDisplayTTComp implements TooltipComponent {
         Entity ent = cradle.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return;
 
-        float width = ent.getWidth();
-        float height = ent.getHeight();
+        Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
+
+        double height = bounds.getYLength();
 
         float rot = 15f;
-        double radRot = Math.toRadians(rot % 90);
-        double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
 
         EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(ent);
         MatrixStack matrices = context.getMatrices();
@@ -45,10 +45,9 @@ public class EntityDisplayTTComp implements TooltipComponent {
         int rHeight = getRenderHeight();
         int ttWidth = getWidth(font);
         matrices.translate(mouseX + ttWidth/2.0, mouseY, 500);
-        float scaleFactor = ((float)rHeight)/height;
+        float scaleFactor = (float)(rHeight/height);
         matrices.scale(scaleFactor, -scaleFactor, scaleFactor);
         matrices.translate(0, -height, 0);
-        MinecraftClient.getInstance().getTickDelta();
         MinecraftClient client = MinecraftClient.getInstance();
         float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
@@ -62,29 +61,36 @@ public class EntityDisplayTTComp implements TooltipComponent {
         Entity ent = cradle.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return 0;
 
-        float width = ent.getWidth();
-        float height = ent.getHeight();
+        // Box bounds = ent.getBoundingBox().expand(0.15, 0.1, 0.15);
+        Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
+
+        double width = bounds.getXLength();
+        double depth = bounds.getZLength();
+        double height = bounds.getYLength();
 
         float rot = 15f;
         double radRot = Math.toRadians(rot % 90);
-        double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
+        double pWidth = (width * Math.cos(radRot)) + (depth * Math.sin(radRot));
 
         return (int) (widthProvider.apply(
             (int) (pWidth*100),
             (int) (height*100)
-        ) * 1.2);
+        )) + 16;
     }
 
     private int getRenderHeight(){
         Entity ent = cradle.getEntity(MinecraftClient.getInstance().world);
         if(ent == null) return 0;
 
-        float width = ent.getWidth();
-        float height = ent.getHeight();
+        Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
+
+        double width = bounds.getXLength();
+        double depth = bounds.getZLength();
+        double height = bounds.getYLength();
 
         float rot = 15f;
         double radRot = Math.toRadians(rot % 90);
-        double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
+        double pWidth = (width * Math.cos(radRot)) + (depth * Math.sin(radRot));
 
         int realWidth = widthProvider.apply(
             (int) (pWidth*100),
@@ -98,6 +104,6 @@ public class EntityDisplayTTComp implements TooltipComponent {
 
     @Override
     public int getHeight() {
-        return getRenderHeight() + 4;
+        return getRenderHeight() + 4; 
     }
 }

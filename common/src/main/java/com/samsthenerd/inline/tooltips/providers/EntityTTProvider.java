@@ -38,7 +38,7 @@ public class EntityTTProvider implements CustomTooltipProvider<EntityCradle> {
     @Override
     @NotNull
     public Optional<TooltipData> getTooltipData(EntityCradle cradle){
-        return Optional.of(new EntityDisplayTTData(cradle, (w,h) -> h == 0 ? 0 : w * 96 /h ));
+        return Optional.of(new EntityDisplayTTData(cradle, (w,h) -> h == 0 ? 0 : Math.min(w * 96 /h, 96) ));
     }
 
     @Override

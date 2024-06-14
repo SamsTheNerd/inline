@@ -17,7 +17,8 @@
       "feature.playerskins.MixinClientHeadChecker",
       "feature.playerskins.MixinClientAccessor",
       "feature.playerskins.MixinOfflinePlayerSkins",
-      "feature.playerskins.MixinAccessPlayerModelParts"
+      "feature.playerskins.MixinAccessPlayerModelParts",
+      "feature.playerskins.MixinTurnOffLabel"
     ],
     "injectors": {
       "defaultRequire": 1
