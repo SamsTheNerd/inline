@@ -31,16 +31,16 @@ public class URLTextureUtils {
         if(maybeTexture != null){
             return maybeTexture;
         }
-        Inline.logPrint("Loading texture from URL: " + url);
+        // Inline.logPrint("Loading texture from URL: " + url);
         CompletableFuture.runAsync(() -> {
             try{
                 URL textureUrl = new URL(url);
                 InputStream stream = textureUrl.openStream();
-                Inline.logPrint("in thread maybe ?"); 
+                // Inline.logPrint("in thread maybe ?"); 
                 try{
                     NativeImage baseImage = NativeImage.read(stream);
                     if(baseImage == null){
-                        Inline.logPrint("null baseImage: " + url.toString());
+                        // Inline.logPrint("null baseImage: " + url.toString());
                         return;
                     }
                     NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);

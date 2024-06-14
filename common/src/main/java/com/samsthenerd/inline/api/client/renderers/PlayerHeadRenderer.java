@@ -7,9 +7,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
@@ -21,7 +19,6 @@ import com.samsthenerd.inline.utils.TextureSprite;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -94,23 +91,16 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
         if(weakProf.getId() != null){
             Optional<GameProfile> maybeProf = UUID_PROFILE_CACHE.get(weakProf.getId());
             if(maybeProf != null){
-                if(maybeProf.isPresent() && maybeProf.get().getId() == null){
-                    Inline.logPrint("null id in UUID cache: " + maybeProf.get().toString());
-                }
                 return maybeProf.orElse(null);
             }
         }
         if(weakProf.getName() != null && !weakProf.getName().equals("")){
             Optional<GameProfile> maybeProf = NAME_PROFILE_CACHE.get(weakProf.getName().toLowerCase());
             if(maybeProf != null){
-                if(maybeProf.isPresent() && maybeProf.get().getId() == null){
-                    Inline.logPrint("null id in name cache: " + maybeProf.get().toString());
-                }
                 return maybeProf.orElse(null);
             }
         }
         // can't find, try to fetch it
-        // MinecraftClient.getInstance().getSessionService().fillProfileProperties(weakProf, false);
 
         // set these to empty optionals so we don't repeatedly fetch a ton
         if(weakProf.getId() != null)
@@ -126,14 +116,6 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
         }
 
         SkullBlockEntity.loadProperties(weakProf, betterProf -> {
-            Inline.logPrint(betterProf.toString());
-            Property property = Iterables.getFirst(betterProf.getProperties().get(PlayerSkinProvider.TEXTURES), null);
-            if(property == null){
-                Inline.logPrint("null texture");
-            } else {
-                Inline.logPrint("Texture: "+ property.getValue());
-
-            }
             if(betterProf.getId() != null){
                 UUID_PROFILE_CACHE.put(betterProf.getId(), Optional.of(betterProf));
             }
