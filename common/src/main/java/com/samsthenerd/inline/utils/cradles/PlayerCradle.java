@@ -24,6 +24,22 @@ public class PlayerCradle extends EntityCradle {
     private static final HashMap<UUID, Entity> UUID_PLAYER_CACHE = new HashMap<>();
     private static final HashMap<String, Entity> NAME_PLAYER_CACHE = new HashMap<>();
 
+    public static final Codec<GameProfile> GAME_PROFILE_CODEC = Codec.either(
+            Codec.STRING.fieldOf("username").codec(), 
+            Uuids.CODEC.fieldOf("uuid").codec()
+        ).xmap(
+            (nameOrId) -> nameOrId.map(
+                name -> new GameProfile(null, name), 
+                uuid -> new GameProfile(uuid, null)),
+            
+            (profile) -> {
+                if(profile.getId() != null){
+                    return Either.right(profile.getId());
+                }
+                return Either.left(profile.getName());
+            }
+        );
+
     private GameProfile profile;
 
     public PlayerCradle(GameProfile profile){
@@ -71,21 +87,9 @@ public class PlayerCradle extends EntityCradle {
         }
 
         public Codec<PlayerCradle> getCodec(){
-            return Codec.either(
-                Codec.STRING.fieldOf("username").codec(), 
-                Uuids.CODEC.fieldOf("uuid").codec()
-            ).xmap(
-                (nameOrId) -> new PlayerCradle(nameOrId.map(
-                    name -> new GameProfile(null, name), 
-                    uuid -> new GameProfile(uuid, null))),
-                
-                (PlayerCradle cradle) -> {
-                    GameProfile profile = cradle.getProfile();
-                    if(profile.getId() != null){
-                        return Either.right(profile.getId());
-                    }
-                    return Either.left(profile.getName());
-                }
+            return GAME_PROFILE_CODEC.xmap(
+                PlayerCradle::new,
+                PlayerCradle::getProfile
             );
         }
     }

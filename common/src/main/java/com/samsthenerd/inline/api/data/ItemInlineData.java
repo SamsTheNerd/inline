@@ -1,17 +1,11 @@
 package com.samsthenerd.inline.api.data;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.HoverEvent.ItemStackContent;
 import net.minecraft.text.Style;
@@ -56,34 +50,11 @@ public class ItemInlineData implements InlineData<ItemInlineData>{
         }
 
         @Override
-        public ItemInlineData deserialize(JsonElement jsonElem){
-            JsonObject json = jsonElem.getAsJsonObject();
-            ItemStack stack = new ItemStack(Items.AIR);
-            if(json.has("item")){
-                Item item = Registries.ITEM.get(new Identifier(json.get("item").getAsString()));
-                stack = new ItemStack(item);
-                if(json.has("nbt")){
-                    String stringyNbt = json.get("nbt").getAsString();
-                    NbtCompound tag = new NbtCompound();
-                    try{
-                        tag = StringNbtReader.parse(stringyNbt);
-                    } catch(Exception e){}
-                    stack.setNbt(tag);
-                }
-            }
-            return new ItemInlineData(stack);
-        }
-
-        @Override
-        public JsonObject serializeData(ItemInlineData data){
-            JsonObject json = new JsonObject();
-            json.addProperty("item", Registries.ITEM.getId(data.stack.getItem()).toTranslationKey());
-            json.addProperty("count", data.stack.getCount());
-            NbtCompound tag = data.stack.getNbt();
-            if(tag != null){
-                json.addProperty("nbt", tag.asString());
-            }
-            return json;
+        public Codec<ItemInlineData> getCodec(){
+            return ItemStack.CODEC.xmap(
+                ItemInlineData::new,
+                ItemInlineData::getStack
+            );
         }
     }
 }

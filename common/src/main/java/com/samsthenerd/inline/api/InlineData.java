@@ -1,6 +1,6 @@
 package com.samsthenerd.inline.api;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.api.client.InlineMatcher;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
@@ -88,17 +88,9 @@ public interface InlineData<Self extends InlineData<Self>> {
         public Identifier getId();
 
         /**
-         * Parses an object of type {@link D} from the provided json
-         * @param json
-         * @return parsed object
+         * Gets a codec for serializing data of type D.
+         * @return codec
          */
-        public D deserialize(JsonElement json);
-
-        /**
-         * Serializes the provided data. Should not include type information.
-         * @param data
-         * @return serialized data.
-         */
-        public JsonElement serializeData(D data);
+        public Codec<D> getCodec();
     }
 }

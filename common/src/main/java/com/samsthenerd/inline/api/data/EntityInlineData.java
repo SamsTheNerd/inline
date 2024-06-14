@@ -2,8 +2,7 @@ package com.samsthenerd.inline.api.data;
 
 import javax.annotation.Nullable;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager;
@@ -84,15 +83,11 @@ public class EntityInlineData implements InlineData<EntityInlineData>{
         }
 
         @Override
-        public EntityInlineData deserialize(JsonElement json){
-            return new EntityInlineData(
-                EntityCradle.CRADLE_CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Inline.LOGGER::error).get()
+        public Codec<EntityInlineData> getCodec(){
+            return EntityCradle.CRADLE_CODEC.xmap(
+                EntityInlineData::new,
+                data -> data.cradle
             );
-        }
-
-        @Override
-        public JsonElement serializeData(EntityInlineData data){
-            return EntityCradle.CRADLE_CODEC.encodeStart(JsonOps.INSTANCE, data.cradle).resultOrPartial(Inline.LOGGER::error).orElseThrow();
         }
     }
 }

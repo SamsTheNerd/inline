@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.impl.InlineStyle;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager;
@@ -97,14 +97,16 @@ public class ModIconData extends SpriteInlineData{
         }
 
         @Override
-        public ModIconData deserialize(JsonElement json){
-            return new ModIconData(json.getAsString());
-        }
-
-        @Override
-        public JsonElement serializeData(SpriteInlineData data){
-            if(!(data instanceof ModIconData mData)) return new JsonPrimitive("");
-            return new JsonPrimitive(mData.modid);
+        public Codec<SpriteInlineData> getCodec(){
+            return Codec.STRING.flatComapMap(
+                ModIconData::new,
+                (SpriteInlineData data) -> {
+                    if(!(data instanceof ModIconData mData)) {
+                        return DataResult.error(() -> "");
+                    }
+                    return DataResult.success(mData.modid);
+                }
+            );
         }
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager;
@@ -55,6 +56,11 @@ public class PlayerHeadData implements InlineData<PlayerHeadData>{
         }
 
         private static Gson GSON = new GsonBuilder().create();
+
+        @Override
+        public Codec<PlayerHeadData> getCodec(){
+            return PlayerCradle.GAME_PROFILE_CODEC.xmap(PlayerHeadData::new, data -> data.profile);
+        }
 
         public PlayerHeadData deserialize(JsonElement json){
             return new PlayerHeadData(GSON.fromJson(json, GameProfile.class));

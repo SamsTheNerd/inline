@@ -1,10 +1,6 @@
 package com.samsthenerd.inline.api.data;
 
-import java.util.Optional;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.utils.Spritelike;
@@ -35,16 +31,12 @@ public class SpriteInlineData implements InlineData<SpriteInlineData>{
             return new Identifier(Inline.MOD_ID, "spritelike");
         }
 
-        public SpriteInlineData deserialize(JsonElement json){
-            return new SpriteInlineData(Spritelike.fromJson(json));
-        }
-
-        public JsonElement serializeData(SpriteInlineData data){
-            Optional<JsonElement> res = Spritelike.CODEC.encodeStart(JsonOps.INSTANCE, data.sprite).result();
-            if(res.isPresent()){
-                return res.get();
-            }
-            return new JsonObject();
+        @Override
+        public Codec<SpriteInlineData> getCodec(){
+            return Spritelike.CODEC.xmap(
+                SpriteInlineData::new,
+                data -> data.sprite
+            );
         }
     }
 }

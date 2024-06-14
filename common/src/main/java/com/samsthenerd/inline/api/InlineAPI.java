@@ -26,7 +26,7 @@ public interface InlineAPI {
      * @param json serialized data
      * @return data
      */
-    public InlineData<?> deserializeData(JsonObject json);
+    public <D extends InlineData<D>> D deserializeData(JsonObject json);
 
     /**
      * Serialize data to json
