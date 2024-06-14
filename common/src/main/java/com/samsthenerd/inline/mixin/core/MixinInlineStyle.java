@@ -29,6 +29,8 @@ import net.minecraft.util.JsonHelper;
 @Mixin(Style.class)
 public class MixinInlineStyle implements InlineStyle {
 
+    private static final boolean DEBUG_SER_CHECK = false;
+    
     private InlineData data = null;
     private boolean _isGlowy = false; // this is purely client so doesn't need to be serialized
     private boolean _hidden = false; 
@@ -46,6 +48,13 @@ public class MixinInlineStyle implements InlineStyle {
     @Override
     public Style setData(InlineData data){
         this.data = data;
+        // if(DEBUG_SER_CHECK){
+        //     // making sure that the ser/deser works
+        //     Codec<InlineData> dCodec = data.getType().getCodec();
+        //     JsonElement ser = dCodec.encodeStart(JsonOps.INSTANCE, data).resultOrPartial(Inline.LOGGER::error).orElseGet(null);
+        //     Inline.logPrint("deserialized data as: " + ser.toString());
+        //     this.data = dCodec.parse(JsonOps.INSTANCE, ser).getOrThrow(false, Inline.LOGGER::error);
+        // }
         return (Style)(Object)this;
     }
 
