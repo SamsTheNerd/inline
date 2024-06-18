@@ -14,6 +14,8 @@ Data is primarily just a standardized box used to pass arbitrary data to the ren
 
 Finally, Renderers take in some data and render *something* in place of a character. Inline comes with a variety of built in renderers, in some cases it may be beneficial to re-use these either by extending its data or by composition.
 
+![A flowchart visualizing how the core components interact.](https://github.com/SamsTheNerd/inline/raw/main/assets/flowchart.png)
+
 ## Player Facing Features
 
 Inline comes with a couple of built-in matchers:
