@@ -9,7 +9,7 @@ Check out the gallery for some examples !
 Inline comes with a couple of built-in Matchers, these can be used anywhere that displays text in-game:
 - Items -- ex: `[item:diamond_sword]` -- supports any item id
 - Entity -- ex: `[entity:pig]` -- supports any entity type id
-- Player heads -- ex: `[face:samsthenerd]` -- supports player name or uuid.
+- Player heads -- ex: `[face:samsthenerd]` -- supports player name
 - Mod Icon -- ex: `[mod:inline]`
 
 Some other mods, such as emi, rei, and probably others, add the name of the mod that an item comes from to its tooltip. Inline will look for this and attach the mod's icon to it.

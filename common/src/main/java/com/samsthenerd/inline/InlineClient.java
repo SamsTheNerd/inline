@@ -1,7 +1,6 @@
 package com.samsthenerd.inline;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
@@ -99,12 +98,7 @@ public class InlineClient {
         Identifier faceMatcherId = new Identifier(Inline.MOD_ID, "playerface");
         InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("face", "[a-zA-Z0-9_]{1,16}", faceMatcherId, 
         (String playerNameOrUUID) -> {
-            GameProfile profile;
-            try{
-                profile = new GameProfile(UUID.fromString(playerNameOrUUID), null);
-            } catch (IllegalArgumentException e){
-                profile = new GameProfile(null, playerNameOrUUID);
-            }
+            GameProfile profile = new GameProfile(null, playerNameOrUUID);
             PlayerHeadData headData = new PlayerHeadData(profile);
             return new DataMatch(headData, Style.EMPTY.withHoverEvent(headData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(faceMatcherId)));
