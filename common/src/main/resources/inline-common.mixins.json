@@ -1,27 +1,28 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "com.samsthenerd.inline.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-      "core.MixinInlineStyle"
-    ],
-    "client": [
-      "core.MixinInlineRendering",
-      "core.MixinInlineParsing",
-      "core.MixinSetTessBuffer",
-      "core.MixinTextWiden",
-      "prompts.MixinSuggestInChat",
-      "feature.MixinHijackFeatherForTooltip",
-      "feature.MixinAddModIconToTooltip",
-      "feature.playerskins.MixinClientHeadChecker",
-      "feature.playerskins.MixinClientAccessor",
-      "feature.playerskins.MixinOfflinePlayerSkins",
-      "feature.playerskins.MixinAccessPlayerModelParts",
-      "feature.playerskins.MixinTurnOffLabel"
-    ],
-    "injectors": {
-      "defaultRequire": 1
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.samsthenerd.inline.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "core.MixinInlineStyle",
+    "core.MixinInlineStyle$MixinInlineStyleSerializer"
+  ],
+  "client": [
+    "core.MixinInlineParsing",
+    "core.MixinInlineRendering",
+    "core.MixinSetTessBuffer",
+    "core.MixinTextWiden",
+    "feature.MixinAddModIconToTooltip",
+    "feature.MixinHijackFeatherForTooltip",
+    "feature.playerskins.MixinAccessPlayerModelParts",
+    "feature.playerskins.MixinClientAccessor",
+    "feature.playerskins.MixinClientHeadChecker",
+    "feature.playerskins.MixinOfflinePlayerSkins",
+    "feature.playerskins.MixinTurnOffLabel",
+    "prompts.MixinSuggestInChat"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
   }
   

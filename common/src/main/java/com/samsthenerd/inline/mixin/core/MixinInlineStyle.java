@@ -14,10 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
 
@@ -27,15 +25,13 @@ import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
 import javax.annotation.Nullable;
 
 @Mixin(Style.class)
 public class MixinInlineStyle implements InlineStyle {
 
-    private static final boolean DEBUG_SER_CHECK = false;
-
+    @Unique
     private final Map<ISComponent<?>, Object> components = new HashMap<>();
 
     @NotNull
@@ -44,6 +40,7 @@ public class MixinInlineStyle implements InlineStyle {
         return original.withColor(original.getColor());
     }
 
+    @Unique
     private Style getCopy(){
         return inline$makeCopy((Style)(Object)this);
     }
@@ -152,6 +149,7 @@ public class MixinInlineStyle implements InlineStyle {
 		}
 	}
 
+    @Unique
     private Style keepData(Style newStyle){
         for(ISComponent comp : components.keySet()){
             newStyle.setComponent(comp, getComponent(comp));
