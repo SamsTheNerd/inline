@@ -58,6 +58,6 @@ public class MixinTextWiden {
     at=@At(value="INVOKE", target="net/minecraft/text/Style.withColor (I)Lnet/minecraft/text/Style;"))
     private Style MarkTextGlowy(Style originalStyle, int color, Operation<Style> original){
         InlineStyle inlStyle = (InlineStyle)originalStyle;
-        return original.call(inlStyle.withGlowyMarker(true), color);
+        return original.call(originalStyle.withComponent(InlineStyle.GLOWY_MARKER_COMP,true), color);
     }
 }

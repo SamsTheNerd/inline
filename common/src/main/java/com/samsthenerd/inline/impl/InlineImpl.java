@@ -8,22 +8,34 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineData.InlineDataType;
 
+import com.samsthenerd.inline.utils.EntityCradle;
 import net.minecraft.util.Identifier;
 
 public class InlineImpl implements InlineAPI {
 
-    private final Map<Identifier, InlineDataType<?>> DATA_TYPES = new HashMap<>();
+    private static final Map<Identifier, InlineDataType<?>> DATA_TYPES = new HashMap<>();
 
     @Override
     public void addDataType(InlineDataType<?> type){
         DATA_TYPES.put(type.getId(), type);
     }
+
+    private static final Codec<InlineDataType<?>> INLINE_DATA_TYPE_CODEC = Identifier.CODEC.comapFlatMap(
+            id -> DATA_TYPES.containsKey(id)
+                    ? DataResult.success(DATA_TYPES.get(id))
+                    : DataResult.error(() -> "No inline data type: " + id.toString()),
+            InlineDataType::getId);
+
+    public static final Codec<InlineData<?>> INLINE_DATA_CODEC = INLINE_DATA_TYPE_CODEC.dispatch("type",
+            InlineData::getType, InlineDataType::getCodec);
 
     @Override
     @Nullable

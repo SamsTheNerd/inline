@@ -1,12 +1,15 @@
 package com.samsthenerd.inline.mixin.core;
 
 import java.lang.reflect.Type;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.mojang.serialization.JsonOps;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -26,100 +29,89 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+import javax.annotation.Nullable;
+
 @Mixin(Style.class)
 public class MixinInlineStyle implements InlineStyle {
 
     private static final boolean DEBUG_SER_CHECK = false;
-    
-    private InlineData data = null;
-    private boolean _isGlowy = false; // this is purely client so doesn't need to be serialized
-    private boolean _hidden = false; 
 
-    @Override
-    public InlineData getInlineData(){
-        return data;
+    private final Map<ISComponent<?>, Object> components = new HashMap<>();
+
+    @NotNull
+    @Unique
+    private static Style inline$makeCopy(Style original){
+        return original.withColor(original.getColor());
+    }
+
+    private Style getCopy(){
+        return inline$makeCopy((Style)(Object)this);
     }
 
     @Override
     public Style withInlineData(InlineData data){
-        return ((InlineStyle)((Style)(Object)this).withBold(null)).setData(data);
+        return getCopy().setComponent(InlineStyle.INLINE_DATA_COMP, data);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C> C getComponent(ISComponent<C> component){
+        return (C)components.getOrDefault(component, component.defaultValue());
     }
 
     @Override
-    public Style setData(InlineData data){
-        this.data = data;
-        // if(DEBUG_SER_CHECK){
-        //     // making sure that the ser/deser works
-        //     Codec<InlineData> dCodec = data.getType().getCodec();
-        //     JsonElement ser = dCodec.encodeStart(JsonOps.INSTANCE, data).resultOrPartial(Inline.LOGGER::error).orElseGet(null);
-        //     Inline.logPrint("deserialized data as: " + ser.toString());
-        //     this.data = dCodec.parse(JsonOps.INSTANCE, ser).getOrThrow(false, Inline.LOGGER::error);
-        // }
+    public Set<ISComponent<?>> getComponents(){
+        return new HashSet<>(components.keySet());
+    }
+
+    @Override
+    public <C> Style withComponent(ISComponent<C> component, @Nullable C value){
+        return getCopy().setComponent(component, value);
+    }
+
+    @Override
+    public <C> Style setComponent(ISComponent<C> component, @Nullable C value){
+        if(value == null){
+            this.components.remove(component);
+        } else {
+            this.components.put(component, value);
+        }
         return (Style)(Object)this;
     }
 
-    @Override
-    public Style setGlowyMarker(boolean glowy){
-        this._isGlowy = glowy;
-        return (Style)(Object)this;
-    }
-
-    @Override
-    public Style withGlowyMarker(boolean glowy){
-        return ((InlineStyle)((Style)(Object)this).withBold(null)).setGlowyMarker(glowy);
-    }
-
-    @Override
-    public boolean hasGlowyMarker(){
-        return this._isGlowy;
-    }
-
-
-    @Override
-    public Style setHidden(boolean hidden){
-        this._hidden = hidden;
-        return (Style)(Object)this;
-    }
-
-    @Override
-    public Style withHidden(boolean hidden){
-        return ((Style)(Object)this).withParent(((InlineStyle)Style.EMPTY.withBold(null)).setHidden(hidden));
-    }
-
-    @Override
-    public boolean isHidden(){
-        return _hidden;
-    }
-
+    @SuppressWarnings("unchecked")
     @ModifyReturnValue(method = "withParent(Lnet/minecraft/text/Style;)Lnet/minecraft/text/Style;", at = @At("RETURN"))
 	private Style InlineStyWithParent(Style original, Style parent) {
-        if(this.getInlineData() != null){
-            original = ((InlineStyle) original).withInlineData(this.getInlineData());
-        } else { // no data on this style, try falling back to inherit parent
-            InlineData parentData = ((InlineStyle) parent).getInlineData();
-            if(parentData != null){
-                original = ((InlineStyle) original).withInlineData(parentData);
+        Style maybeNewStyle = inline$makeCopy(original);
+        for(ISComponent comp : parent.getComponents()){
+            if(!maybeNewStyle.getComponents().contains(comp)){
+                maybeNewStyle.setComponent(comp, parent.getComponent(comp));
+            } else {
+                maybeNewStyle.setComponent(comp, comp.merger().apply(getComponent(comp), parent.getComponent(comp)));
             }
         }
-        if(this.isHidden() || ((InlineStyle) parent).isHidden()){
-            ((InlineStyle) original).setHidden(true);
-        }
-		return original;
-	}
-	@Inject(method = "equals(Ljava/lang/Object;)Z", at = @At("HEAD"), cancellable = true)
-	private void InlineStyEquals(Object obj, CallbackInfoReturnable<Boolean> cir) {
-		if (this != obj && (obj instanceof InlineStyle style)) {
-			if (!Objects.equals(this.getInlineData(), style.getInlineData())) {
-				cir.setReturnValue(false);
-			}
-            if(this.isHidden() != style.isHidden()){
-                cir.setReturnValue(false);
-            }
-		}
+        return maybeNewStyle;
 	}
 
-    private static final String DATA_KEY = "inlineData";
-    private static final String HIDDEN_KEY = "isHidden";
+	@ModifyReturnValue(method = "equals(Ljava/lang/Object;)Z", at = @At("RETURN"))
+	private boolean InlineStyEquals(boolean original, Object obj) {
+		if (original && this != obj && (obj instanceof MixinInlineStyle style)) {
+            Set<ISComponent> allComps = Stream.concat(
+                    this.components.keySet().stream(),
+                    style.components.keySet().stream()
+            ).collect(Collectors.toSet());
+            // see if any comps are different
+            for(ISComponent<?> comp : allComps){
+                if(!Objects.equals(this.getComponent(comp), style.getComponent(comp))){
+                    return false;
+                }
+            }
+		}
+        return original;
+	}
+
+    @Unique
+    private static final String COMP_KEY = "inlinecomps";
 
 	@Mixin(Style.Serializer.class)
 	public static class MixinInlineStyleSerializer {
@@ -129,40 +121,40 @@ public class MixinInlineStyle implements InlineStyle {
 				return initialStyle;
 			}
 			JsonObject json = jsonElement.getAsJsonObject();
-			if (!json.has(DATA_KEY)) {
-				return initialStyle;
-			}
-            Boolean hiddenFromJson = JsonHelper.hasBoolean(json, HIDDEN_KEY) ? JsonHelper.getBoolean(json, HIDDEN_KEY) : false;
-            InlineData data = InlineAPI.INSTANCE.deserializeData(json.get(DATA_KEY).getAsJsonObject());
-
-            return ((InlineStyle)initialStyle).withInlineData(data).setHidden(hiddenFromJson);
+            if (!json.has(COMP_KEY)) {
+                return initialStyle;
+            }
+            Style copiedStyle = inline$makeCopy(initialStyle);
+            for(Map.Entry<String, JsonElement> compEntry : json.get(COMP_KEY).getAsJsonObject().entrySet()){
+                ISComponent comp = ISComponent.ALL_COMPS.get(compEntry.getKey());
+                if(comp == null) continue;
+                Optional<?> compVal = comp.codec().parse(JsonOps.INSTANCE, compEntry.getValue()).result();
+                compVal.ifPresent(val -> copiedStyle.setComponent(comp, val));
+            }
+            return copiedStyle;
 		}
 
+        @SuppressWarnings("unchecked")
 		@ModifyReturnValue(method = "serialize", at = @At("RETURN"))
 		private JsonElement HexPatStySerialize(JsonElement jsonElement, Style style, Type type, JsonSerializationContext jsonSerializationContext) {
-			InlineStyle iStyle = (InlineStyle) style;
 			if (jsonElement == null || !jsonElement.isJsonObject()) {
 				return jsonElement;
 			}
 			JsonObject json = jsonElement.getAsJsonObject();
-            if(iStyle.isHidden()){
-                json.add(HIDDEN_KEY, new JsonPrimitive(true));
+            JsonObject compsJson = new JsonObject();
+            // save all comps
+            for(ISComponent comp : style.getComponents()){
+                Optional<JsonElement> dataElem = comp.codec().encodeStart(JsonOps.INSTANCE, style.getComponent(comp)).result();
+                dataElem.ifPresent(element -> compsJson.add(comp.id(), element));
             }
-            InlineData data = iStyle.getInlineData();
-            if(data != null){
-                json.add(DATA_KEY, InlineAPI.INSTANCE.serializeData(data));
-            }
+            if(compsJson.size() > 0) json.add(COMP_KEY, compsJson);
             return json;
 		}
 	}
 
     private Style keepData(Style newStyle){
-        if(this.getInlineData() != null){
-            ((InlineStyle) newStyle).setData(this.getInlineData());
-            ((InlineStyle) newStyle).setGlowyMarker((this.hasGlowyMarker()));
-        }
-        if(this.isHidden()){
-            ((InlineStyle) newStyle).setHidden(true);
+        for(ISComponent comp : components.keySet()){
+            newStyle.setComponent(comp, getComponent(comp));
         }
         return newStyle;
     }

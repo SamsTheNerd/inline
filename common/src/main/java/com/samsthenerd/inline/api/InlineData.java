@@ -30,13 +30,13 @@ public interface InlineData<Self extends InlineData<Self>> {
      * Used mostly for serialization.
      * @return type of this data.
      */
-    public InlineDataType<Self> getType();
+    InlineDataType<Self> getType();
 
     /**
      * Gets which {@link InlineRenderer} should be used for rendering this data.
      * @return id of renderer
      */
-    public Identifier getRendererId();
+    Identifier getRendererId();
 
     /**
      * Gets a suitable Style for this data, without the data itself.
@@ -44,7 +44,7 @@ public interface InlineData<Self extends InlineData<Self>> {
      * This is primarily used for adding hover or click events.
      * @return Style with no attached data
      */
-    public default Style getExtraStyle(){
+    default Style getExtraStyle(){
         return Style.EMPTY;
     }
 
@@ -53,7 +53,7 @@ public interface InlineData<Self extends InlineData<Self>> {
      * @param withExtra whether or not extra styling, such as hover or click events, should be added.
      * @return Style with attached data and extra styling if withExtra is true
      */
-    public default Style asStyle(boolean withExtra){
+    default Style asStyle(boolean withExtra){
         Style dataStyle = InlineStyle.fromInlineData(this);
         if(withExtra){
             dataStyle = dataStyle.withParent(getExtraStyle());
@@ -68,7 +68,7 @@ public interface InlineData<Self extends InlineData<Self>> {
      * @param withExtra whether or not extra styling, such as hover or click events, should be added.
      * @return Text with attached data and extra styling if withExtra is true
      */
-    public default Text asText(boolean withExtra){
+    default Text asText(boolean withExtra){
         return Text.literal(".").setStyle(asStyle(withExtra));
     }
 
@@ -78,7 +78,7 @@ public interface InlineData<Self extends InlineData<Self>> {
      * <p>
      * Make sure to register each type with {@link InlineAPI#addDataType(InlineDataType)}
      */
-    public static interface InlineDataType<D extends InlineData<D>> {
+    interface InlineDataType<D extends InlineData<D>> {
 
         /**
          * Gets a unique identifier for this data type. 

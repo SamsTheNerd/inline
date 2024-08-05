@@ -77,7 +77,7 @@ public class MixinInlineRendering {
             return;
         }
 
-        boolean needsGlowHelp = inlStyle.hasGlowyMarker() && !renderer.canBeTrustedWithOutlines();
+        boolean needsGlowHelp = inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP) && !renderer.canBeTrustedWithOutlines();
 
         Tessellator heldTess = Tessellator.getInstance();
 
@@ -94,7 +94,7 @@ public class MixinInlineRendering {
         matrices.translate(x, y, needsGlowHelp ? 0 : 500);
 
         TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
-            red, green, blue, alpha, layerType, vertexConsumers, inlStyle.hasGlowyMarker());
+            red, green, blue, alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP));
         x += renderer.render(inlData, drawContext, index, style, codepoint, trContext);
 
         matrices.pop();
