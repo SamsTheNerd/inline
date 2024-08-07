@@ -40,8 +40,8 @@ public interface InlineMatch {
      */
     public static class DataMatch implements InlineMatch{
 
-        private InlineData data;
-        private Style style;
+        public final InlineData data;
+        public final Style style;
 
         /**
          * Makes a DataMatch with the given data and style
@@ -63,7 +63,8 @@ public interface InlineMatch {
 
         public int accept(CharacterVisitor visitor, int index, Style currentStyle){
             Style nonDataStyle = style.withParent(currentStyle);
-            visitor.accept(index, ((InlineStyle)nonDataStyle).withInlineData(data), '.');
+            Style dataStyle = nonDataStyle.withInlineData(data);
+            visitor.accept(index, dataStyle, '.');
             return 1;
         }
 

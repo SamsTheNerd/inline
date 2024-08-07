@@ -1,12 +1,18 @@
 package com.samsthenerd.inline.api.client.matchers;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.samsthenerd.inline.api.InlineAPI;
+import net.minecraft.text.Style;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import com.samsthenerd.inline.api.client.InlineMatch;
@@ -106,6 +112,15 @@ public interface RegexMatcher extends ContinuousMatcher {
     public static class Standard implements RegexMatcher{
 
         public static String IDENTIFIER_REGEX = "(?:[0-9a-z._-]+:)?[0-9a-z._\\/-]+";
+        public static String SEPARATORS_REGEX = "([:; ,.!+])";
+        public static Map<String, UnaryOperator<Style>> SEPARATOR_STYLES = new HashMap<>();
+
+        static {
+            SEPARATOR_STYLES.put("!", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 1.5));
+            SEPARATOR_STYLES.put("+", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 2));
+            SEPARATOR_STYLES.put(",", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 0.75));
+            SEPARATOR_STYLES.put(".", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 0.5));
+        }
 
         private final Pattern regex;
         private final Function<String, InlineMatch> matcher;
@@ -116,13 +131,13 @@ public interface RegexMatcher extends ContinuousMatcher {
          * Constructs a simple regex matcher of the form {@code [namespace:(inner)]}.
          * @param namespace ideally follow Identifier/ResLoc rules for this
          * @param innerRegex regex pattern for the inner portion, generally input-like
-         * @param id identifier this matcher. mostly for config
+         * @param id identifier for this matcher. mostly for config
          * @param matcher takes in whatever was matched by the innerRegex and returns an
          * InlineMatch to attach to the entire match.
          * @param info
          */
         public Standard(String namespace, String innerRegex, Identifier id, Function<String, InlineMatch> matcher, MatcherInfo info){
-            regex = Pattern.compile("(\\\\)?\\[" + namespace + ":(" + innerRegex + ")\\]");
+            regex = Pattern.compile("(\\\\)?\\[" + namespace + SEPARATORS_REGEX + "(" + innerRegex + ")\\]");
             this.id = id;
             this.info = info;
             this.matcher = matcher;
@@ -133,7 +148,13 @@ public interface RegexMatcher extends ContinuousMatcher {
         }
 
         public InlineMatch getMatch(MatchResult regexMatch){
-            return matcher.apply(regexMatch.group(2));
+            InlineMatch retrievedMatch = matcher.apply(regexMatch.group(3));
+            String separator = regexMatch.group(2);
+            if(retrievedMatch instanceof InlineMatch.DataMatch dMatch && SEPARATOR_STYLES.containsKey(separator)){
+                InlineMatch styledMatch = new InlineMatch.DataMatch(dMatch.data, SEPARATOR_STYLES.get(separator).apply(dMatch.style));
+                return styledMatch;
+            }
+            return retrievedMatch;
         }
 
         @NotNull

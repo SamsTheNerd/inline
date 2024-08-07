@@ -32,7 +32,8 @@ public class MixinTextWiden {
         }
         InlineRenderer ilRenderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(ilRenderer != null){
-            int cWidth = ilRenderer.charWidth(inlData, style, codepoint);
+            double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
+            int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing() ? 1 : (float)sizeMod));
             cir.setReturnValue((float)cWidth);
         }
     }

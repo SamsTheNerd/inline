@@ -1,5 +1,6 @@
 package com.samsthenerd.inline.api.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
@@ -66,11 +67,30 @@ public interface InlineRenderer<D extends InlineData<D>> {
     /**
      * Gets whether this renderer handles the glow ink on sign outline
      * effect or not.
-     * @return if you want to handle the outline effect on your own.
+     * The default handling primarily affects z-values.
      */
-    default public boolean canBeTrustedWithOutlines() {
+    default boolean canBeTrustedWithOutlines() {
         return false;
     }
+
+    /**
+     * Indicates if this renderer wants to handle size modifiers on its own.
+     * The default handling should be fine for most cases as it simply scales the matrix stack before passing
+     * to the renderer.
+     */
+    default boolean handleOwnSizing(){return false;}
+
+    /**
+     * Indicates if this renderer will handle transparency/alpha.
+     * Note that the default handling is done with {@link RenderSystem#setShaderColor}.
+     */
+    default boolean handleOwnTransparency(){return false;}
+
+    /**
+     * Indicates if this renderer will handle rgb color.
+     * Note that the default handling is done with {@link RenderSystem#setShaderColor}.
+     */
+    default boolean handleOwnColor(){return true; }
 
     /*
      * Text by default is 7px tall, and then 1px of shadow

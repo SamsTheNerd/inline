@@ -80,6 +80,7 @@ public class MixinInlineStyle implements InlineStyle {
     @ModifyReturnValue(method = "withParent(Lnet/minecraft/text/Style;)Lnet/minecraft/text/Style;", at = @At("RETURN"))
 	private Style InlineStyWithParent(Style original, Style parent) {
         Style maybeNewStyle = inline$makeCopy(original);
+        keepData(maybeNewStyle); // make sure that we've still got everything.
         for(ISComponent comp : parent.getComponents()){
             if(!maybeNewStyle.getComponents().contains(comp)){
                 maybeNewStyle.setComponent(comp, parent.getComponent(comp));

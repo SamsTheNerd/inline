@@ -17,6 +17,7 @@ import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineData.InlineDataType;
 
 import com.samsthenerd.inline.utils.EntityCradle;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
 public class InlineImpl implements InlineAPI {
@@ -56,5 +57,10 @@ public class InlineImpl implements InlineAPI {
         json.addProperty("type", data.getType().toString());
         json.add("data", dataElem.orElse(new JsonObject()));
         return json;
+    }
+
+    @Override
+    public Style withSizeModifier(Style style, double modifier){
+        return style.withComponent(InlineStyle.SIZE_MODIFIER_COMP, modifier);
     }
 }
