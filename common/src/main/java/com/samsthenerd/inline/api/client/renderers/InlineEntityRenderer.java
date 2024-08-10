@@ -34,7 +34,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         double pWidth = width * (Math.cos(radRot)+Math.sin(radRot));
 
         int cDist = (int)Math.ceil(pWidth * 8 / height) + 1;
-        if(trContext.shadow){
+        if(trContext.shadow()){
             return cDist;
         }
         EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(ent);
@@ -46,7 +46,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot));
-        renderer.render(ent, 0, 0, matrices, trContext.vertexConsumers, trContext.light);
+        renderer.render(ent, 0, 0, matrices, trContext.vertexConsumers(), trContext.light());
         return cDist;
     }
 

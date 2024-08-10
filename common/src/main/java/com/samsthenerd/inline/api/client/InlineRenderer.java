@@ -105,30 +105,6 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * whether or not it's the drop shadow, and the {@link VertexConsumerProvider} 
      * that came from the text renderer.
      */
-    public static class TextRenderingContext{
-        public int light;
-        public boolean shadow;
-        public float brightnessMultiplier;
-        public float red;
-        public float green;
-        public float blue;
-        public float alpha;
-        public TextLayerType layerType;
-        public VertexConsumerProvider vertexConsumers;
-        // whether or not this render is part of the sign glow outline.
-        public boolean isGlowy;
-
-        public TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue, float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers, boolean isGlowy){
-            this.light = light;
-            this.shadow = shadow;
-            this.brightnessMultiplier = brightnessMultiplier;
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-            this.alpha = alpha;
-            this.layerType = layerType;
-            this.vertexConsumers = vertexConsumers;
-            this.isGlowy = isGlowy;
-        }
-    }
+    record TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue,
+                                float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers, boolean isGlowy){}
 }

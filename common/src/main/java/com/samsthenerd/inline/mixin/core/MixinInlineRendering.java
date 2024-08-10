@@ -89,6 +89,7 @@ public class MixinInlineRendering {
         DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()));
         
         MatrixStack matrices = drawContext.getMatrices();
+        MatrixStack.Entry origMatrix = matrices.peek();
 
         matrices.push();
 
@@ -104,18 +105,19 @@ public class MixinInlineRendering {
         }
 
         TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
-            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP));
+            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP),
+                origMatrix);
 
 
         // do this to clear whatever buffer is in there.
-        if(trContext.vertexConsumers instanceof VertexConsumerProvider.Immediate imm){
+        if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
             imm.draw();
         }
 
         float[] prevColors = RenderSystem.getShaderColor();
 
         if(!renderer.handleOwnColor() || !renderer.handleOwnTransparency()){
-            float[] colorToUse = new float[]{red, green, blue, trContext.alpha};
+            float[] colorToUse = new float[]{red, green, blue, trContext.alpha()};
             if(style.getColor() != null){
                 colorToUse[0] = ColorHelper.Argb.getRed(style.getColor().getRgb())/255f;
                 colorToUse[1] = ColorHelper.Argb.getGreen(style.getColor().getRgb())/255f;
@@ -131,7 +133,7 @@ public class MixinInlineRendering {
 
         x += renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (renderer.handleOwnSizing() ? 1 : (float)sizeMod);
 
-        if(trContext.vertexConsumers instanceof VertexConsumerProvider.Immediate imm){
+        if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
             imm.draw();
         }
 

@@ -1,8 +1,9 @@
 package com.samsthenerd.inline.api.client.renderers;
 
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import org.joml.Matrix4f;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
@@ -21,6 +22,8 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
 
@@ -34,7 +37,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
 
     public int render(ItemInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext){
         // only draw it once
-        if(trContext.shadow){
+        if(trContext.shadow()){
             return 8;
         }
         MatrixStack matrices = context.getMatrices();
@@ -50,22 +53,31 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             return 8;
         }
         BakedModel bakedModel = client.getItemRenderer().getModel(stack, world, null, 0);
+        boolean flat = !bakedModel.isSideLit();
+        /*
+         * here we do a bunch of garbage to make lighting work as nicely as possible in-game.
+         *
+         * the main issue is that DiffuseLighting.disableGuiDepthLighting() messes up the game's lighting but is needed
+         * to make an item look Right when rendered in a flat UI.
+         *
+         * First we check that it's flat and that the layer type is normal (all UI text rendering seems to use this?)
+         * Then we check that the position matrix at the top is flat.
+         */
+        if (flat && trContext.layerType() == TextRenderer.TextLayerType.NORMAL) {
+            Vector4f straightVec = new Vector4f(0, 0, 1, 0);
+            straightVec.mul(matrices.peek().getPositionMatrix());
+            if(straightVec.x() == 0 && straightVec.y() == 0){
+                DiffuseLighting.disableGuiDepthLighting();
+            }
+        }
         matrices.push();
         matrices.translate(4, 4, 0);
-        RenderSystem.enableDepthTest();
         try {
-            boolean flat = !bakedModel.isSideLit();
             matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
             matrices.scale(8.0f, 8.0f, 8f);
-            if (flat) {
-                DiffuseLighting.disableGuiDepthLighting();
-            } else {
-                DiffuseLighting.enableGuiDepthLighting();
-            }
-            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, trContext.vertexConsumers, trContext.light, OverlayTexture.DEFAULT_UV, bakedModel);
-            context.draw();
-            if (!flat) {
-                DiffuseLighting.disableGuiDepthLighting();
+            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, trContext.vertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
+            if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
+                imm.draw();
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");

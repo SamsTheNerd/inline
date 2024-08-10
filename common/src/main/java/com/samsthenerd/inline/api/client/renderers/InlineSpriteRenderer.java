@@ -31,7 +31,7 @@ public class InlineSpriteRenderer implements InlineRenderer<SpriteInlineData>{
         MatrixStack matrices = context.getMatrices();
         matrices.translate(0, 0, 1);
         RenderSystem.enableDepthTest();
-        SpritelikeRenderers.getRenderer(data.sprite).drawSpriteWithLight(data.sprite, context, 0, 0, 0, 8 * width / height,8, trContext.light, 0xFFFFFFFF);
+        SpritelikeRenderers.getRenderer(data.sprite).drawSpriteWithLight(data.sprite, context, 0, 0, 0, 8 * width / height,8, trContext.light(), 0xFFFFFFFF);
         return (int)Math.ceil(whRatio * 8);
     }
 
