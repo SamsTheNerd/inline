@@ -23,7 +23,7 @@ import net.minecraft.util.Pair;
 
 /**
  * A regex based matcher. Simply implement {@link RegexMatcher#getRegex()}
- * and {@link RegexMatcher#getMatch(MatchResult)} and it'll take care of the rest.
+ * and {@link RegexMatcher#getMatch} and it'll take care of the rest.
  * 
  * @see RegexMatcher.Standard
  * @see RegexMatcher.Simple
@@ -46,7 +46,7 @@ public interface RegexMatcher extends ContinuousMatcher {
     /**
      * Parses an InlineMatch out of the regexMatch and provides a group from 
      * the regexMatch for this match to be attached to. By default this will
-     * delegate to {@link RegexMatcher#getMatch(MatchResult)} and cover the 
+     * delegate to {@link RegexMatcher#getMatch} and cover the
      * entire regex match.
      * @param regexMatch a single match from the provided regex
      * @param matchContext a match context provided in-case it's needed. It generally won't be.
