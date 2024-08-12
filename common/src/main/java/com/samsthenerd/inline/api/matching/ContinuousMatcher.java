@@ -1,15 +1,12 @@
-package com.samsthenerd.inline.api.client.matchers;
+package com.samsthenerd.inline.api.matching;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.client.InlineMatch;
-import com.samsthenerd.inline.api.client.InlineMatch.DataMatch;
-import com.samsthenerd.inline.api.client.InlineMatch.TextMatch;
-import com.samsthenerd.inline.api.client.InlineMatcher;
-import com.samsthenerd.inline.api.client.MatchContext;
+import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
 
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -17,11 +14,11 @@ import net.minecraft.util.Pair;
 
 public interface ContinuousMatcher extends InlineMatcher{
 
-    public ContinuousMatchResult match(String input);
+    ContinuousMatchResult match(String input, MatchContext matchContext);
 
-    public default void match(MatchContext matchContext){
+    default void match(MatchContext matchContext){
         for(Entry<Integer, String> seqEntry : matchContext.getUnmatchedSequences().entrySet()){
-            ContinuousMatchResult res = match(seqEntry.getValue());
+            ContinuousMatchResult res = match(seqEntry.getValue(), matchContext);
             for(Pair<Pair<Integer, Integer>, InlineMatch> match : res.getMatches()){
                 int matchStart = match.getLeft().getLeft() + seqEntry.getKey();
                 int matchEnd = match.getLeft().getRight() + seqEntry.getKey();
@@ -30,7 +27,7 @@ public interface ContinuousMatcher extends InlineMatcher{
         }
     }
 
-    public static class ContinuousMatchResult {
+    class ContinuousMatchResult {
         
         // Horrible generic, but whatever, consider it an implementation detail
         private List<Pair<Pair<Integer, Integer>, InlineMatch>> matches = new ArrayList<>();

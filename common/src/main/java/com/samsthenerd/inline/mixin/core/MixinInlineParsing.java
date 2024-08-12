@@ -13,9 +13,9 @@ import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineClientConfig;
-import com.samsthenerd.inline.api.client.InlineMatch;
-import com.samsthenerd.inline.api.client.InlineMatcher;
-import com.samsthenerd.inline.api.client.MatchContext;
+import com.samsthenerd.inline.api.matching.InlineMatch;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
+import com.samsthenerd.inline.api.matching.MatchContext;
 
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;

@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
-import com.samsthenerd.inline.api.client.InlineMatch.DataMatch;
-import com.samsthenerd.inline.api.client.MatcherInfo;
-import com.samsthenerd.inline.api.client.matchers.RegexMatcher;
-import com.samsthenerd.inline.api.client.matchers.RegexMatcher.Standard;
+import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.matching.MatcherInfo;
+import com.samsthenerd.inline.api.matching.RegexMatcher;
+import com.samsthenerd.inline.api.matching.RegexMatcher.Standard;
 import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;

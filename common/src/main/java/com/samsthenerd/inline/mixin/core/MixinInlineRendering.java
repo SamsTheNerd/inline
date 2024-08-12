@@ -105,8 +105,7 @@ public class MixinInlineRendering {
         }
 
         TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
-            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP),
-                origMatrix);
+            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP));
 
 
         // do this to clear whatever buffer is in there.

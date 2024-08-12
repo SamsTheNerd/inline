@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.samsthenerd.inline.api.client.renderers.InlineErrorRenderer;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.impl.InlineClientImpl;
 
 import net.minecraft.util.Identifier;

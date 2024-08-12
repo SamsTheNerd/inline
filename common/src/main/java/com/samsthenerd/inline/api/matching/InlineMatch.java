@@ -1,10 +1,9 @@
-package com.samsthenerd.inline.api.client;
+package com.samsthenerd.inline.api.matching;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.impl.InlineStyle;
 
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;

@@ -1,8 +1,6 @@
 package com.samsthenerd.inline.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +14,7 @@ import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineData.InlineDataType;
 
+import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.utils.EntityCradle;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
@@ -62,5 +61,11 @@ public class InlineImpl implements InlineAPI {
     @Override
     public Style withSizeModifier(Style style, double modifier){
         return style.withComponent(InlineStyle.SIZE_MODIFIER_COMP, modifier);
+    }
+
+    public static final Set<InlineMatcher> SERVER_CHAT_MATCHERS = new HashSet<>();
+
+    public void addChatMatcher(InlineMatcher matcher){
+        SERVER_CHAT_MATCHERS.add(matcher);
     }
 }

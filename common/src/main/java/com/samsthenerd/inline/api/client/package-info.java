@@ -1,4 +1,4 @@
 /**
- * Clientside API. Mostly matchers and renderers.
+ * Clientside API. Mostly renderers.
  */
 package com.samsthenerd.inline.api.client;

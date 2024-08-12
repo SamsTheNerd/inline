@@ -2,6 +2,8 @@ package com.samsthenerd.inline.api;
 
 import com.google.gson.JsonObject;
 import com.samsthenerd.inline.api.InlineData.InlineDataType;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
+import com.samsthenerd.inline.api.matching.MatchContext;
 import com.samsthenerd.inline.impl.InlineImpl;
 import net.minecraft.text.Style;
 
@@ -35,6 +37,11 @@ public interface InlineAPI {
      * @return serialized data
      */
     <D extends InlineData<D>> JsonObject serializeData(D data);
+
+    /**
+     * Register a server-side matcher to be used against chat with a {@link MatchContext.ChatMatchContext}
+     */
+    void addChatMatcher(InlineMatcher matcher);
 
     /**
      * Attach a size modifier to this style. Generally this should be used for some data-holding style to tell

@@ -8,7 +8,7 @@ import java.util.Set;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineClientConfig;
-import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineErrorRenderer;
 import com.samsthenerd.inline.config.InlineClientConfigImpl;

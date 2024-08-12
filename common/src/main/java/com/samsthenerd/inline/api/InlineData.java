@@ -1,7 +1,7 @@
 package com.samsthenerd.inline.api;
 
 import com.mojang.serialization.Codec;
-import com.samsthenerd.inline.api.client.InlineMatcher;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
 

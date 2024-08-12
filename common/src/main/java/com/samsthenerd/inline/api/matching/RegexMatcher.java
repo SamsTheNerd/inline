@@ -1,7 +1,8 @@
-package com.samsthenerd.inline.api.client.matchers;
+package com.samsthenerd.inline.api.matching;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.MatchResult;
@@ -12,12 +13,9 @@ import javax.annotation.Nullable;
 
 import com.samsthenerd.inline.api.InlineAPI;
 import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import com.samsthenerd.inline.api.client.InlineMatch;
-import com.samsthenerd.inline.api.client.InlineMatch.TextMatch;
-import com.samsthenerd.inline.api.client.MatcherInfo;
+import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -31,19 +29,19 @@ import net.minecraft.util.Pair;
  * @see RegexMatcher.Simple
  */
 public interface RegexMatcher extends ContinuousMatcher {
-    public default ContinuousMatchResult match(String input){
+    default ContinuousMatchResult match(String input, MatchContext matchContext){
         Matcher regexMatcher = getRegex().matcher(input);
         ContinuousMatchResult result = new ContinuousMatchResult();
         while(regexMatcher.find()){
             MatchResult mr = regexMatcher.toMatchResult();
-            Pair<InlineMatch, Integer> matchAndGroup = getMatchAndGroup(mr);
+            Pair<InlineMatch, Integer> matchAndGroup = getMatchAndGroup(mr, matchContext);
             if(matchAndGroup.getLeft() == null) continue;
             result.addMatch(mr.start(matchAndGroup.getRight()), mr.end(matchAndGroup.getRight()), matchAndGroup.getLeft());
         }
         return result;
     }
 
-    public Pattern getRegex();
+    Pattern getRegex();
 
     /**
      * Parses an InlineMatch out of the regexMatch and provides a group from 
@@ -51,27 +49,29 @@ public interface RegexMatcher extends ContinuousMatcher {
      * delegate to {@link RegexMatcher#getMatch(MatchResult)} and cover the 
      * entire regex match.
      * @param regexMatch a single match from the provided regex
+     * @param matchContext a match context provided in-case it's needed. It generally won't be.
      * @return Pair of InlineMatch and the regex match group to attach it to. The match
      * may be null, but the pair should not be.
      */
     @NotNull
-    public default Pair<InlineMatch, Integer> getMatchAndGroup(MatchResult regexMatch){
-        return new Pair<>(getMatch(regexMatch), 0);
+    default Pair<InlineMatch, Integer> getMatchAndGroup(MatchResult regexMatch, MatchContext matchContext){
+        return new Pair<>(getMatch(regexMatch, matchContext), 0);
     }
 
     /**
      * Parses an InlineMatch out of the regexMatch.
      * @param regexMatch a single match from the provided regex.
+     * @param matchContext a match context provided in-case it's needed. It generally won't be.
      * @return InlineMatch that gets attached to the entire regex match or null for no match
      */
     @Nullable
-    public InlineMatch getMatch(MatchResult regexMatch);
+    public InlineMatch getMatch(MatchResult regexMatch, MatchContext matchContext);
 
     /**
      * A helper class for constructing a RegexMatcher from just a
      * regex pattern and a getMatch function.
      */
-    public static class Simple implements RegexMatcher {
+    class Simple implements RegexMatcher {
         private Pattern regex;
         private Function<MatchResult, InlineMatch> matcher;
         private MatcherInfo info;
@@ -92,7 +92,7 @@ public interface RegexMatcher extends ContinuousMatcher {
             return regex;
         }
 
-        public InlineMatch getMatch(MatchResult regexMatch){
+        public InlineMatch getMatch(MatchResult regexMatch, MatchContext matchContext){
             return matcher.apply(regexMatch);
         }
 
@@ -147,7 +147,8 @@ public interface RegexMatcher extends ContinuousMatcher {
             return regex;
         }
 
-        public InlineMatch getMatch(MatchResult regexMatch){
+        @Override
+        public InlineMatch getMatch(MatchResult regexMatch, MatchContext matchContext){
             InlineMatch retrievedMatch = matcher.apply(regexMatch.group(3));
             String separator = regexMatch.group(2);
             if(retrievedMatch instanceof InlineMatch.DataMatch dMatch && SEPARATOR_STYLES.containsKey(separator)){
@@ -157,12 +158,13 @@ public interface RegexMatcher extends ContinuousMatcher {
             return retrievedMatch;
         }
 
+        @Override
         @NotNull
-        public Pair<InlineMatch, Integer> getMatchAndGroup(MatchResult regexMatch){
+        public Pair<InlineMatch, Integer> getMatchAndGroup(MatchResult regexMatch, MatchContext matchContext){
             if(regexMatch.group(1) != null){
                 return new Pair<>(new TextMatch(Text.literal("")), 1);
             }
-            return new Pair<>(getMatch(regexMatch), 0);
+            return new Pair<>(getMatch(regexMatch, matchContext), 0);
         }
 
         public MatcherInfo getInfo(){
@@ -171,6 +173,27 @@ public interface RegexMatcher extends ContinuousMatcher {
 
         public Identifier getId(){
             return id;
+        }
+    }
+
+    class ChatStandard extends Standard{
+        private BiFunction<String, MatchContext.ChatMatchContext, InlineMatch> ctxMatcher;
+
+        public ChatStandard(String namespace, String innerRegex, Identifier id, BiFunction<String, MatchContext.ChatMatchContext, InlineMatch> matcher, MatcherInfo info){
+            super(namespace, innerRegex, id, (nop) -> null, info);
+            this.ctxMatcher = matcher;
+        }
+
+        @Override
+        public InlineMatch getMatch(MatchResult regexMatch, MatchContext matchContext){
+            if(!(matchContext instanceof MatchContext.ChatMatchContext chatCtx)) return null;
+            InlineMatch retrievedMatch = ctxMatcher.apply(regexMatch.group(3), chatCtx);
+            String separator = regexMatch.group(2);
+            if(retrievedMatch instanceof InlineMatch.DataMatch dMatch && SEPARATOR_STYLES.containsKey(separator)){
+                InlineMatch styledMatch = new InlineMatch.DataMatch(dMatch.data, SEPARATOR_STYLES.get(separator).apply(dMatch.style));
+                return styledMatch;
+            }
+            return retrievedMatch;
         }
     }
 }

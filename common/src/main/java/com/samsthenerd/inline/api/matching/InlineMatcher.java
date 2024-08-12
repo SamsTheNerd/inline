@@ -1,8 +1,7 @@
-package com.samsthenerd.inline.api.client;
+package com.samsthenerd.inline.api.matching;
 
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.client.matchers.ContinuousMatcher;
-import com.samsthenerd.inline.api.client.matchers.RegexMatcher;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
 
 import net.minecraft.util.Identifier;
 
@@ -14,7 +13,8 @@ import net.minecraft.util.Identifier;
  * can and should be made using one of the {@link RegexMatcher}s but the raw matcher 
  * interface is available here in case it's needed.
  * <p>
- * Regardless of how the matcher is made, it should be registered using {@link InlineClientAPI#addMatcher}.
+ * Matchers are *generally* client-sided. In order for a Matcher to work against arbitrary rendered
+ * text it should be registered using {@link InlineClientAPI#addMatcher}.
  * 
  * @see ContinuousMatcher
  * @see RegexMatcher

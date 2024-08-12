@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.api.client;
+package com.samsthenerd.inline.api.matching;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

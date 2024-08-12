@@ -1,21 +1,31 @@
 package com.samsthenerd.inline.impl;
 
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import com.samsthenerd.inline.api.client.InlineMatch;
-import com.samsthenerd.inline.api.client.MatchContext;
+import com.samsthenerd.inline.api.matching.InlineMatch;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
+import com.samsthenerd.inline.api.matching.MatchContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import org.apache.logging.log4j.core.jmx.Server;
 
 public class MatchContextImpl implements MatchContext{
-    private String fullInput;
-    private TreeMap<Integer, InlineMatch> matchMap = new TreeMap<>();
-    private BitSet matchCheck;
+    private final String fullInput;
+    private final Text fullInputText;
+    private final TreeMap<Integer, InlineMatch> matchMap = new TreeMap<>();
+    private final BitSet matchCheck;
 
     public MatchContextImpl(String fullInput){
-        this.fullInput = fullInput;
+        this(Text.of(fullInput));
+    }
+
+    public MatchContextImpl(Text textInput){
+        this.fullInputText = textInput;
+        this.fullInput = textInput.getString();
         matchCheck = new BitSet(fullInput.length());
     }
 
@@ -45,6 +55,38 @@ public class MatchContextImpl implements MatchContext{
         }
         matchCheck.set(start, end);
         return true;
+    }
+
+    public Text getFinalStyledText(){
+        // don't bother running if we have no matches
+        if(matchMap.size() == 0){
+            return fullInputText.copy();
+        }
+        MutableText res = Text.empty();
+        // atomic as a mutable wrapper for lambda non-sense.
+        AtomicReference<InlineMatch> currentMatch = new AtomicReference<>(null);
+        AtomicInteger chunkIdx = new AtomicInteger(0);
+        fullInputText.visit((Style sty, String seg) -> {
+            for(int i = 0; i < seg.length(); i++){
+                int absI = i + chunkIdx.get();
+                if(matchCheck.get(absI)){
+                    InlineMatch newMatch = matchMap.get(absI);
+                    if(newMatch != currentMatch.get()){
+                        // if we have a new match then accept the match and add to the final result.
+                        newMatch.accept((vI, vSty, codePoint) -> {
+                            res.append(Text.literal(Character.toString(codePoint)).setStyle(vSty));
+                            return true; // sounds fine?
+                        }, res.getString().length(), sty);
+                        currentMatch.set(newMatch);
+                    }
+                } else {
+                    res.append(Text.literal(seg.substring(absI, absI+1)).setStyle(sty));
+                }
+            }
+            chunkIdx.addAndGet(seg.length());
+            return Optional.empty();
+        }, Style.EMPTY);
+        return res;
     }
 
     public String getFinalText(){
@@ -130,4 +172,18 @@ public class MatchContextImpl implements MatchContext{
         return seqMap;
     }
 
+    public static class ChatMatchContextImpl extends MatchContextImpl implements ChatMatchContext{
+
+        private ServerPlayerEntity player;
+
+        public ChatMatchContextImpl(ServerPlayerEntity player, Text originalMsg){
+            super(originalMsg);
+            this.player = player;
+        }
+
+        @Override
+        public ServerPlayerEntity getChatSender(){
+            return player;
+        }
+    }
 }
