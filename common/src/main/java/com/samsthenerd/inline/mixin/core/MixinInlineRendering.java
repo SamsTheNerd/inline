@@ -1,7 +1,9 @@
 package com.samsthenerd.inline.mixin.core;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.samsthenerd.inline.utils.VCPImmediateButImLyingAboutIt;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -85,12 +87,15 @@ public class MixinInlineRendering {
         Tessellator heldTess = Tessellator.getInstance();
         MixinSetTessBuffer.setInstance(secondaryTess);
 
-        VertexConsumerProvider.Immediate immToUse = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        VertexConsumerProvider.Immediate immToUse = null;
 
         // do this to clear whatever buffer is in there.
         if(vertexConsumers instanceof VertexConsumerProvider.Immediate imm){
             imm.draw();
             immToUse = imm;
+        } else {
+            // force the given vc into an immediate wrapper just so that we can still pass it through if needed.
+            immToUse = VCPImmediateButImLyingAboutIt.of(vertexConsumers);
         }
 
         DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), immToUse);
