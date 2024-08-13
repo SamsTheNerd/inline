@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-// duck interface to carry added style data
+/**
+ * duck interface to carry added style data
+ */
 public interface InlineStyle {
     default InlineData getInlineData(){return getComponent(INLINE_DATA_COMP); }
 
@@ -44,5 +46,16 @@ public interface InlineStyle {
     ISComponent<InlineData<?>> INLINE_DATA_COMP = new ISComponent<>("inlinedata", InlineImpl.INLINE_DATA_CODEC, null);
     ISComponent<Boolean> HIDDEN_COMP = new ISComponent<>("hidden", Codec.BOOL, false);
     ISComponent<Double> SIZE_MODIFIER_COMP = new ISComponent<>("size", Codec.DOUBLE, 1.0);
+
+    /**
+     * GLOWY_MARKER_COMP indicates if the *currently rendered* text is an outline. ie, the outline is currently being
+     * rendered and it has this style.
+     */
     ISComponent<Boolean> GLOWY_MARKER_COMP = new ISComponent<>("glowy", Codec.BOOL, false); // todo make this better
+    /**
+     * GLOWY_PARENT_COMP indicates that this text *has* outlines, but that the currently rendered text is the center,
+     * not the outline. It stores the color of the outline. This is really only used for if you want to self-handle the
+     * glow outline.
+     */
+    ISComponent<Integer> GLOWY_PARENT_COMP = new ISComponent<>("glowyparent", Codec.INT, -1);
 }

@@ -83,13 +83,19 @@ public class MixinInlineRendering {
         boolean needsGlowHelp = inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP) && !renderer.canBeTrustedWithOutlines();
 
         Tessellator heldTess = Tessellator.getInstance();
-
         MixinSetTessBuffer.setInstance(secondaryTess);
 
-        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()));
+        VertexConsumerProvider.Immediate immToUse = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+
+        // do this to clear whatever buffer is in there.
+        if(vertexConsumers instanceof VertexConsumerProvider.Immediate imm){
+            imm.draw();
+            immToUse = imm;
+        }
+
+        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), immToUse);
         
         MatrixStack matrices = drawContext.getMatrices();
-        MatrixStack.Entry origMatrix = matrices.peek();
 
         matrices.push();
 
@@ -104,24 +110,28 @@ public class MixinInlineRendering {
             matrices.scale((float)sizeMod, (float)sizeMod, 1f);
         }
 
-        TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
-            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP));
-
-
-        // do this to clear whatever buffer is in there.
-        if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
-            imm.draw();
+        int rendererARGB = ColorHelper.Argb.getArgb(
+                Math.round((alpha == 0 ? 1 : alpha) * 255),
+                Math.round(red * 255),
+                Math.round(green * 255),
+                Math.round(blue * 255)
+        );
+        int usableColor = rendererARGB;
+        if(style.getColor() != null){
+            usableColor = ColorHelper.Argb.mixColor(rendererARGB, style.getColor().getRgb() | 0xFF_000000);
         }
+
+        TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
+            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP),
+        inlStyle.getComponent(InlineStyle.GLOWY_PARENT_COMP), usableColor);
 
         float[] prevColors = RenderSystem.getShaderColor();
 
         if(!renderer.handleOwnColor() || !renderer.handleOwnTransparency()){
             float[] colorToUse = new float[]{red, green, blue, trContext.alpha()};
-            if(style.getColor() != null){
-                colorToUse[0] = ColorHelper.Argb.getRed(style.getColor().getRgb())/255f;
-                colorToUse[1] = ColorHelper.Argb.getGreen(style.getColor().getRgb())/255f;
-                colorToUse[2] = ColorHelper.Argb.getBlue(style.getColor().getRgb())/255f;
-            }
+            colorToUse[0] = ColorHelper.Argb.getRed(usableColor)/255f;
+            colorToUse[1] = ColorHelper.Argb.getGreen(usableColor)/255f;
+            colorToUse[2] = ColorHelper.Argb.getBlue(usableColor)/255f;
             RenderSystem.setShaderColor(
                     renderer.handleOwnColor() ? prevColors[0] : colorToUse[0],
                     renderer.handleOwnColor() ? prevColors[1] : colorToUse[1],

@@ -46,7 +46,7 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * Renders in place of a single codepoint/character based on the data given.
      * @param data the data to render.
      * @param context a {@link DrawContext} with a {@link MatrixStack} set to the correct
-     * position for this character and a fresh {@link Tessellator}.
+     * position for this character and with a {@link VertexConsumerProvider} for rendering to.
      * @param index the index of this character in the overall string.
      * @param style the style attached to the text.
      * @param codepoint the unicode codepoint for this character.
@@ -103,8 +103,16 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * 
      * Notably the argb color of the text (mostly useful for the transparency), 
      * whether or not it's the drop shadow, and the {@link VertexConsumerProvider} 
-     * that came from the text renderer.
+     * that came from the text renderer. Note that generally this vc provider will be the same
+     * as the one given in the render call's {@link DrawContext}.
+     * <p>
+     * @param isGlowy indicates if this text *is* an outline.
+     * @param outlineColor indicates if the text *has* an outline (that would be rendered separately) and what color it is.
+     *                     -1 if no outline.
+     * @param usableColor argb value for the color of the text. Takes into account the argb float values here as well as
+     *                    the text's style.
      */
     record TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue,
-                                float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers, boolean isGlowy){}
+                                float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers,
+                                boolean isGlowy, int outlineColor, int usableColor){}
 }

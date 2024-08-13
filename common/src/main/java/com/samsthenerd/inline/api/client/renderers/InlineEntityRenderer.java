@@ -46,7 +46,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot));
-        renderer.render(ent, 0, 0, matrices, trContext.vertexConsumers(), trContext.light());
+        renderer.render(ent, 0, 0, matrices, context.getVertexConsumers(), trContext.light());
         return cDist;
     }
 

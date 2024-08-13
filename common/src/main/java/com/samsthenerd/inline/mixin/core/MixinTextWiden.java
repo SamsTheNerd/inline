@@ -1,5 +1,10 @@
 package com.samsthenerd.inline.mixin.core;
 
+import com.llamalad7.mixinextras.injector.ModifyReceiver;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.text.CharacterVisitor;
+import net.minecraft.text.OrderedText;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
@@ -39,11 +44,11 @@ public class MixinTextWiden {
     }
 
 
+    @SuppressWarnings("unchecked")
     @WrapOperation(method="method_37297(Lnet/minecraft/client/font/TextRenderer$Drawer;[FIFIIILnet/minecraft/text/Style;I)Z",
     at=@At(value="INVOKE", target="net/minecraft/client/font/Glyph.getAdvance (Z)F"))
     private float MakeTextGlowWider(Glyph glyph, boolean bold, Operation<Float> original, @Coerce Object drawer, float[] fs, int i, float f, int j, int k, int index, Style style, int codepoint){
-        InlineStyle inlStyle = (InlineStyle)style;
-        InlineData inlData = inlStyle.getInlineData();
+        InlineData inlData = style.getInlineData();
         if(inlData == null){
             return original.call(glyph, bold);
         }
@@ -56,10 +61,23 @@ public class MixinTextWiden {
         return original.call(glyph, bold);
     }
 
+    // this makes the
     @WrapOperation(method="method_37297(Lnet/minecraft/client/font/TextRenderer$Drawer;[FIFIIILnet/minecraft/text/Style;I)Z",
     at=@At(value="INVOKE", target="net/minecraft/text/Style.withColor (I)Lnet/minecraft/text/Style;"))
     private Style MarkTextGlowy(Style originalStyle, int color, Operation<Style> original){
-        InlineStyle inlStyle = (InlineStyle)originalStyle;
         return original.call(originalStyle.withComponent(InlineStyle.GLOWY_MARKER_COMP,true), color);
     }
+
+    @WrapOperation(
+            method="drawWithOutline(Lnet/minecraft/text/OrderedText;FFIILorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+            at=@At(value="INVOKE", target="Lnet/minecraft/text/OrderedText;accept(Lnet/minecraft/text/CharacterVisitor;)Z")
+    )
+    private boolean MarkTextParentGlowy(OrderedText originalText, CharacterVisitor visitor, Operation<Boolean> originalOp,
+                                            // parent method params so we can get outlineColor
+                                            OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light){
+        CharacterVisitor markedVisitor = (int index, Style style, int codePoint) ->
+                visitor.accept(index, style.withComponent(InlineStyle.GLOWY_PARENT_COMP, outlineColor), codePoint);
+        return originalOp.call(originalText, markedVisitor);
+    }
+
 }

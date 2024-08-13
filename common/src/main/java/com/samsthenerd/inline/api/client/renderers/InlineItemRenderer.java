@@ -75,10 +75,8 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         try {
             matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
             matrices.scale(8.0f, 8.0f, 8f);
-            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, trContext.vertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
-            if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
-                imm.draw();
-            }
+            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
+            context.getVertexConsumers().draw();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
