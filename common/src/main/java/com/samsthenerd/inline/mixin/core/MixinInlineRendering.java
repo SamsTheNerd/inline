@@ -1,6 +1,8 @@
 package com.samsthenerd.inline.mixin.core;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.samsthenerd.inline.impl.InlineRenderCore;
 import com.samsthenerd.inline.utils.VCPImmediateButImLyingAboutIt;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -67,99 +69,16 @@ public class MixinInlineRendering {
     @Final
     VertexConsumerProvider vertexConsumers;
 
-    private static final Tessellator secondaryTess = new Tessellator();
-
 
     @Inject(method = "accept(ILnet/minecraft/text/Style;I)Z", at = @At("HEAD"), cancellable = true)
-	private void PatStyDrawerAccept(int index, Style style, int codepoint, CallbackInfoReturnable<Boolean> cir) {
-        InlineStyle inlStyle = (InlineStyle) style;
-        InlineData inlData = inlStyle.getInlineData();
-        if(inlData == null){
-            return;
+	private void InlineRenderDrawerAccept(int index, Style style, int codepoint, CallbackInfoReturnable<Boolean> cir) {
+        AtomicDouble xUpdater = new AtomicDouble(x);
+        InlineRenderCore.RenderArgs args = new InlineRenderCore.RenderArgs(x, y, matrix, light, shadow, brightnessMultiplier,
+                red, green, blue, alpha, layerType, vertexConsumers, xUpdater);
+        if(InlineRenderCore.textDrawerAcceptHandler(index, style, codepoint, args)){
+            this.x = xUpdater.floatValue();
+            cir.setReturnValue(true);
         }
-        InlineRenderer renderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
-        if(renderer == null){
-            return;
-        }
-
-        boolean needsGlowHelp = inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP) && !renderer.canBeTrustedWithOutlines();
-
-        Tessellator heldTess = Tessellator.getInstance();
-        MixinSetTessBuffer.setInstance(secondaryTess);
-
-        VertexConsumerProvider.Immediate immToUse = null;
-
-        // do this to clear whatever buffer is in there.
-        if(vertexConsumers instanceof VertexConsumerProvider.Immediate imm){
-            imm.draw();
-            immToUse = imm;
-        } else {
-            // force the given vc into an immediate wrapper just so that we can still pass it through if needed.
-            immToUse = VCPImmediateButImLyingAboutIt.of(vertexConsumers);
-        }
-
-        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), immToUse);
-        
-        MatrixStack matrices = drawContext.getMatrices();
-
-        matrices.push();
-
-        double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
-
-        matrices.multiplyPositionMatrix(matrix);
-        matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
-        matrices.translate(x, y, needsGlowHelp ? 0 : 500);
-        if(!renderer.handleOwnSizing()){
-            double yOffset = (sizeMod - 1) * 4; // sizeMod - 1 gives how much goes "outside" the main 8px. scale by 8 and then take half, so x4.
-            matrices.translate(0, -yOffset, 0);
-            matrices.scale((float)sizeMod, (float)sizeMod, 1f);
-        }
-
-        int rendererARGB = ColorHelper.Argb.getArgb(
-                Math.round((alpha == 0 ? 1 : alpha) * 255),
-                Math.round(red * 255),
-                Math.round(green * 255),
-                Math.round(blue * 255)
-        );
-        int usableColor = rendererARGB;
-        if(style.getColor() != null){
-            usableColor = ColorHelper.Argb.mixColor(rendererARGB, style.getColor().getRgb() | 0xFF_000000);
-        }
-
-        TextRenderingContext trContext = new InlineRenderer.TextRenderingContext(light, shadow, brightnessMultiplier, 
-            red, green, blue, alpha == 0 ? 1 : alpha, layerType, vertexConsumers, inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP),
-        inlStyle.getComponent(InlineStyle.GLOWY_PARENT_COMP), usableColor);
-
-        float[] prevColors = RenderSystem.getShaderColor();
-
-        if(!renderer.handleOwnColor() || !renderer.handleOwnTransparency()){
-            float[] colorToUse = new float[]{red, green, blue, trContext.alpha()};
-            colorToUse[0] = ColorHelper.Argb.getRed(usableColor)/255f;
-            colorToUse[1] = ColorHelper.Argb.getGreen(usableColor)/255f;
-            colorToUse[2] = ColorHelper.Argb.getBlue(usableColor)/255f;
-            RenderSystem.setShaderColor(
-                    renderer.handleOwnColor() ? prevColors[0] : colorToUse[0],
-                    renderer.handleOwnColor() ? prevColors[1] : colorToUse[1],
-                    renderer.handleOwnColor() ? prevColors[2] : colorToUse[2],
-                    renderer.handleOwnTransparency() ? prevColors[3] : colorToUse[3]
-            );
-        }
-
-        x += renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (renderer.handleOwnSizing() ? 1 : (float)sizeMod);
-
-        if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
-            imm.draw();
-        }
-
-        if(!renderer.handleOwnColor() || !renderer.handleOwnTransparency()){
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        }
-
-        matrices.pop();
-
-        MixinSetTessBuffer.setInstance(heldTess);
-
-        cir.setReturnValue(true);
     }
 }
 

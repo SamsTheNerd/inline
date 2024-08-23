@@ -19,6 +19,9 @@
     "feature.playerskins.MixinClientHeadChecker",
     "feature.playerskins.MixinOfflinePlayerSkins",
     "feature.playerskins.MixinTurnOffLabel",
+    "interop.MixinCreateDisplayRendering",
+    "interop.MixinCreateMakeBoardsRightLength",
+    "interop.MixinCreateMakeDisplaySectionsNotTooLong",
     "prompts.MixinSuggestInChat"
   ],
   "injectors": {

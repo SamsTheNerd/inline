@@ -94,7 +94,31 @@ public interface MatchContext {
     Map<Integer, InlineMatch> getFinalMatches();
 
     /**
-     * An extension of MatchContext that has the player sending the message. Meant to be used for
+     * Gets a map of all matches added. The key is the start index of the match
+     * in the original string input, the value is the match.
+     * @return
+     */
+    Map<Integer, InlineMatch> getMatches();
+
+    /**
+     * Converts the given index from its position in the original string to the corresponding
+     * position in the final string returned by {@link MatchContext#getFinalText()}
+     * @param orig index to convert
+     * @return the index in the final string.
+     */
+    int origToFinal(int orig);
+
+    /**
+     * Converts the given index from its position in the final string returned by {@link MatchContext#getFinalText()}
+     * to the corresponding position in the original string.
+     * @param fin index to convert
+     * @return the index in the original string. If fin is a match then it returns the index of the first character
+     * matched in the original.
+     */
+    int finalToOrig(int fin);
+
+    /**
+     * An extension of MatchContext that has the player sending the message. Meant to be used for serverside chat matching.
      */
     interface ChatMatchContext extends MatchContext{
         ServerPlayerEntity getChatSender();

@@ -45,20 +45,22 @@ public class InlineClient {
 
     private static void addDefaultMatchers(){
         Identifier itemMatcherID = new Identifier(Inline.MOD_ID, "item");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("item", Standard.IDENTIFIER_REGEX, itemMatcherID, 
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("item", Standard.IDENTIFIER_REGEX_INSENSITIVE, itemMatcherID,
         (String itemId) ->{
-            Item item = Registries.ITEM.get(new Identifier(itemId));
-            if(item == null) return null;
+            Identifier itemActualId = new Identifier(itemId.toLowerCase());
+            if(!Registries.ITEM.containsId(itemActualId)) return null;
+            Item item = Registries.ITEM.get(itemActualId);
             ItemStack stack = new ItemStack(item);
             HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ItemStackContent(stack));
             return new DataMatch(new ItemInlineData(stack), Style.EMPTY.withHoverEvent(he));
         }, MatcherInfo.fromId(itemMatcherID)));
 
         Identifier entityMatcherID = new Identifier(Inline.MOD_ID, "entity");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("entity", Standard.IDENTIFIER_REGEX, entityMatcherID, 
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("entity", Standard.IDENTIFIER_REGEX_INSENSITIVE, entityMatcherID,
         (String entityTypeId) ->{
-            EntityType entType = Registries.ENTITY_TYPE.get(new Identifier(entityTypeId));
-            if(entType == null) return null;
+            Identifier entTypeActualId = new Identifier(entityTypeId.toLowerCase());
+            if(Registries.ENTITY_TYPE.containsId(entTypeActualId)) return null;
+            EntityType entType = Registries.ENTITY_TYPE.get(entTypeActualId);
             EntityInlineData entData = EntityInlineData.fromType(entType);
             return new DataMatch(entData, Style.EMPTY.withHoverEvent(entData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(entityMatcherID)));
@@ -85,14 +87,15 @@ public class InlineClient {
         // }));
 
         Identifier modMatcherId = new Identifier(Inline.MOD_ID, "modicon");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("mod", "[0-9a-z._-]+", modMatcherId, 
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("mod", "[0-9A-Za-z._-]+", modMatcherId,
         (String modid) -> {
-            Optional<IModMeta> maybeMod = IModMeta.getMod(modid);
+            String modidLowercase = modid.toLowerCase();
+            Optional<IModMeta> maybeMod = IModMeta.getMod(modidLowercase);
             if(maybeMod.isEmpty()){
                 return null;
             }
             // IModMeta mod = maybeMod.get();
-            return new DataMatch(new ModIconData(modid), ModIconData.getTooltipStyle(modid));
+            return new DataMatch(new ModIconData(modidLowercase), ModIconData.getTooltipStyle(modidLowercase));
         }, MatcherInfo.fromId(modMatcherId)));
 
         Identifier faceMatcherId = new Identifier(Inline.MOD_ID, "playerface");

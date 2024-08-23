@@ -16,7 +16,9 @@ import org.apache.logging.log4j.core.jmx.Server;
 public class MatchContextImpl implements MatchContext{
     private final String fullInput;
     private final Text fullInputText;
-    private final TreeMap<Integer, InlineMatch> matchMap = new TreeMap<>();
+    private final TreeMap<Integer, InlineMatch> matchMap = new TreeMap<>(); // orig index -> match for every match
+    // TODO: rewrite some bits to make it actually use singularMatchMap
+    private final TreeMap<Integer, InlineMatch> singularMatchMap = new TreeMap<>(); // orig index -> match for the first index of every match.
     private final BitSet matchCheck;
 
     public MatchContextImpl(String fullInput){
@@ -52,6 +54,13 @@ public class MatchContextImpl implements MatchContext{
         }
         for(int i = start; i < end; i++){
             matchMap.put(i, match);
+        }
+        // do some checks and add to singular map.
+        if(singularMatchMap.get(start-1) != match){ // only put it in the singular map if the prev idx is not the same match
+            singularMatchMap.put(start, match);
+        }
+        if(singularMatchMap.get(start+1) == match){
+            singularMatchMap.remove(start+1); // make sure the one after it isn't the same.
         }
         matchCheck.set(start, end);
         return true;
@@ -155,6 +164,45 @@ public class MatchContextImpl implements MatchContext{
             }
         }
         return squishedMatchMap;
+    }
+
+    public int origToFinal(int orig){
+        // need to count how many chars were 'lost' in matching and how many were re-added from matching.
+//        int unMatched = matchCheck.previousClearBit(orig); // find the last unmatched idx
+//        int prevMatchedChars = 0;
+//        if(unMatched != -1) prevMatchedChars = matchCheck.get(0, unMatched).cardinality(); // count how many matched chars we have before this match chunk
+        // this is prob a little slow
+        int fin = 0;
+        InlineMatch currentMatch = null;
+        for(int i = 0; i < orig; i++){
+            InlineMatch newMatch = matchMap.get(i);
+            if(newMatch == null){
+                currentMatch = null;
+                fin++;
+            } else if(newMatch != currentMatch){
+                currentMatch = newMatch;
+                fin++;
+            }
+        }
+        return fin;
+    }
+
+    public int finalToOrig(int fin){
+        int fCounted = 0;
+        int i = 0; // orig counter
+        InlineMatch currentMatch = null;
+        while(fCounted < fin){
+            InlineMatch newMatch = matchMap.get(i);
+            if(newMatch == null){
+                currentMatch = null;
+                fCounted++;
+            } else if(newMatch != currentMatch){
+                currentMatch = newMatch;
+                fCounted++;
+            }
+            i++;
+        }
+        return i;
     }
 
     public Map<Integer, String> getUnmatchedSequences(){

@@ -112,6 +112,7 @@ public interface RegexMatcher extends ContinuousMatcher {
     public static class Standard implements RegexMatcher{
 
         public static String IDENTIFIER_REGEX = "(?:[0-9a-z._-]+:)?[0-9a-z._\\/-]+";
+        public static String IDENTIFIER_REGEX_INSENSITIVE = "(?:[0-9a-zA-Z._-]+:)?[0-9a-zA-Z._\\/-]+";
         public static String SEPARATORS_REGEX = "([:; ,.!+])";
         public static Map<String, UnaryOperator<Style>> SEPARATOR_STYLES = new HashMap<>();
 
@@ -137,7 +138,7 @@ public interface RegexMatcher extends ContinuousMatcher {
          * @param info
          */
         public Standard(String namespace, String innerRegex, Identifier id, Function<String, InlineMatch> matcher, MatcherInfo info){
-            regex = Pattern.compile("(\\\\)?\\[" + namespace + SEPARATORS_REGEX + "(" + innerRegex + ")\\]");
+            regex = Pattern.compile("(\\\\)?\\[" + "(?i)(?:" + namespace + ")" + SEPARATORS_REGEX + "(" + innerRegex + ")\\]");
             this.id = id;
             this.info = info;
             this.matcher = matcher;
