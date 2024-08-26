@@ -1,0 +1,36 @@
+{
+
+    "config.inline.title": "Inline",
+    "config.inline.category.matchers": "표시기들",
+    "config.inline.category.extras": "추가 기능",
+
+    "config.inline.extras.modicon": "아이템 툴팁 모드 아이콘",
+    "config.inline.extras.modicon.desc": "JEI나 EMI와 같은 모드가 아이템 툴팁에 추가하는 모드 이름 옆 모드의 아이콘을 추가합니다.",
+
+    "config.inline.extras.chatcap": "채팅 크기 제한",
+    "config.inline.extras.chatcap.desc": "1: [item:diamond_sword] 1.5: [item!diamond_sword] 2: [item+diamond_sword] 큰 표시가 채팅을 가리는 것을 방지합니다.",
+
+    "config.inline.extras.createinterop": "Create [mod:create] 디스플레이 화면 호환",
+    "config.inline.extras.createinterop.desc": "Inline이 디스플레이 화면에서도 표시되도록 합니다.",
+
+    "matcher.inline.modicon.title": "모드 아이콘",
+    "matcher.inline.modicon.title.styled": "모드 아이콘 [mod:inline]",
+    "matcher.inline.modicon.description": "모드 아이콘을 표시합니다.",
+    "matcher.inline.modicon.example": "[mod:inline]",
+
+    "matcher.inline.item.title": "아이템",
+    "matcher.inline.item.title.styled": "아이템 [item:writable_book]",
+    "matcher.inline.item.description": "리소스 위치로 지정된 아이템을 표시합니다.",
+    "matcher.inline.item.example": "[item:diamond_sword][item:book]",
+
+    "matcher.inline.entity.title": "엔티티",
+    "matcher.inline.entity.title.styled": "엔티티 [entity:pig]",
+    "matcher.inline.entity.description": "리소스 위치로 지정된 엔티티을 표시합니다.",
+    "matcher.inline.entity.example": "[entity:pig]",
+
+    "matcher.inline.playerface.title": "플레이어 머리",
+    "matcher.inline.playerface.title.styled": "플레이어 머리 [face:MHF_Steve]",
+    "matcher.inline.playerface.description": "플레이어의 머리를 표시합니다.",
+    "matcher.inline.playerface.example": "[face:MHF_Steve]"
+
+}
