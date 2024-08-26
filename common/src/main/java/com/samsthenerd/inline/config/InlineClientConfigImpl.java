@@ -33,6 +33,8 @@ public class InlineClientConfigImpl implements InlineClientConfig {
 
     private Set<Identifier> disabledMatchers = new HashSet<>();
     private boolean renderModIcon = true;
+    private boolean doCreateMixin = true;
+    private double chatScaleCap = 1.5;
 
     private boolean dirty = false;
 
@@ -125,6 +127,26 @@ public class InlineClientConfigImpl implements InlineClientConfig {
 
     public void setShouldRenderModIcons(boolean should){
         renderModIcon = should;
+        dirty = true;
+    }
+
+    @Override
+    public boolean shouldDoCreateMixins(){
+        return doCreateMixin;
+    }
+
+    public void setShouldDoCreateMixins(boolean should){
+        doCreateMixin = should;
+        dirty = true;
+    }
+
+    @Override
+    public double maxChatSizeModifier(){
+        return chatScaleCap;
+    }
+
+    public void setChatScaleCap(double newCap){
+        chatScaleCap = newCap;
         dirty = true;
     }
 }

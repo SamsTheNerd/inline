@@ -59,7 +59,7 @@ public class InlineClient {
         InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("entity", Standard.IDENTIFIER_REGEX_INSENSITIVE, entityMatcherID,
         (String entityTypeId) ->{
             Identifier entTypeActualId = new Identifier(entityTypeId.toLowerCase());
-            if(Registries.ENTITY_TYPE.containsId(entTypeActualId)) return null;
+            if(!Registries.ENTITY_TYPE.containsId(entTypeActualId)) return null;
             EntityType entType = Registries.ENTITY_TYPE.get(entTypeActualId);
             EntityInlineData entData = EntityInlineData.fromType(entType);
             return new DataMatch(entData, Style.EMPTY.withHoverEvent(entData.getEntityDisplayHoverEvent()));

@@ -38,6 +38,14 @@ public class MixinCreateMakeBoardsRightLength {
             at=@At(value="INVOKE", target="Ljava/lang/Math;min(II)I")
     )
     private int getInlineBasedTextLength(int spinningLength, int origLength, Operation<Integer> minOp, @Local LocalRef<String> textRef){
+        if(!InlineClientAPI.INSTANCE.getConfig().shouldDoCreateMixins()){
+            // if we've already done our little mixin before then undo our spinning array size thing.
+            if(origSpinningLength != -1 && spinning.length != origSpinningLength){
+                spinning = new boolean[singleFlap ? 1 : origSpinningLength];
+                origSpinningLength = -1; // just avoid future checks i guess.
+            }
+            return minOp.call(spinningLength, origLength);
+        }
         // spinning length is how many chars we have to work with
         // origLength is from newText.length() - if we have a match this will be quite long, perhaps longer than spinningLength even if it's only '1' char
         MatchContext matchContext = MatchContext.forInput(textRef.get().trim());
@@ -55,6 +63,7 @@ public class MixinCreateMakeBoardsRightLength {
             originalSize = size;
         }
 
+        // TODO: can prob skip some stuff here if we have no matches
         int squishedLength = matchContext.getFinalText().length(); // how long the parsed text is. Shorter than origLength if we have matches.
         int origMin = minOp.call(origSpinningLength, squishedLength); // this is the "actual" length that we want to fit to.
         int lenNeededForUnparsed = matchContext.finalToOrig(origMin+1)-1; // this is how many chars we actually have

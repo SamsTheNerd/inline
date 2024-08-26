@@ -38,6 +38,9 @@ public class MixinTextWiden {
         InlineRenderer ilRenderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(ilRenderer != null){
             double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
+            // TODO: this doesn't seem worth it? since this doesn't directly effect spacing
+//            double maxSizeMod = InlineClientAPI.INSTANCE.getConfig().maxChatSizeModifier();
+//            if(sizeMod > maxSizeMod && InlineRenderer.isChatty()) sizeMod = maxSizeMod;
             int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing() ? 1 : (float)sizeMod));
             cir.setReturnValue((float)cWidth);
         }
@@ -55,6 +58,7 @@ public class MixinTextWiden {
         InlineRenderer ilRenderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(ilRenderer != null){
             double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
+            // this should explicitly be Not Chat, so no use checking configs.
             int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing() ? 1 : (float)sizeMod));
             return cWidth;
         }

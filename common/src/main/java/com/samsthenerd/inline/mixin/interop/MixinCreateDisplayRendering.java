@@ -1,6 +1,7 @@
 package com.samsthenerd.inline.mixin.interop;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.impl.InlineRenderCore;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -28,6 +29,9 @@ public class MixinCreateDisplayRendering {
 
     @Inject(method = "accept(ILnet/minecraft/text/Style;I)Z", at = @At("HEAD"), cancellable = true)
     private void InlineCreateRenderDrawerAccept(int index, Style style, int codepoint, CallbackInfoReturnable<Boolean> cir) {
+        if(!InlineClientAPI.INSTANCE.getConfig().shouldDoCreateMixins()){
+            return;
+        }
         AtomicDouble xUpdater = new AtomicDouble(x);
         InlineRenderCore.RenderArgs args = new InlineRenderCore.RenderArgs(x, 0, pose, light, false, 1f,
                 r, g, b, a, TextRenderer.TextLayerType.NORMAL, bufferSource, xUpdater);

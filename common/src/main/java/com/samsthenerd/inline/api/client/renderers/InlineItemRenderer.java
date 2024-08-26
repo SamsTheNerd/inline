@@ -63,12 +63,8 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
          * First we check that it's flat and that the layer type is normal (all UI text rendering seems to use this?)
          * Then we check that the position matrix at the top is flat.
          */
-        if (flat && trContext.layerType() == TextRenderer.TextLayerType.NORMAL) {
-            Vector4f straightVec = new Vector4f(0, 0, 1, 0);
-            straightVec.mul(matrices.peek().getPositionMatrix());
-            if(straightVec.x() == 0 && straightVec.y() == 0){
-                DiffuseLighting.disableGuiDepthLighting();
-            }
+        if (flat && InlineRenderer.isFlat(matrices, trContext.layerType())) {
+            DiffuseLighting.disableGuiDepthLighting();
         }
         matrices.push();
         matrices.translate(4, 4, 0);

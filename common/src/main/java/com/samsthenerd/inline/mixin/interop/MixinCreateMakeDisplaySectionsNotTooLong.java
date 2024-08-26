@@ -56,24 +56,25 @@ public class MixinCreateMakeDisplaySectionsNotTooLong {
             at=@At(value="INVOKE", target="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer$FlapDisplayRenderOutput;nextSection(Lcom/simibubi/create/content/trains/display/FlapDisplaySection;)V")
     )
     private void catchSection(@Coerce Object renderOutput, @Coerce Object nextSection, Operation<Void> actualOp, @Share("takeitbacknowyall") LocalFloatRef backRef){
+        if(InlineClientAPI.INSTANCE.getConfig().shouldDoCreateMixins()) {
+            try {
+                // we can assume that sectionText is properly trimmed
+                String sectionText = (String) (textGetter.invoke(nextSection));
+                MatchContext matchContext = MatchContext.forInput(sectionText.trim());
 
-        try {
-            // we can assume that sectionText is properly trimmed
-            String sectionText = (String)(textGetter.invoke(nextSection));
-            MatchContext matchContext = MatchContext.forInput(sectionText.trim());
+                // run all the matchers
+                InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
+                for (InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()) {
+                    if (!config.isMatcherEnabled(matcher.getId())) continue;
+                    matcher.match(matchContext);
+                }
 
-            // run all the matchers
-            InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
-            for (InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()) {
-                if (!config.isMatcherEnabled(matcher.getId())) continue;
-                matcher.match(matchContext);
+                int squishedLength = matchContext.getFinalText().length(); // how long the parsed text is. Shorter than origLength if we have matches.
+                int lenNeededForUnparsed = matchContext.finalToOrig(squishedLength + 1) - 1; // this is how many chars the unparsed takes up
+                backRef.set(7 * (lenNeededForUnparsed - squishedLength));
+            } catch (Throwable e) {
+                // oopsies,
             }
-
-            int squishedLength = matchContext.getFinalText().length(); // how long the parsed text is. Shorter than origLength if we have matches.
-            int lenNeededForUnparsed = matchContext.finalToOrig(squishedLength + 1) - 1; // this is how many chars the unparsed takes up
-            backRef.set(7*(lenNeededForUnparsed - squishedLength));
-        } catch (Throwable e){
-            // oopsies,
         }
         actualOp.call(renderOutput, nextSection);
     }

@@ -8,13 +8,20 @@ import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
 import com.samsthenerd.inline.api.data.ModIconData;
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
+import org.joml.Vector4f;
+
+import java.util.stream.Collectors;
 
 /**
  * Renders in place of text based on the InlineData attached to the text.
@@ -115,4 +122,34 @@ public interface InlineRenderer<D extends InlineData<D>> {
     record TextRenderingContext(int light, boolean shadow, float brightnessMultiplier, float red, float green, float blue,
                                 float alpha, TextLayerType layerType, VertexConsumerProvider vertexConsumers,
                                 boolean isGlowy, int outlineColor, int usableColor){}
+
+    /**
+     * A helper method for checking if a given rendering environment is for a flat UI, such as in chat, a tooltip,
+     * inventory title, or other similar cases.
+     * @param matrices the matrix stack given by the rendering env.
+     * @param layerType text layer type for the given env. Can be found with {@link TextRenderingContext#layerType()}
+     * @return if the render context, with the given matrix stack, is flat or not.
+     */
+    static boolean isFlat(MatrixStack matrices, TextLayerType layerType){
+        if (layerType == TextRenderer.TextLayerType.NORMAL) {
+            Vector4f straightVec = new Vector4f(0, 0, 1, 0);
+            straightVec.mul(matrices.peek().getPositionMatrix());
+            return straightVec.x() == 0 && straightVec.y() == 0;
+        }
+        return false;
+    }
+
+    /**
+     * A small helper for checking if this renderer is being called from a chat renderer.
+     * <p>
+     * NOTE: since this has to check the call stack, it's maybe not the most efficient thing in the world.
+     * Try to limit calls to it. Using {@link TextRenderingContext#isFlat} can
+     * @return if this renderer is being called from a chat renderer.
+     */
+    static boolean isChatty(){
+        return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s ->
+                s.limit(20).anyMatch(frame ->
+                        frame.getDeclaringClass().equals(ChatScreen.class) || frame.getDeclaringClass().equals(ChatHud.class))
+        );
+    }
 }

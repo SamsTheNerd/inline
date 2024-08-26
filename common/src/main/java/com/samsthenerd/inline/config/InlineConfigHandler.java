@@ -1,14 +1,18 @@
 package com.samsthenerd.inline.config;
 
+import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.matching.MatcherInfo;
 
+import com.samsthenerd.inline.xplat.IModMeta;
+import com.samsthenerd.inline.xplat.IXPlatAbstractions;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
+import me.shedaniel.clothconfig2.gui.entries.DoubleListEntry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -49,6 +53,28 @@ public class InlineConfigHandler {
             .build();
 
         extraFeatures.addEntry(modIconEntry);
+
+        DoubleListEntry chatCapField = entryBuilder.startDoubleField(Text.translatable("config.inline.extras.chatcap"),
+                InlineClientConfigImpl.getInstance().maxChatSizeModifier())
+                .setTooltip(Text.translatable("config.inline.extras.chatcap.desc"))
+                .setDefaultValue(1.5).setMin(1.0).setMax(2.0)
+                .setSaveConsumer((newCap) -> InlineClientConfigImpl.getInstance().setChatScaleCap(newCap))
+                .build();
+        extraFeatures.addEntry(chatCapField);
+
+        if(IModMeta.getMod("create").isPresent()){
+            BooleanListEntry createToggleEntry = entryBuilder.startBooleanToggle(Text.translatable("config.inline.extras.createinterop"),
+                            InlineClientConfigImpl.getInstance().shouldDoCreateMixins())
+                    .setTooltip(Text.translatable("config.inline.extras.createinterop.desc"))
+                    .setDefaultValue(true)
+                    .setYesNoTextSupplier((boolval) -> boolval ?
+                            Text.translatable("addServer.resourcePack.enabled").setStyle(Style.EMPTY.withColor(Formatting.GREEN)) :
+                            Text.translatable("addServer.resourcePack.disabled").setStyle(Style.EMPTY.withColor(Formatting.RED))
+                    )
+                    .setSaveConsumer((enabled) -> InlineClientConfigImpl.getInstance().setShouldDoCreateMixins(enabled))
+                    .build();
+            extraFeatures.addEntry(createToggleEntry);
+        }
 
         builder.setSavingRunnable(() -> InlineClientConfigImpl.getInstance().save());
 

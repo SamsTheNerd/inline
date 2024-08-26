@@ -16,10 +16,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 public class InlineRenderCore {
     // returns if it handled stuff
@@ -61,7 +57,14 @@ public class InlineRenderCore {
         matrices.multiplyPositionMatrix(args.matrix());
         matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
         matrices.translate(args.x(), args.y(), needsGlowHelp ? 0 : 500);
-        if(!renderer.handleOwnSizing()){
+
+        // only handle sizing here if sizing exists, renderer won't handle it, and player config says it's ok
+        double maxSizeMod = InlineClientAPI.INSTANCE.getConfig().maxChatSizeModifier();
+        if(sizeMod > maxSizeMod && InlineRenderer.isFlat(matrices, args.layerType) && InlineRenderer.isChatty()) sizeMod = maxSizeMod;
+
+        boolean needToHandleSize = sizeMod != 1.0 && !renderer.handleOwnSizing();
+
+        if(needToHandleSize){
             double yOffset = (sizeMod - 1) * 4; // sizeMod - 1 gives how much goes "outside" the main 8px. scale by 8 and then take half, so x4.
             matrices.translate(0, -yOffset, 0);
             matrices.scale((float)sizeMod, (float)sizeMod, 1f);
@@ -97,7 +100,7 @@ public class InlineRenderCore {
             );
         }
 
-        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (renderer.handleOwnSizing() ? 1 : (float)sizeMod));
+        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
 
         if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
             imm.draw();
@@ -118,5 +121,5 @@ public class InlineRenderCore {
 
     public record RenderArgs(float x, float y, Matrix4f matrix, int light, boolean shadow, float brightnessMultiplier,
                                     float red, float green, float blue, float alpha, TextRenderer.TextLayerType layerType,
-                                    VertexConsumerProvider provider, AtomicDouble xUpdater){};
+                                    VertexConsumerProvider provider, AtomicDouble xUpdater){}
 }
