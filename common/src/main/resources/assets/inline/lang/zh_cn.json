@@ -1,0 +1,36 @@
+{
+
+    "config.inline.title": "Inline",
+    "config.inline.category.matchers": "匹配项",
+    "config.inline.category.extras": "附加设置",
+
+    "config.inline.extras.modicon": "物品提示文本模组图标",
+    "config.inline.extras.modicon.desc": "在物品提示文本内的模组名旁加上模组图标，通常出现于JEI和EMI中",
+
+    "config.inline.extras.chatcap": "聊天栏缩放比例上限",
+    "config.inline.extras.chatcap.desc": "1：[item:diamond_sword]、1.5：[item!diamond_sword]、2：[item+diamond_sword]，可借此避免渲染效果遮挡聊天栏",
+
+    "config.inline.extras.createinterop": "机械动力[mod:create]翻牌显示器兼容",
+    "config.inline.extras.createinterop.desc": "使得Inline的渲染可用于翻牌显示器",
+
+    "matcher.inline.modicon.title": "模组图标",
+    "matcher.inline.modicon.title.styled": "模组图标[mod:inline]",
+    "matcher.inline.modicon.description": "显示模组图标",
+    "matcher.inline.modicon.example": "[mod:inline]",
+
+    "matcher.inline.item.title": "物品",
+    "matcher.inline.item.title.styled": "物品[item:writable_book]",
+    "matcher.inline.item.description": "根据物品ID显示物品",
+    "matcher.inline.item.example": "[item:diamond_sword][item:book]",
+
+    "matcher.inline.entity.title": "实体",
+    "matcher.inline.entity.title.styled": "实体 [entity:pig]",
+    "matcher.inline.entity.description": "根据实体类型ID显示实体",
+    "matcher.inline.entity.example": "[entity:pig]",
+
+    "matcher.inline.playerface.title": "玩家的头",
+    "matcher.inline.playerface.title.styled": "玩家的头[face:MHF_Steve]",
+    "matcher.inline.playerface.description": "显示玩家的头像",
+    "matcher.inline.playerface.example": "[face:MHF_Steve]"
+
+}
