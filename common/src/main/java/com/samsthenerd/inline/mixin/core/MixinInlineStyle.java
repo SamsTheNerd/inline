@@ -1,32 +1,29 @@
 package com.samsthenerd.inline.mixin.core;
 
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.mojang.serialization.JsonOps;
-import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.serialization.JsonOps;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
-
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mixin(Style.class)
 public class MixinInlineStyle implements InlineStyle {
@@ -149,6 +146,15 @@ public class MixinInlineStyle implements InlineStyle {
             return json;
 		}
 	}
+
+    // a fix from skye to prevent breaking with font mods like caxton.
+    @ModifyReturnValue(method = "getFont", at = @At("RETURN"))
+    private Identifier overrideFont(Identifier original) {
+        if(this.getInlineData() != null){
+            return new Identifier("inline", "dummy_font");
+        }
+        return original;
+    }
 
     @Unique
     private Style keepData(Style newStyle){
