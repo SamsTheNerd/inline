@@ -1,20 +1,15 @@
 package com.samsthenerd.inline.config;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineClientConfig;
-
+import com.samsthenerd.inline.impl.MatchCacher;
 import me.shedaniel.cloth.clothconfig.shadowed.com.moandjiezana.toml.Toml;
 import me.shedaniel.cloth.clothconfig.shadowed.com.moandjiezana.toml.TomlWriter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
+
+import java.io.File;
+import java.util.*;
 
 // still should only really be on the client i think ?
 public class InlineClientConfigImpl implements InlineClientConfig {
@@ -100,11 +95,13 @@ public class InlineClientConfigImpl implements InlineClientConfig {
     protected void enableMatcher(Identifier matcherId){
         disabledMatchers.remove(matcherId);
         dirty = true;
+        MatchCacher.clear();
     }
 
     protected void disableMatcher(Identifier matcherId){
         disabledMatchers.add(matcherId);
         dirty = true;
+        MatchCacher.clear();
     }
 
     protected void someableMatcher(Identifier matcherId, boolean enableOrDisable){

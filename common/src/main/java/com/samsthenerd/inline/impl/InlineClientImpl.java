@@ -1,19 +1,21 @@
 package com.samsthenerd.inline.impl;
 
+import com.mojang.datafixers.util.Either;
+import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.InlineClientConfig;
+import com.samsthenerd.inline.api.client.InlineRenderer;
+import com.samsthenerd.inline.api.client.renderers.InlineErrorRenderer;
+import com.samsthenerd.inline.api.matching.InlineMatcher;
+import com.samsthenerd.inline.api.matching.MatchContext;
+import com.samsthenerd.inline.config.InlineClientConfigImpl;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.api.client.InlineClientAPI;
-import com.samsthenerd.inline.api.client.InlineClientConfig;
-import com.samsthenerd.inline.api.matching.InlineMatcher;
-import com.samsthenerd.inline.api.client.InlineRenderer;
-import com.samsthenerd.inline.api.client.renderers.InlineErrorRenderer;
-import com.samsthenerd.inline.config.InlineClientConfigImpl;
-
-import net.minecraft.util.Identifier;
 
 public class InlineClientImpl implements InlineClientAPI{
     private final Map<Identifier, InlineRenderer<?>> RENDERERS = new HashMap<>();
@@ -64,6 +66,16 @@ public class InlineClientImpl implements InlineClientAPI{
     @Override
     public Set<InlineMatcher> getAllMatchers(){
         return new HashSet<>(MATCHERS.values());
+    }
+
+    @Override
+    public MatchContext getMatched(String input){
+        return MatchCacher.getMatch(Either.left(input));
+    }
+
+    @Override
+    public MatchContext getMatched(Text input){
+        return MatchCacher.getMatch(Either.right(input));
     }
 
     public InlineClientConfig getConfig(){

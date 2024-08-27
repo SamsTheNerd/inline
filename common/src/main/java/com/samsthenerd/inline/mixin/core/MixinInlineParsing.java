@@ -1,25 +1,21 @@
 package com.samsthenerd.inline.mixin.core;
 
-import java.util.Map;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
-import com.samsthenerd.inline.api.client.InlineClientConfig;
 import com.samsthenerd.inline.api.matching.InlineMatch;
-import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.matching.MatchContext;
-
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextVisitFactory;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(TextVisitFactory.class)
 public class MixinInlineParsing {
@@ -46,15 +42,7 @@ public class MixinInlineParsing {
         CallbackInfoReturnable<Boolean> cir, @Local(ordinal=0, argsOnly = true) LocalRef<String> textRef,
         @Share("matches") LocalRef<Map<Integer, InlineMatch>> matchesRef){
         
-        MatchContext matchContext = MatchContext.forInput(text);
-
-        InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
-
-        // run all the matchers
-        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
-            if(!config.isMatcherEnabled(matcher.getId())) continue;
-            matcher.match(matchContext);
-        }
+        MatchContext matchContext = InlineClientAPI.INSTANCE.getMatched(text);
 
         textRef.set(matchContext.getFinalText());
         matchesRef.set(matchContext.getFinalMatches());

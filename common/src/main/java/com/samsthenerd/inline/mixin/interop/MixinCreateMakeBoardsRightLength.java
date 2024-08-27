@@ -5,16 +5,12 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
-import com.samsthenerd.inline.api.client.InlineClientConfig;
-import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.matching.MatchContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.Map;
 
 @Pseudo
 @Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplaySection")
@@ -48,22 +44,14 @@ public class MixinCreateMakeBoardsRightLength {
         }
         // spinning length is how many chars we have to work with
         // origLength is from newText.length() - if we have a match this will be quite long, perhaps longer than spinningLength even if it's only '1' char
-        MatchContext matchContext = MatchContext.forInput(textRef.get().trim());
-
-        InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
-
-        // run all the matchers
-        for(InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()){
-            if(!config.isMatcherEnabled(matcher.getId())) continue;
-            matcher.match(matchContext);
-        }
+        MatchContext matchContext = InlineClientAPI.INSTANCE.getMatched(textRef.get().trim());
 
         if(origSpinningLength == -1){
             origSpinningLength = spinningLength;
             originalSize = size;
         }
 
-        // TODO: can prob skip some stuff here if we have no matches
+        if(matchContext.getMatches().isEmpty()) return minOp.call(spinningLength, origLength); // no matches just call original and leave
         int squishedLength = matchContext.getFinalText().length(); // how long the parsed text is. Shorter than origLength if we have matches.
         int origMin = minOp.call(origSpinningLength, squishedLength); // this is the "actual" length that we want to fit to.
         int lenNeededForUnparsed = matchContext.finalToOrig(origMin+1)-1; // this is how many chars we actually have

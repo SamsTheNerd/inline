@@ -2,15 +2,9 @@ package com.samsthenerd.inline.mixin.interop;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
-import com.samsthenerd.inline.api.client.InlineClientConfig;
-import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.matching.MatchContext;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 
 @Pseudo
 @Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer")
@@ -50,7 +43,6 @@ public class MixinCreateMakeDisplaySectionsNotTooLong {
         translateOp.call(stack,x - backRef.get(), y, z);
     }
 
-    // TODO: maybe make this not a wrap operation
     @WrapOperation(
             method="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer;renderSafe(Lcom/simibubi/create/content/trains/display/FlapDisplayBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
             at=@At(value="INVOKE", target="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer$FlapDisplayRenderOutput;nextSection(Lcom/simibubi/create/content/trains/display/FlapDisplaySection;)V")
@@ -60,14 +52,7 @@ public class MixinCreateMakeDisplaySectionsNotTooLong {
             try {
                 // we can assume that sectionText is properly trimmed
                 String sectionText = (String) (textGetter.invoke(nextSection));
-                MatchContext matchContext = MatchContext.forInput(sectionText.trim());
-
-                // run all the matchers
-                InlineClientConfig config = InlineClientAPI.INSTANCE.getConfig();
-                for (InlineMatcher matcher : InlineClientAPI.INSTANCE.getAllMatchers()) {
-                    if (!config.isMatcherEnabled(matcher.getId())) continue;
-                    matcher.match(matchContext);
-                }
+                MatchContext matchContext = InlineClientAPI.INSTANCE.getMatched(sectionText.trim());
 
                 int squishedLength = matchContext.getFinalText().length(); // how long the parsed text is. Shorter than origLength if we have matches.
                 int lenNeededForUnparsed = matchContext.finalToOrig(squishedLength + 1) - 1; // this is how many chars the unparsed takes up

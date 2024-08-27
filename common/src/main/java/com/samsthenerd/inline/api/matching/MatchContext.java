@@ -1,15 +1,15 @@
 package com.samsthenerd.inline.api.matching;
 
-import java.util.Map;
-
 import com.samsthenerd.inline.impl.MatchContextImpl;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.Map;
+
 /**
  * This is the core of the matcher system. 
  * <p>
- * A MatchContext is made out of some input string with {@link MatchContext#forInput(input)}. 
+ * A MatchContext is made out of some input string with {@link MatchContext#forInput}.
  * It's then given to each matcher, which can parse it however it sees fit 
  * and add new matches on a given range. 
  */
@@ -27,6 +27,17 @@ public interface MatchContext {
     static MatchContext forTextInput(Text inputText){
         return new MatchContextImpl(inputText);
     }
+
+    /**
+     * If this context is 'frozen', meaning it no longer accepts new matches.
+     * @return if this context is read-only or not.
+     */
+    boolean isFrozen();
+
+    /**
+     * Freeze this context so that it no longer accepts new matches.
+     */
+    void freeze();
 
     /**
      * Gets the raw input
@@ -50,7 +61,7 @@ public interface MatchContext {
      * @param end end of range exclusive
      * @param match match to assign
      * @return whether the match was successfully added. will return false if any 
-     * character in this range is already matched.
+     * character in this range is already matched or if the context is frozen.
      */
     boolean addMatch(int start, int end, InlineMatch match);
 

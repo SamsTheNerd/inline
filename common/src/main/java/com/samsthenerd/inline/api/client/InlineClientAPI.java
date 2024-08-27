@@ -1,15 +1,14 @@
 package com.samsthenerd.inline.api.client;
 
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.renderers.InlineErrorRenderer;
 import com.samsthenerd.inline.api.matching.InlineMatcher;
+import com.samsthenerd.inline.api.matching.MatchContext;
 import com.samsthenerd.inline.impl.InlineClientImpl;
-
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * The main Inline Client API. Primarly for managing matchers and renderers.
@@ -56,6 +55,25 @@ public interface InlineClientAPI {
      * @return all registered matchers
      */
     Set<InlineMatcher> getAllMatchers();
+
+    /**
+     * Gets a frozen/read-only {@link MatchContext} with all currently enabled client-side matchers
+     * (see {@link InlineClientAPI#getAllMatchers} and {@link InlineClientConfig#isMatcherEnabled}) applied to it.
+     * <p>
+     * This is backed by a cache for faster matching of repeated values. Since the returned MatchContexts are cached/re-used,
+     * it's likely that some of their operations (such as {@link MatchContext#getFinalMatches()} or {@link MatchContext#getFinalText()})
+     * will have already been ran and cached as well.
+     * @param input string to match against
+     * @return read-only MatchContext with all currently enabled client-side matchers applied to it
+     */
+    MatchContext getMatched(String input);
+
+    /**
+     * Like {@link InlineClientAPI#getMatched(String)} but for {@link Text} input.
+     * @param input Text to match against
+     * @return read-only MatchContext with all currently enabled client-side matchers applied to it
+     */
+    MatchContext getMatched(Text input);
 
     /**
      * Get the client config.
