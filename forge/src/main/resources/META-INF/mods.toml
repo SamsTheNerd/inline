@@ -9,7 +9,7 @@ modId = "inline"
 version = "${mod_version}"
 displayName = "Inline"
 displayURL = "https://github.com/SamsTheNerd/inline"
-logoFile = "icon.png"
+logoFile = "assets/inline/icon.png"
 authors = "samsthenerd"
 description = "A library for rendering in line with text"
 
