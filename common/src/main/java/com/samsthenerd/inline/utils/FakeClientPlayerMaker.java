@@ -1,20 +1,11 @@
 package com.samsthenerd.inline.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.Executor;
-
-import javax.annotation.Nullable;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinAccessPlayerModelParts;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinClientAccessor;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinClientHeadChecker;
-
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
@@ -23,6 +14,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Pair;
 import net.minecraft.util.UserCache;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.Executor;
 
 public class FakeClientPlayerMaker {
     public static Pair<Entity, Boolean> getPlayerEntity(GameProfile profile){
@@ -100,12 +98,18 @@ public class FakeClientPlayerMaker {
     }
 
     private static void acceptBetterProf(GameProfile betterProf){
-        Inline.LOGGER.info("Got profile: " + betterProf.toString());
-            if(betterProf.getId() != null){
-                UUID_PROFILE_CACHE.put(betterProf.getId(), Optional.of(betterProf));
-            }
-            if(betterProf.getName() != null && !betterProf.getName().equals("")){
-                NAME_PROFILE_CACHE.put(betterProf.getName().toLowerCase(), Optional.of(betterProf));
-            }
+        if(!betterProf.isComplete()){
+            // I can't consistently reproduce this issue to debug it, let's just log it and call it a day.
+            Inline.LOGGER.warn(
+                    "Could not complete profile, either username does not belong to a player or some other error occured (can try restarting the game and clearing usercache.json). Incomplete Profile: "
+                    + betterProf
+            );
+        }
+        if(betterProf.getId() != null){
+            UUID_PROFILE_CACHE.put(betterProf.getId(), Optional.of(betterProf));
+        }
+        if(betterProf.getName() != null && !betterProf.getName().equals("")){
+            NAME_PROFILE_CACHE.put(betterProf.getName().toLowerCase(), Optional.of(betterProf));
+        }
     }
 }
