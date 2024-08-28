@@ -2,6 +2,7 @@ package com.samsthenerd.inline.impl;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineRenderer;
@@ -9,15 +10,25 @@ import com.samsthenerd.inline.mixin.core.MixinSetTessBuffer;
 import com.samsthenerd.inline.utils.VCPImmediateButImLyingAboutIt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Style;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
 public class InlineRenderCore {
+
+    private static SimpleFramebuffer GLOW_BUFF = new SimpleFramebuffer(512, 512, true, MinecraftClient.IS_SYSTEM_MAC);
+
     // returns if it handled stuff
     public static boolean textDrawerAcceptHandler(int index, Style style, int codepoint, RenderArgs args) {
         InlineStyle inlStyle = (InlineStyle) style;
@@ -31,6 +42,10 @@ public class InlineRenderCore {
         }
 
         boolean needsGlowHelp = inlStyle.getComponent(InlineStyle.GLOWY_MARKER_COMP) && !renderer.canBeTrustedWithOutlines();
+        if(needsGlowHelp) return true;
+
+        int glowColor = inlStyle.getComponent(InlineStyle.GLOWY_PARENT_COMP);
+        boolean needsGlowChildren = glowColor != -1 && !renderer.canBeTrustedWithOutlines();
 
         Tessellator heldTess = Tessellator.getInstance();
         MixinSetTessBuffer.setInstance(secondaryTess);
@@ -100,7 +115,48 @@ public class InlineRenderCore {
             );
         }
 
-        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
+        if(needsGlowChildren){
+            Framebuffer frameBuffer = new SimpleFramebuffer(64, 64, false, MinecraftClient.IS_SYSTEM_MAC);
+//            frameBuffer.setClearColor(0, 0, 0, 0);
+//            frameBuffer.clear(false);
+            frameBuffer.beginWrite(false);
+            DrawContext glowContext = new DrawContext(MinecraftClient.getInstance(), immToUse);
+            MatrixStack glowStack = glowContext.getMatrices();
+            glowStack.push();
+            glowContext.fill(0, 0, 32, 32, 0xFF_FF0000);
+            glowContext.fill(0, 0, 1, 1, 0xFF_00FF00);
+            glowContext.fill(0, 0, -1, -16, 0xFF_00FFFF);
+            glowContext.drawItem(new ItemStack(Items.DANDELION), 0, 0);
+            glowContext.drawItem(new ItemStack(Items.DANDELION), 16, 16);
+            renderer.render(inlData, glowContext, index, style, codepoint, trContext);
+            immToUse.draw();
+            frameBuffer.endWrite();
+
+            try (NativeImage nativeImage = new NativeImage(64, 64, true)) {
+                frameBuffer.beginRead();
+                nativeImage.loadFromTextureImage(0, false);
+                frameBuffer.endRead();
+                nativeImage.writeTo(MinecraftClient.getInstance().runDirectory.toPath().resolve("boop.png"));
+
+                Identifier actualTextureId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(new Identifier(Inline.MOD_ID, "glowtexture").toTranslationKey(), new NativeImageBackedTexture(nativeImage));
+                for (int j = -1; j <= 1; ++j) {
+                    for (int k = -1; k <= 1; ++k) {
+                        if (j == 0 && k == 0) continue;
+                        matrices.push();
+                        drawContext.drawTexture(actualTextureId, j, k, 0, 0, 8, 8, 8, 8);
+                        matrices.pop();
+                    }
+                }
+                immToUse.draw();
+//                MinecraftClient.getInstance().getTextureManager().destroyTexture(actualTextureId);
+            } catch (Exception e){
+                Inline.LOGGER.error(e.toString());
+            }
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
+        }
+
+//        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
+        args.xUpdater().addAndGet(8);
 
         if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
             imm.draw();
