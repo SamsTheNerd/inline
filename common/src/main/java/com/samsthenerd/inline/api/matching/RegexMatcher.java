@@ -1,5 +1,14 @@
 package com.samsthenerd.inline.api.matching;
 
+import com.samsthenerd.inline.api.InlineAPI;
+import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -8,18 +17,6 @@ import java.util.function.UnaryOperator;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-
-import com.samsthenerd.inline.api.InlineAPI;
-import net.minecraft.text.Style;
-import org.jetbrains.annotations.NotNull;
-
-import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
-
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 
 /**
  * A regex based matcher. Simply implement {@link RegexMatcher#getRegex()}
@@ -113,14 +110,13 @@ public interface RegexMatcher extends ContinuousMatcher {
 
         public static String IDENTIFIER_REGEX = "(?:[0-9a-z._-]+:)?[0-9a-z._\\/-]+";
         public static String IDENTIFIER_REGEX_INSENSITIVE = "(?:[0-9a-zA-Z._-]+:)?[0-9a-zA-Z._\\/-]+";
-        public static String SEPARATORS_REGEX = "([:; ,.!+])";
+        public static String SEPARATORS_REGEX = "([:;,!+])";
         public static Map<String, UnaryOperator<Style>> SEPARATOR_STYLES = new HashMap<>();
 
         static {
             SEPARATOR_STYLES.put("!", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 1.5));
             SEPARATOR_STYLES.put("+", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 2));
             SEPARATOR_STYLES.put(",", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 0.75));
-            SEPARATOR_STYLES.put(".", sty -> InlineAPI.INSTANCE.withSizeModifier(sty, 0.5));
         }
 
         private final Pattern regex;
