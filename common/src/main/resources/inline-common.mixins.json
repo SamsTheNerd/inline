@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "core.MixinInlineStyle",
-    "core.MixinInlineStyle$MixinInlineStyleSerializer"
+    "core.MixinInlineStyleSerializer"
   ],
   "client": [
     "core.MixinInlineParsing",

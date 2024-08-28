@@ -58,4 +58,8 @@ public interface InlineStyle {
      * glow outline.
      */
     ISComponent<Integer> GLOWY_PARENT_COMP = new ISComponent<>("glowyparent", Codec.INT, -1);
+
+    public static Style makeCopy(Style original){
+        return original.withColor(original.getColor());
+    }
 }
