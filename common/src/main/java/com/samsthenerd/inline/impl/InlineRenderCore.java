@@ -2,15 +2,17 @@ package com.samsthenerd.inline.impl;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.mixin.core.MixinSetTessBuffer;
+import com.samsthenerd.inline.utils.SpritelikeRenderers;
+import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.VCPImmediateButImLyingAboutIt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
@@ -18,8 +20,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -27,7 +27,7 @@ import org.joml.Matrix4f;
 
 public class InlineRenderCore {
 
-    private static SimpleFramebuffer GLOW_BUFF = new SimpleFramebuffer(512, 512, true, MinecraftClient.IS_SYSTEM_MAC);
+    private static SimpleFramebuffer GLOW_BUFF = new SimpleFramebuffer(64, 64, true, MinecraftClient.IS_SYSTEM_MAC);
 
     // returns if it handled stuff
     public static boolean textDrawerAcceptHandler(int index, Style style, int codepoint, RenderArgs args) {
@@ -116,51 +116,63 @@ public class InlineRenderCore {
         }
 
         if(needsGlowChildren){
-            Framebuffer frameBuffer = new SimpleFramebuffer(64, 64, false, MinecraftClient.IS_SYSTEM_MAC);
-//            frameBuffer.setClearColor(0, 0, 0, 0);
-//            frameBuffer.clear(false);
-            frameBuffer.beginWrite(false);
+            GLOW_BUFF.setClearColor(0, 0, 0, 0);
+            GLOW_BUFF.clear(false);
+            MinecraftClient.getInstance().getFramebuffer().endWrite();
+            MatrixStack mvStack = RenderSystem.getModelViewStack();
+            mvStack.push();
+            mvStack.loadIdentity();
+            RenderSystem.applyModelViewMatrix();
+            Matrix4f backupProjMatrix = RenderSystem.getProjectionMatrix();
+            VertexSorter backupVertexSorter = RenderSystem.getVertexSorting();
+            RenderSystem.backupProjectionMatrix();
+            Matrix4f newProjMatrix = new Matrix4f();
+            newProjMatrix.identity();
+            newProjMatrix.setOrtho(0, 64, 64, 0, 0, 100);
+            RenderSystem.setProjectionMatrix(newProjMatrix, VertexSorter.BY_DISTANCE);
+            GLOW_BUFF.beginWrite(true);
             DrawContext glowContext = new DrawContext(MinecraftClient.getInstance(), immToUse);
             MatrixStack glowStack = glowContext.getMatrices();
             glowStack.push();
-            glowContext.fill(0, 0, 32, 32, 0xFF_FF0000);
-            glowContext.fill(0, 0, 1, 1, 0xFF_00FF00);
-            glowContext.fill(0, 0, -1, -16, 0xFF_00FFFF);
-            glowContext.drawItem(new ItemStack(Items.DANDELION), 0, 0);
-            glowContext.drawItem(new ItemStack(Items.DANDELION), 16, 16);
+            glowStack.translate(0, 48, -50);
+            glowStack.scale(4f, -4f, 1f);
             renderer.render(inlData, glowContext, index, style, codepoint, trContext);
+
             immToUse.draw();
-            frameBuffer.endWrite();
+            mvStack.pop();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.setProjectionMatrix(backupProjMatrix, backupVertexSorter);
+            GLOW_BUFF.endWrite();
 
             try (NativeImage nativeImage = new NativeImage(64, 64, true)) {
-                frameBuffer.beginRead();
+                GLOW_BUFF.beginRead();
                 nativeImage.loadFromTextureImage(0, false);
-                frameBuffer.endRead();
-                nativeImage.writeTo(MinecraftClient.getInstance().runDirectory.toPath().resolve("boop.png"));
+                nativeImage.apply(original -> ColorHelper.Argb.getAlpha(original) > 0 ? 0xFF_FFFFFF : 0);
+                GLOW_BUFF.endRead();
+                // debug thingy
+//                nativeImage.writeTo(MinecraftClient.getInstance().runDirectory.toPath().resolve("boop.png"));
 
+                MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
                 Identifier actualTextureId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(new Identifier(Inline.MOD_ID, "glowtexture").toTranslationKey(), new NativeImageBackedTexture(nativeImage));
+                TextureSprite tSprite = new TextureSprite(actualTextureId);
                 for (int j = -1; j <= 1; ++j) {
                     for (int k = -1; k <= 1; ++k) {
                         if (j == 0 && k == 0) continue;
                         matrices.push();
-                        drawContext.drawTexture(actualTextureId, j, k, 0, 0, 8, 8, 8, 8);
+                        matrices.translate(j, k, -100);
+                        SpritelikeRenderers.getRenderer(tSprite).drawSpriteWithLight(tSprite, drawContext, 0, -4, 0, 16, 16, trContext.light(), (glowColor & 0x00_FFFFFF) | (usableColor & 0xFF_000000));
                         matrices.pop();
                     }
                 }
-                immToUse.draw();
-//                MinecraftClient.getInstance().getTextureManager().destroyTexture(actualTextureId);
+                MinecraftClient.getInstance().getTextureManager().destroyTexture(actualTextureId);
             } catch (Exception e){
                 Inline.LOGGER.error(e.toString());
             }
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
         }
 
-//        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
-        args.xUpdater().addAndGet(8);
+        args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
 
-        if(trContext.vertexConsumers() instanceof VertexConsumerProvider.Immediate imm){
-            imm.draw();
-        }
+        immToUse.draw();
 
         if(!renderer.handleOwnColor() || !renderer.handleOwnTransparency()){
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
