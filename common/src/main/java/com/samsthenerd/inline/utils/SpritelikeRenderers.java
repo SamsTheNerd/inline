@@ -39,13 +39,29 @@ public class SpritelikeRenderers {
             // BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             RenderLayer renderLayer = RenderLayer.getEntityTranslucent(texture);
             VertexConsumer vc = ctx.getVertexConsumers().getBuffer(renderLayer);
-            vc.vertex(matrix4f, x, y, z).color(argb).texture(sprite.getMinU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-            vc.vertex(matrix4f, x, y+height, z).color(argb).texture(sprite.getMinU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-            vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(sprite.getMaxU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
-            vc.vertex(matrix4f, x+width, y, z).color(argb).texture(sprite.getMaxU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 1f, 1f, 1f).next();
+            vc.vertex(matrix4f, x, y, z).color(argb).texture(sprite.getMinU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
+            vc.vertex(matrix4f, x, y+height, z).color(argb).texture(sprite.getMinU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
+            vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(sprite.getMaxU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
+            vc.vertex(matrix4f, x+width, y, z).color(argb).texture(sprite.getMaxU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
 
             ctx.getVertexConsumers().draw(renderLayer);
         }
+
+//        public void drawSpriteWithLightNoNormals(Spritelike sprite, DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb){
+//            Identifier texture = sprite.getTextureId();
+//            RenderSystem.setShaderTexture(0, texture);
+//            RenderSystem.setShader(GameRenderer::getRenderTypeTextIntensityProgram);
+//            Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
+//            // BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+//            RenderLayer renderLayer = RenderLayer.getTextIntensity(texture);
+//            VertexConsumer vc = ctx.getVertexConsumers().getBuffer(renderLayer);
+//            vc.vertex(matrix4f, x, y, z).color(argb).texture(sprite.getMinU(), sprite.getMinV()).light(light).next();
+//            vc.vertex(matrix4f, x, y+height, z).color(argb).texture(sprite.getMinU(), sprite.getMaxV()).light(light).next();
+//            vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(sprite.getMaxU(), sprite.getMaxV()).light(light).next();
+//            vc.vertex(matrix4f, x+width, y, z).color(argb).texture(sprite.getMaxU(), sprite.getMinV()).light(light).next();
+//
+//            ctx.getVertexConsumers().draw(renderLayer);
+//        }
         
         public void drawSprite(Spritelike sprite, DrawContext ctx, float x, float y, float z, float width, float height){
             Identifier texture = sprite.getTextureId();
