@@ -25,6 +25,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.function.IntUnaryOperator;
@@ -61,9 +62,9 @@ public class InlineRenderCore {
 
 //        matrices.multiply(args.matrix().getUnnormalizedRotation(new Quaternionf()).normalize());
         matrices.multiplyPositionMatrix(args.matrix());
-//        matrices.peek().getNormalMatrix().mul(new Matrix3f(args.matrix()));
+        // there's almost certainly a better way to do this, but we're just flipping the y and z axes
+        matrices.peek().getNormalMatrix().mul(new Matrix3f(1, 0, 0, 0, 0, 1, 0, 1, 0));
         matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
-//        matrices.scale(1f, 1f, 0.001f);
         matrices.translate(args.x(), args.y(), 0);
 
         // only handle sizing here if sizing exists, renderer won't handle it, and player config says it's ok

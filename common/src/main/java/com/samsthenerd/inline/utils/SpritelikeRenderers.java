@@ -39,10 +39,10 @@ public class SpritelikeRenderers {
             // BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             RenderLayer renderLayer = RenderLayer.getEntityTranslucent(texture);
             VertexConsumer vc = ctx.getVertexConsumers().getBuffer(renderLayer);
-            vc.vertex(matrix4f, x, y, z).color(argb).texture(sprite.getMinU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
-            vc.vertex(matrix4f, x, y+height, z).color(argb).texture(sprite.getMinU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
-            vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(sprite.getMaxU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
-            vc.vertex(matrix4f, x+width, y, z).color(argb).texture(sprite.getMaxU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 1f, 0f).next();
+            vc.vertex(matrix4f, x, y, z).color(argb).texture(sprite.getMinU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 0, 1f).next();
+            vc.vertex(matrix4f, x, y+height, z).color(argb).texture(sprite.getMinU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 0, 1f).next();
+            vc.vertex(matrix4f, x+width, y+height, z).color(argb).texture(sprite.getMaxU(), sprite.getMaxV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 0, 1f).next();
+            vc.vertex(matrix4f, x+width, y, z).color(argb).texture(sprite.getMaxU(), sprite.getMinV()).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(ctx.getMatrices().peek().getNormalMatrix(), 0, 0, 1f).next();
 
             ctx.getVertexConsumers().draw(renderLayer);
         }
