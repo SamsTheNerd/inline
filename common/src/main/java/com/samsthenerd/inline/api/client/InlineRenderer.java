@@ -2,26 +2,18 @@ package com.samsthenerd.inline.api.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.api.InlineData;
-import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
-import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
-import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
-import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
+import com.samsthenerd.inline.api.client.renderers.*;
 import com.samsthenerd.inline.api.data.ModIconData;
-
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import org.joml.Vector4f;
-
-import java.util.stream.Collectors;
 
 /**
  * Renders in place of text based on the InlineData attached to the text.
@@ -72,13 +64,10 @@ public interface InlineRenderer<D extends InlineData<D>> {
     public int charWidth(D data, Style style, int codepoint);
 
     /**
-     * Gets whether this renderer handles the glow ink on sign outline
-     * effect or not.
-     * The default handling primarily affects z-values.
+     *
+     * @return
      */
-    default boolean canBeTrustedWithOutlines() {
-        return false;
-    }
+    default GlowHandling getGlowPreference(){ return new GlowHandling.Full(); }
 
     /**
      * Indicates if this renderer wants to handle size modifiers on its own.
@@ -93,17 +82,11 @@ public interface InlineRenderer<D extends InlineData<D>> {
      */
     default boolean handleOwnTransparency(){return false;}
 
-    /**
-     * Indicates if this renderer will handle rgb color.
-     * Note that the default handling is done with {@link RenderSystem#setShaderColor}.
-     */
-    default boolean handleOwnColor(){return true; }
-
     /*
      * Text by default is 7px tall, and then 1px of shadow
      */
-    public static final int DEFAULT_FONT_COLOR = 0xFFFFFF;
-    public static final int DEFAULT_SHADOW_COLOR = 0x3e3e3e;
+    int DEFAULT_FONT_COLOR = 0xFFFFFF;
+    int DEFAULT_SHADOW_COLOR = 0x3e3e3e;
 
     /**
      * A collection of values taken from the text renderer. 

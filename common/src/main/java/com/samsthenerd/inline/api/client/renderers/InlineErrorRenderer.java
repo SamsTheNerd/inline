@@ -32,7 +32,5 @@ public class InlineErrorRenderer implements InlineRenderer{
     }
 
     @Override
-    public boolean canBeTrustedWithOutlines() {
-        return InlineItemRenderer.INSTANCE.canBeTrustedWithOutlines();
-    }
+    public GlowHandling getGlowPreference() { return InlineItemRenderer.INSTANCE.getGlowPreference(); }
 }
