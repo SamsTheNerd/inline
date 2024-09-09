@@ -154,8 +154,6 @@ public class InlineRenderCore {
             }
         }
 
-        Inline.LOGGER.info("doing glow sprite making for inlData: " + inlData);
-
         int resScale = 8;
         GLOW_BUFF.setClearColor(0, 0, 0, 0);
         GLOW_BUFF.clear(false);
