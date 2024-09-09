@@ -91,9 +91,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            archiveArtifacts "build/jenkinsArtifacts/*"
-        }
-    }
 }
