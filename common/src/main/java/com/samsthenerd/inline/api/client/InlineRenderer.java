@@ -39,7 +39,7 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * which renderer to use for it.
      * @return the id
      */
-    public Identifier getId();
+    Identifier getId();
 
     /**
      * Renders in place of a single codepoint/character based on the data given.
@@ -52,7 +52,7 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * @param trContext a collection of values taken from the text renderer. 
      * @return the width that this render takes up. more or less corresponds to pixels in the default font.
      */
-    public int render(D data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext);
+    int render(D data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext);
 
     /**
      * Gets the width of the render without doing the rendering.
@@ -61,11 +61,16 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * @param codepoint the unicode codepoint for this character.
      * @return the width that this render takes up. more or less corresponds to pixels in the default font.
      */
-    public int charWidth(D data, Style style, int codepoint);
+    int charWidth(D data, Style style, int codepoint);
 
     /**
-     *
-     * @return
+     * Indicates preferences for how the render system should handle glow effects with this renderer. Glow effects
+     * happen when a sign is clicked with a glow ink sac. Vanilla text handles this by rendering text in 8 offsets,
+     * doing this with inline renders tends to create a busy z-fighting mess. Instead, the render system can flatten the
+     * rendering to create an outline. See {@link GlowHandling} for more details.
+     * @param forData incase the handling changes based on data. This should really only be used for returning a
+     *                cache id in the GlowHandling.
+     * @return a GlowHandling for if this renderer needs glow help.
      */
     default GlowHandling getGlowPreference(D forData){ return new GlowHandling.Full(); }
 
@@ -73,12 +78,14 @@ public interface InlineRenderer<D extends InlineData<D>> {
      * Indicates if this renderer wants to handle size modifiers on its own.
      * The default handling should be fine for most cases as it simply scales the matrix stack before passing
      * to the renderer.
+     * @param forData incase the handling changes based on data. In the vast majority of cases it shouldn't.
      */
     default boolean handleOwnSizing(D forData){return false;}
 
     /**
      * Indicates if this renderer will handle transparency/alpha.
      * Note that the default handling is done with {@link RenderSystem#setShaderColor}.
+     * @param forData incase the handling changes based on data. In the vast majority of cases it shouldn't.
      */
     default boolean handleOwnTransparency(D forData){return false;}
 

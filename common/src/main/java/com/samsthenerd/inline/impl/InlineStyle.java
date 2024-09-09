@@ -51,7 +51,7 @@ public interface InlineStyle {
      * GLOWY_MARKER_COMP indicates if the *currently rendered* text is an outline. ie, the outline is currently being
      * rendered and it has this style.
      */
-    ISComponent<Boolean> GLOWY_MARKER_COMP = new ISComponent<>("glowy", Codec.BOOL, false); // todo make this better
+    ISComponent<Boolean> GLOWY_MARKER_COMP = new ISComponent<>("glowy", Codec.BOOL, false);
     /**
      * GLOWY_PARENT_COMP indicates that this text *has* outlines, but that the currently rendered text is the center,
      * not the outline. It stores the color of the outline. This is really only used for if you want to self-handle the
