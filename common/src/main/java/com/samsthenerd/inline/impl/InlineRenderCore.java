@@ -13,6 +13,8 @@ import com.samsthenerd.inline.utils.ColorUtils;
 import com.samsthenerd.inline.utils.SpritelikeRenderers;
 import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.VCPImmediateButImLyingAboutIt;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -28,6 +30,8 @@ import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.IntUnaryOperator;
 
 public class InlineRenderCore {
@@ -41,11 +45,11 @@ public class InlineRenderCore {
         InlineRenderer renderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(renderer == null) return false;
 
-        if(!(renderer.getGlowPreference() instanceof GlowHandling.None) && style.getComponent(InlineStyle.GLOWY_MARKER_COMP)){
+        if(!(renderer.getGlowPreference(inlData) instanceof GlowHandling.None) && style.getComponent(InlineStyle.GLOWY_MARKER_COMP)){
             return true;
         }
         int glowColor = style.getComponent(InlineStyle.GLOWY_PARENT_COMP);
-        boolean needsGlowChildren = glowColor != -1 && renderer.getGlowPreference() instanceof GlowHandling.Full;
+        boolean needsGlowChildren = glowColor != -1 && renderer.getGlowPreference(inlData) instanceof GlowHandling.Full;
 
         Tessellator heldTess = Tessellator.getInstance();
         MixinSetTessBuffer.setInstance(secondaryTess);
@@ -71,7 +75,7 @@ public class InlineRenderCore {
         double maxSizeMod = InlineClientAPI.INSTANCE.getConfig().maxChatSizeModifier();
         if(sizeMod > maxSizeMod && InlineRenderer.isFlat(matrices, args.layerType) && InlineRenderer.isChatty()) sizeMod = maxSizeMod;
 
-        boolean needToHandleSize = sizeMod != 1.0 && !renderer.handleOwnSizing();
+        boolean needToHandleSize = sizeMod != 1.0 && !renderer.handleOwnSizing(inlData);
 
         double outlineScaleBack = 1;
         if(needToHandleSize){
@@ -96,7 +100,7 @@ public class InlineRenderCore {
                 args.red(), args.green(), args.blue(), args.alpha() == 0 ? 1 : args.alpha(), args.layerType(), args.provider(), style.getComponent(InlineStyle.GLOWY_MARKER_COMP),
                 style.getComponent(InlineStyle.GLOWY_PARENT_COMP), usableColor);
 
-        if(!renderer.handleOwnTransparency()){
+        if(!renderer.handleOwnTransparency(inlData)){
             RenderSystem.setShaderColor(1, 1, 1, alphaToUse);
         }
 
@@ -142,18 +146,34 @@ public class InlineRenderCore {
 //                nativeImage.apply(original -> ColorHelper.Argb.getAlpha(original) << 24 | 0x00_FFFFFF);
                 NativeImage fullImage = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), true);
                 int outlineRange = (int)Math.round(resScale * outlineScaleBack);
-                for(int px = 0; px < nativeImage.getWidth(); px++){
-                    for(int py = 0; py < nativeImage.getHeight(); py++){
-                        int pAlph = ColorHelper.Argb.getAlpha(nativeImage.getColor(px, py));
-                        if(pAlph > 0){
-                            // TODO: this iteration is bad and cringe and very inefficient probably
-                            for (int j = -outlineRange; j <= outlineRange; ++j) {
-                                if(px + j >= nativeImage.getWidth() || px + j < 0) continue;
-                                for (int k = -outlineRange; k <= outlineRange; ++k) {
-                                    if(py + k >= nativeImage.getHeight() || py + k < 0) continue;
-                                    int prevAlpha = ColorHelper.Argb.getAlpha(fullImage.getColor(px + j, py+k));
-                                    if(pAlph > 100 && pAlph > prevAlpha) fullImage.setColor(px + j, py+k, pAlph << 24 | 0x00_FFFFFF);
-                                }
+                // would
+                Queue<Integer> pixelQueue = new LinkedList<>(); // bfs guarantees that we only hit each one once
+                Int2IntMap seenPixels = new Int2IntOpenHashMap(); // x + y * width -> distance from an original
+                // do an initial sweep for starting ones
+                int imgWidth = nativeImage.getWidth();
+                int imgHeight = nativeImage.getHeight();
+                for(int px = 0; px < imgWidth; px++){
+                    for(int py = 0; py < imgHeight; py++){
+                        if(ColorHelper.Argb.getAlpha(nativeImage.getColor(px, py)) == 0) continue;
+                        int thisPos = px + py *imgWidth;
+                        seenPixels.put(thisPos, 0);
+                        pixelQueue.add(thisPos);
+                    }
+                }
+                while(!pixelQueue.isEmpty()){
+                    int cPix = pixelQueue.poll(); // get current pixel to process;
+                    int cX = cPix % imgWidth;
+                    int cY = cPix / imgWidth;
+                    fullImage.setColor(cX, cY, 0xFF_FFFFFF);
+                    if(seenPixels.get(cPix) >= outlineRange) continue; // exit out if we don't need to add neighbors
+                    for(int i = -1; i <= 1; i++){
+                        if( cX + i < 0 || cX + i >= imgWidth) continue;
+                        for(int j = -1; j <= 1; j++){
+                            if( cY + j < 0 || cY + j >= imgHeight) continue;
+                            int nbrPos = cPix + i + j * imgWidth;
+                            if(!seenPixels.containsKey(nbrPos)){
+                                seenPixels.put(nbrPos, seenPixels.get(cPix)+1);
+                                pixelQueue.add(nbrPos);
                             }
                         }
                     }
@@ -163,19 +183,6 @@ public class InlineRenderCore {
                 Identifier backTexId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(new Identifier(Inline.MOD_ID, "glowtextureback").toTranslationKey(), new NativeImageBackedTexture(fullImage));
                 TextureSprite backSprite = new TextureSprite(backTexId);
                 int brighterGlow = ColorUtils.ARGBtoHSB(glowColor)[2] > ColorUtils.ARGBtoHSB(usableColor)[2] ? glowColor : usableColor;
-//                for (int j = -1; j <= 1; ++j) {
-//                    for (int k = -1; k <= 1; ++k) {
-//                        matrices.push();
-//                        if (j == 0 && k == 0){
-//                            matrices.translate(0, 0, 100);
-////                            SpritelikeRenderers.getRenderer(frontSprite).drawSpriteWithLight(frontSprite, drawContext, 0, -4, 0, 16, 16, trContext.light(), 0xFF_FFFFFF);
-//                        } else {
-//                            matrices.translate(j * outlineScaleBack, k * outlineScaleBack, 0);
-////                            SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, 0, -4, 0, 16, 16, trContext.light(), (glowColor & 0x00_FFFFFF) | (usableColor & 0xFF_000000));
-//                        }
-//                        matrices.pop();
-//                    }
-//                }
                 SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), brighterGlow);
                 MinecraftClient.getInstance().getTextureManager().destroyTexture(backTexId);
             } catch (Exception e){
@@ -189,7 +196,7 @@ public class InlineRenderCore {
 
         immToUse.draw();
 
-        if(!renderer.handleOwnTransparency()){
+        if(!renderer.handleOwnTransparency(inlData)){
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         }
 

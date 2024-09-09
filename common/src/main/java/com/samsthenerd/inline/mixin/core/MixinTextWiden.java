@@ -1,26 +1,23 @@
 package com.samsthenerd.inline.mixin.core;
 
-import com.llamalad7.mixinextras.injector.ModifyReceiver;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.text.CharacterVisitor;
-import net.minecraft.text.OrderedText;
-import org.joml.Matrix4f;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.impl.InlineStyle;
-
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.text.CharacterVisitor;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
+import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TextRenderer.class)
 public class MixinTextWiden {
@@ -41,7 +38,7 @@ public class MixinTextWiden {
             // TODO: this doesn't seem worth it? since this doesn't directly effect spacing
 //            double maxSizeMod = InlineClientAPI.INSTANCE.getConfig().maxChatSizeModifier();
 //            if(sizeMod > maxSizeMod && InlineRenderer.isChatty()) sizeMod = maxSizeMod;
-            int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing() ? 1 : (float)sizeMod));
+            int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing(inlData) ? 1 : (float)sizeMod));
             cir.setReturnValue((float)cWidth);
         }
     }
@@ -59,7 +56,7 @@ public class MixinTextWiden {
         if(ilRenderer != null){
             double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
             // this should explicitly be Not Chat, so no use checking configs.
-            int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing() ? 1 : (float)sizeMod));
+            int cWidth = (int)(ilRenderer.charWidth(inlData, style, codepoint) * (ilRenderer.handleOwnSizing(inlData) ? 1 : (float)sizeMod));
             return cWidth;
         }
         return original.call(glyph, bold);

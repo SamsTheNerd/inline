@@ -32,5 +32,5 @@ public class InlineErrorRenderer implements InlineRenderer{
     }
 
     @Override
-    public GlowHandling getGlowPreference() { return InlineItemRenderer.INSTANCE.getGlowPreference(); }
+    public GlowHandling getGlowPreference(InlineData data) { return InlineItemRenderer.INSTANCE.getGlowPreference(ERROR_DATA); }
 }
