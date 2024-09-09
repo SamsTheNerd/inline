@@ -2,10 +2,10 @@ package com.samsthenerd.inline.api.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
 import com.samsthenerd.inline.utils.SpritelikeRenderers;
-
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -42,5 +42,11 @@ public class InlineSpriteRenderer implements InlineRenderer<SpriteInlineData>{
             return 0;
         }
         return (int)Math.ceil(8.0 * data.sprite.getSpriteWidth() / (float)height);
+    }
+
+    // spritelikes aren't really built to handle animated sprites so it's fine.
+    @Override
+    public GlowHandling getGlowPreference(SpriteInlineData forData){
+        return new GlowHandling.Full(forData.sprite.getTextureId().toTranslationKey() + Integer.toHexString(forData.sprite.hashCode()).toLowerCase());
     }
 }

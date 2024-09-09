@@ -1,19 +1,17 @@
 package com.samsthenerd.inline.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.samsthenerd.inline.utils.cradles.EntTypeCradle;
 import com.samsthenerd.inline.utils.cradles.NbtCradle;
 import com.samsthenerd.inline.utils.cradles.PlayerCradle;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A fancy entity supplier with serialization.
@@ -38,6 +36,12 @@ public abstract class EntityCradle {
      */
     @Nullable
     public abstract Entity getEntity(World world);
+
+    /**
+     * Gets an id representing this entity in some way. This is used for texture caching on glows (and maybe other stuff in the future).
+     * @return string that can be used in an identifier/resloc.
+     */
+    public String getId(){ return null; }
 
     public static interface CradleType<C extends EntityCradle>{
 

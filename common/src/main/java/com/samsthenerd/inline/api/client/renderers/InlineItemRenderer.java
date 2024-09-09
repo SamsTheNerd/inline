@@ -1,13 +1,9 @@
 package com.samsthenerd.inline.api.client.renderers;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import org.joml.Matrix4f;
-
 import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
@@ -22,8 +18,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Matrix4f;
 
 public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
 
@@ -88,5 +83,13 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
 
     public int charWidth(ItemInlineData data, Style style, int codepoint){
         return 8;
+    }
+
+    // TODO: handle animated items ehre
+    @Override
+    public GlowHandling getGlowPreference(ItemInlineData forData){
+        // this nonsense should force it to refresh for animated sprites ?
+        BakedModel bakedModel = MinecraftClient.getInstance().getItemRenderer().getModel(forData.getStack(), MinecraftClient.getInstance().world, null, 0);
+        return new GlowHandling.Full(forData.getStack().getTranslationKey() + Integer.toHexString(bakedModel.hashCode()));
     }
 }

@@ -67,20 +67,20 @@ public interface InlineRenderer<D extends InlineData<D>> {
      *
      * @return
      */
-    default GlowHandling getGlowPreference(InlineData<D> forData){ return new GlowHandling.Full(); }
+    default GlowHandling getGlowPreference(D forData){ return new GlowHandling.Full(); }
 
     /**
      * Indicates if this renderer wants to handle size modifiers on its own.
      * The default handling should be fine for most cases as it simply scales the matrix stack before passing
      * to the renderer.
      */
-    default boolean handleOwnSizing(InlineData<D> forData){return false;}
+    default boolean handleOwnSizing(D forData){return false;}
 
     /**
      * Indicates if this renderer will handle transparency/alpha.
      * Note that the default handling is done with {@link RenderSystem#setShaderColor}.
      */
-    default boolean handleOwnTransparency(InlineData<D> forData){return false;}
+    default boolean handleOwnTransparency(D forData){return false;}
 
     /*
      * Text by default is 7px tall, and then 1px of shadow

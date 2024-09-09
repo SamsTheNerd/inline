@@ -1,6 +1,7 @@
 package com.samsthenerd.inline.api.client.renderers;
 
 import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.EntityInlineData;
 
@@ -62,4 +63,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
 
         return (int)Math.ceil(pWidth * 8 / height) + 1;
     }
+
+    @Override
+    public GlowHandling getGlowPreference(EntityInlineData forData){ return new GlowHandling.Full(forData.cradle.getId()); }
 }

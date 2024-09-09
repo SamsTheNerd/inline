@@ -2,6 +2,7 @@ package com.samsthenerd.inline.api.client.renderers;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
@@ -69,5 +70,11 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     @Override
     public int charWidth(PlayerHeadData data, Style style, int codepoint){
         return 8;
+    }
+
+    @Override
+    public GlowHandling getGlowPreference(PlayerHeadData forData){
+        // silly but should be fine.
+        return new GlowHandling.Full(forData.profile.getName().toLowerCase());
     }
 }

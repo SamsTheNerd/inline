@@ -1,7 +1,5 @@
 package com.samsthenerd.inline.api.data;
 
-import javax.annotation.Nullable;
-
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
@@ -10,7 +8,6 @@ import com.samsthenerd.inline.tooltips.providers.EntityTTProvider;
 import com.samsthenerd.inline.utils.EntityCradle;
 import com.samsthenerd.inline.utils.cradles.EntTypeCradle;
 import com.samsthenerd.inline.utils.cradles.NbtCradle;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -20,11 +17,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public class EntityInlineData implements InlineData<EntityInlineData>{
 
     protected static final Random random = Random.create();
     protected float uniqueOffset = 0;
-    private final EntityCradle cradle;
+    public final EntityCradle cradle;
 
     public EntityInlineData(EntityCradle cradle){
         this.cradle = cradle;

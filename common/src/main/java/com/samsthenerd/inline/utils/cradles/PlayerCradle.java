@@ -1,20 +1,19 @@
 package com.samsthenerd.inline.utils.cradles;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
 import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * An entity cradle backed by a player GameProfile
@@ -52,6 +51,11 @@ public class PlayerCradle extends EntityCradle {
 
     public CradleType<?> getType(){
         return PlayerCradleType.INSTANCE;
+    }
+
+    @Override
+    public String getId(){
+        return profile.getId() == null ? profile.getName() : profile.getId().toString();
     }
 
     public Entity getEntity(World world){

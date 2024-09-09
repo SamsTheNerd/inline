@@ -2,6 +2,7 @@ package com.samsthenerd.inline.api.client.renderers;
 
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
+import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
 
