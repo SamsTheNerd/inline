@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+
+- Player heads crashing.
+
 ## 1.0.0
 
 ### Added

@@ -75,6 +75,12 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     @Override
     public GlowHandling getGlowPreference(PlayerHeadData forData){
         // silly but should be fine.
-        return new GlowHandling.Full(forData.profile.getName().toLowerCase());
+        if(forData.profile.getName() != null){
+            return new GlowHandling.Full(forData.profile.getName().toLowerCase());
+        }
+        if(forData.profile.getId() != null){
+            return new GlowHandling.Full(forData.profile.getId().toString().toLowerCase());
+        }
+        return new GlowHandling.Full();
     }
 }
