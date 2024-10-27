@@ -32,10 +32,11 @@ public class PlayerCradle extends EntityCradle {
                 uuid -> new GameProfile(uuid, null)),
             
             (profile) -> {
-                if(profile.getId() != null){
-                    return Either.right(profile.getId());
+                String name = profile.getName();
+                if(name != null && !name.isEmpty()){
+                    return Either.left(name);
                 }
-                return Either.left(profile.getName());
+                return Either.right(profile.getId());
             }
         );
 
