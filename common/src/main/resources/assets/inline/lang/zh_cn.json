@@ -24,7 +24,7 @@
     "matcher.inline.item.example": "[item:diamond_sword][item:book]",
 
     "matcher.inline.entity.title": "实体",
-    "matcher.inline.entity.title.styled": "实体 [entity:pig]",
+    "matcher.inline.entity.title.styled": "实体[entity:pig]",
     "matcher.inline.entity.description": "根据实体类型ID显示实体",
     "matcher.inline.entity.example": "[entity:pig]",
 
