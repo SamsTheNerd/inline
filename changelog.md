@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+### Fixed
+
+- Player Head serialization bug
+
 ## 1.0.1
 
 ### Fixed

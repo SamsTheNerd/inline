@@ -32,6 +32,7 @@ public class PlayerCradle extends EntityCradle {
                 uuid -> new GameProfile(uuid, null)),
             
             (profile) -> {
+                // TODO: maybe switch away from an Either codec.
                 String name = profile.getName();
                 if(name != null && !name.isEmpty()){
                     return Either.left(name);
