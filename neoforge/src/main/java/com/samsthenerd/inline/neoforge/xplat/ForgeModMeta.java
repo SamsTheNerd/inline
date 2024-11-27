@@ -1,26 +1,19 @@
 package com.samsthenerd.inline.neoforge.xplat;
 
+import com.samsthenerd.inline.xplat.IModMeta;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.language.IModInfo;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
-import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
-
-import com.samsthenerd.inline.xplat.IModMeta;
-
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
-import net.minecraftforge.forgespi.language.IModFileInfo;
-import net.minecraftforge.forgespi.language.IModInfo;
 
 public class ForgeModMeta implements IModMeta {
     private final ModContainer container;

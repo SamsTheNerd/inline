@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.samsthenerd.inline.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "core.MixinInlineStyle",
     "core.MixinInlineStyleSerializer"

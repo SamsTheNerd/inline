@@ -5,36 +5,37 @@ import com.samsthenerd.inline.InlineClient;
 import com.samsthenerd.inline.api.matching.InlineMatcher;
 import com.samsthenerd.inline.api.matching.MatchContext;
 import com.samsthenerd.inline.config.InlineConfigHandler;
+import com.samsthenerd.inline.impl.InlineImpl;
 import com.samsthenerd.inline.neoforge.xplat.ForgeAbstractions;
 import com.samsthenerd.inline.neoforge.xplat.ForgeModMeta;
-import com.samsthenerd.inline.impl.InlineImpl;
 import com.samsthenerd.inline.xplat.XPlatInstances;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.ServerChatEvent;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod("inline")
 public class InlineForge {
     public InlineForge(){
         // so that we can register properly with architectury
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModContainer modContainer = ModLoadingContext.get().getActiveContainer();
+        IEventBus modBus = ModLoadingContext.get().getActiveContainer().getEventBus();
         modBus.addListener(this::onClientSetup);
-        MinecraftForge.EVENT_BUS.addListener(this::onServerChatDecoration);
-        
+        NeoForge.EVENT_BUS.addListener(this::onServerChatDecoration);
+
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> InlineConfigHandler.getConfigScreen(parent));
+
         // note, technically double nested lambdas, so should be fine ?
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, 
-            () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> InlineConfigHandler.getConfigScreen(parent)));
-
-
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modBus.register(InlineForgeClient.class));
+//        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
+//            () -> IConfigScreenFactory.((client, parent) -> InlineConfigHandler.getConfigScreen(parent)));
+//
+//
+//        .unsafeRunWhenOn(Dist.CLIENT, () -> () -> modBus.register(InlineForgeClient.class));
 
         XPlatInstances forgeXPlats = new XPlatInstances(
             ForgeModMeta::getMod,
@@ -44,7 +45,7 @@ public class InlineForge {
         Inline.onInitialize(forgeXPlats);
     }
 
-    private void onClientSetup(FMLClientSetupEvent event) { 
+    private void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             InlineClient.initClient();
         });

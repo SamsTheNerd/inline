@@ -1,16 +1,19 @@
 package com.samsthenerd.inline.neoforge;
 
+import com.samsthenerd.inline.Inline;
+import com.samsthenerd.inline.registry.InlineTooltips;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.item.tooltip.TooltipData;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import com.samsthenerd.inline.Inline;
-import com.samsthenerd.inline.registry.InlineTooltips;
-
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.item.TooltipData;
-import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
+@EventBusSubscriber(modid = "inline", value = Dist.CLIENT, bus= Bus.MOD)
 public class InlineForgeClient {
     @SubscribeEvent
     public static void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent evt) {
