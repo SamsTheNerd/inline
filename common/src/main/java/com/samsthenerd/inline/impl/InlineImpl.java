@@ -1,23 +1,19 @@
 package com.samsthenerd.inline.impl;
 
-import java.util.*;
-
-import javax.annotation.Nullable;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.InlineData.InlineDataType;
-
 import com.samsthenerd.inline.api.matching.InlineMatcher;
-import com.samsthenerd.inline.utils.EntityCradle;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class InlineImpl implements InlineAPI {
 
@@ -35,17 +31,18 @@ public class InlineImpl implements InlineAPI {
             InlineDataType::getId);
 
     public static final Codec<InlineData<?>> INLINE_DATA_CODEC = INLINE_DATA_TYPE_CODEC.dispatch("type",
-            InlineData::getType, InlineDataType::getCodec);
+            InlineData::getType, (inlineDataType -> inlineDataType.getCodec().fieldOf("data")));
 
     @Override
     @Nullable
+    @SuppressWarnings("unchecked")
     public <D extends InlineData<D>> D deserializeData(JsonObject json){
         String type = json.get("type").getAsString();
-        if(!DATA_TYPES.containsKey(new Identifier(type))){
+        if(!DATA_TYPES.containsKey(Identifier.of(type))){
             return null;
         }
-        InlineDataType<D> dType = (InlineDataType<D>)DATA_TYPES.get(new Identifier(type));
-        return dType.getCodec().parse(JsonOps.INSTANCE, json.get("data")).getOrThrow(false, Inline.LOGGER::error);
+        InlineDataType<D> dType = (InlineDataType<D>)DATA_TYPES.get(Identifier.of(type));
+        return dType.getCodec().parse(JsonOps.INSTANCE, json.get("data")).getOrThrow();
     }
 
     @Override

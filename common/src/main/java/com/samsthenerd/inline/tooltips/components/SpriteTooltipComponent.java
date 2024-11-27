@@ -1,17 +1,16 @@
 package com.samsthenerd.inline.tooltips.components;
 
-import java.util.function.BiFunction;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.tooltips.data.SpriteTooltipData;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.SpritelikeRenderers;
-
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+
+import java.util.function.BiFunction;
 
 public class SpriteTooltipComponent implements TooltipComponent {
     public static final float DEFAULT_RENDER_SIZE = 96f;
@@ -28,7 +27,7 @@ public class SpriteTooltipComponent implements TooltipComponent {
     public void drawItems(TextRenderer font, int mouseX, int mouseY, DrawContext context) {
         // reload it just incase it failed the first time or whatever ?
         Identifier textureId = sprite.getTextureId();
-        if(textureId == null || textureId.equals(new Identifier(""))){
+        if(textureId == null || textureId.equals(Identifier.of(""))){
             return;
         }
         MatrixStack ps = context.getMatrices();

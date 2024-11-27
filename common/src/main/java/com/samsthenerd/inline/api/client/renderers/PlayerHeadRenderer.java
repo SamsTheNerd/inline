@@ -8,14 +8,10 @@ import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
 import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
 import com.samsthenerd.inline.utils.TextureSprite;
-
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
 
 public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
@@ -23,17 +19,18 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
     @Override
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "playerhead");
+        return Inline.id( "playerhead");
     }
 
     public Identifier textureFromHeadData(PlayerHeadData data){
         GameProfile prof = FakeClientPlayerMaker.getBetterProfile(data.profile);
-        Identifier skinTextId;
+        Identifier skinTextId = null;
+        // TODO: FIX
         if(prof == null){
             // get a steve head i guess
-            skinTextId = DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(data.profile));
+//            skinTextId = DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(data.profile));
         } else {
-            skinTextId = MinecraftClient.getInstance().getSkinProvider().loadSkin(prof);
+//            skinTextId = MinecraftClient.getInstance().getSkinProvider().loadSkin(prof);
         }
         return skinTextId;
     }

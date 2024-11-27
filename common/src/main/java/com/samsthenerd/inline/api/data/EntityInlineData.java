@@ -48,7 +48,7 @@ public class EntityInlineData implements InlineData<EntityInlineData>{
 
     @Override
     public Identifier getRendererId(){
-        return new Identifier(Inline.MOD_ID, "entity");
+        return Inline.id( "entity");
     }
 
     @Nullable
@@ -78,7 +78,7 @@ public class EntityInlineData implements InlineData<EntityInlineData>{
 
         @Override
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "entity");
+            return Inline.id("entity");
         }
 
         @Override

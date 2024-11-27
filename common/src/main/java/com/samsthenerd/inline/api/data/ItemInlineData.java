@@ -23,7 +23,7 @@ public class ItemInlineData implements InlineData<ItemInlineData>{
 
     @Override
     public Identifier getRendererId(){
-        return new Identifier(Inline.MOD_ID, "item");
+        return Inline.id( "item");
     }
 
     public ItemStack getStack(){
@@ -46,7 +46,7 @@ public class ItemInlineData implements InlineData<ItemInlineData>{
 
         @Override
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "item");
+            return Inline.id( "item");
         }
 
         @Override

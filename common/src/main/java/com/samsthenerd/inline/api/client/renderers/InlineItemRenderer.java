@@ -25,7 +25,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
     public static final InlineItemRenderer INSTANCE = new InlineItemRenderer();
 
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "item");
+        return Inline.id( "item");
     }
 
     public static boolean debugEarlyReturn = true;
@@ -73,7 +73,8 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
             crashReportSection.add("Item Type", () -> String.valueOf(stack.getItem()));
             crashReportSection.add("Item Damage", () -> String.valueOf(stack.getDamage()));
-            crashReportSection.add("Item NBT", () -> String.valueOf(stack.getNbt()));
+            // TODO: FIX (just see how vanilla does it and copy all that)
+//            crashReportSection.add("Item NBT", () -> String.valueOf(stack.getNbt()));
             crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
             throw new CrashException(crashReport);
         }

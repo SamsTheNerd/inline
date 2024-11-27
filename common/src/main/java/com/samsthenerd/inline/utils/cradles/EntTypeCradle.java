@@ -63,7 +63,7 @@ public class EntTypeCradle<E extends Entity> extends EntityCradle {
         public static EntTypeCradleType INSTANCE = EntityCradle.addCradleType(new EntTypeCradleType());
 
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "enttype");
+            return Inline.id("enttype");
         }
 
         public Codec<EntTypeCradle> getCodec(){

@@ -70,6 +70,6 @@ public abstract class EntityCradle {
 
     public static final Codec<EntityCradle> CRADLE_CODEC = TYPE_CODEC.dispatch("type",
         EntityCradle::getType,
-        CradleType::getCodec
+        cradTy -> cradTy.getCodec().fieldOf("entity")
     );
 }

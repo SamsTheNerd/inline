@@ -25,7 +25,7 @@ public class PlayerHeadData implements InlineData<PlayerHeadData>{
 
     @Override
     public Identifier getRendererId(){
-        return new Identifier(Inline.MOD_ID, "playerhead");
+        return Inline.id( "playerhead");
     }
 
     public final GameProfile profile;
@@ -52,7 +52,7 @@ public class PlayerHeadData implements InlineData<PlayerHeadData>{
 
         @Override
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "playerhead");
+            return Inline.id( "playerhead");
         }
 
         private static Gson GSON = new GsonBuilder().create();

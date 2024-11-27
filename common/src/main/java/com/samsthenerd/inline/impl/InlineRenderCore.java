@@ -29,6 +29,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import java.time.Duration;
 import java.util.LinkedList;
@@ -158,10 +159,10 @@ public class InlineRenderCore {
         GLOW_BUFF.setClearColor(0, 0, 0, 0);
         GLOW_BUFF.clear(false);
         MinecraftClient.getInstance().getFramebuffer().endWrite();
-        MatrixStack mvStack = RenderSystem.getModelViewStack();
+        Matrix4fStack mvStack = RenderSystem.getModelViewStack();
         Matrix4f backupProjMatrix = RenderSystem.getProjectionMatrix();
-        mvStack.push();
-        mvStack.loadIdentity();
+        mvStack.pushMatrix();
+        mvStack.identity();
         RenderSystem.applyModelViewMatrix();
         VertexSorter backupVertexSorter = RenderSystem.getVertexSorting();
         RenderSystem.backupProjectionMatrix();
@@ -182,7 +183,7 @@ public class InlineRenderCore {
 
         immToUse.draw();
 
-        mvStack.pop();
+        mvStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setProjectionMatrix(backupProjMatrix, backupVertexSorter);
         GLOW_BUFF.endWrite();
@@ -238,7 +239,7 @@ public class InlineRenderCore {
                 GLOW_TEXTURE_CACHE.put(texCacheId, tSprite);
                 return new Pair<>(tSprite, () -> {});
             } else {
-                Identifier backTexId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(new Identifier(Inline.MOD_ID, "glowtextureback").toTranslationKey(), new NativeImageBackedTexture(fullImage));
+                Identifier backTexId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(Inline.id("glowtextureback").toTranslationKey(), new NativeImageBackedTexture(fullImage));
                 return new Pair<>(new TextureSprite(backTexId), () -> {
                     MinecraftClient.getInstance().getTextureManager().destroyTexture(backTexId);
                 });

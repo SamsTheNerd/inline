@@ -1,11 +1,5 @@
 package com.samsthenerd.inline.tooltips.providers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.jetbrains.annotations.NotNull;
-
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.data.ModIconData;
@@ -13,13 +7,17 @@ import com.samsthenerd.inline.tooltips.CustomTooltipManager.CustomTooltipProvide
 import com.samsthenerd.inline.tooltips.data.SpriteTooltipData;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.xplat.IModMeta;
-
-import net.minecraft.client.item.TooltipData;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
 
@@ -27,7 +25,7 @@ public class ModDataTTProvider implements CustomTooltipProvider<IModMeta>{
 
     @Override
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "moddata");
+        return Inline.id("moddata");
     }
 
     @Override

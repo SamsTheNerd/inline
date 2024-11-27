@@ -19,7 +19,7 @@ public class InlineErrorRenderer implements InlineRenderer{
 
     @Override
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "error");
+        return Inline.id( "error");
     }
 
     @Override

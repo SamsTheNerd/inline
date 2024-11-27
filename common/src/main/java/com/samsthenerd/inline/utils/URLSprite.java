@@ -2,8 +2,8 @@ package com.samsthenerd.inline.utils;
 
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
@@ -80,7 +80,7 @@ public class URLSprite extends Spritelike{
 
     public static class UrlSpriteType implements SpritelikeType{
         public static final UrlSpriteType INSTANCE = new UrlSpriteType();
-        private static final Codec<URLSprite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        private static final MapCodec<URLSprite> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("url").forGetter(URLSprite::getUrl),
             Identifier.CODEC.fieldOf("id").forGetter(URLSprite::getId),
             Codec.FLOAT.optionalFieldOf("minU", 0f).forGetter(URLSprite::getMinU),
@@ -89,7 +89,7 @@ public class URLSprite extends Spritelike{
             Codec.FLOAT.optionalFieldOf("maxV", 1f).forGetter(URLSprite::getMaxV)
         ).apply(instance, URLSprite::new));
 
-        public Codec<URLSprite> getCodec(){
+        public MapCodec<URLSprite> getCodec(){
             return CODEC;
         }
 

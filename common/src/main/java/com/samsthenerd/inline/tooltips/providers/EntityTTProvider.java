@@ -1,29 +1,27 @@
 package com.samsthenerd.inline.tooltips.providers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.jetbrains.annotations.NotNull;
-
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager.CustomTooltipProvider;
 import com.samsthenerd.inline.tooltips.data.EntityDisplayTTData;
 import com.samsthenerd.inline.utils.EntityCradle;
-
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class EntityTTProvider implements CustomTooltipProvider<EntityCradle> {
     public static final EntityTTProvider INSTANCE = new EntityTTProvider();
 
     @Override
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "entitydisplay");
+        return Inline.id("entitydisplay");
     }
 
     @Override

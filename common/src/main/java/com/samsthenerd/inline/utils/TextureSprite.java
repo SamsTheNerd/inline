@@ -2,8 +2,8 @@ package com.samsthenerd.inline.utils;
 
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.util.Identifier;
 
 // just a raw texture !
@@ -68,7 +68,7 @@ public class TextureSprite extends Spritelike{
 
     public static class TextureSpriteType implements SpritelikeType{
         public static final TextureSpriteType INSTANCE = new TextureSpriteType();
-        private static final Codec<TextureSprite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        private static final MapCodec<TextureSprite> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Identifier.CODEC.fieldOf("id").forGetter(TextureSprite::getTextureId),
             Codec.FLOAT.optionalFieldOf("minU", 0f).forGetter(TextureSprite::getMinU),
             Codec.FLOAT.optionalFieldOf("minV", 0f).forGetter(TextureSprite::getMinV),
@@ -78,7 +78,7 @@ public class TextureSprite extends Spritelike{
             Codec.INT.optionalFieldOf("textHeight", 16).forGetter(TextureSprite::getTextureHeight)
         ).apply(instance, TextureSprite::new));
 
-        public Codec<TextureSprite> getCodec(){
+        public MapCodec<TextureSprite> getCodec(){
             return CODEC;
         }
 

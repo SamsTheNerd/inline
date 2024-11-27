@@ -6,11 +6,8 @@ import com.samsthenerd.inline.impl.InlineImpl;
 import com.samsthenerd.inline.xplat.FabricAbstractions;
 import com.samsthenerd.inline.xplat.FabricModMeta;
 import com.samsthenerd.inline.xplat.XPlatInstances;
-
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
-
-import java.util.concurrent.CompletableFuture;
 
 public class InlineFabric implements ModInitializer {
     @Override
@@ -26,7 +23,7 @@ public class InlineFabric implements ModInitializer {
             for(InlineMatcher matcher : InlineImpl.SERVER_CHAT_MATCHERS){
                 matcher.match(ctx);
             }
-            return CompletableFuture.completedFuture(ctx.getFinalStyledText());
+            return ctx.getFinalStyledText();
         });
     }
 }

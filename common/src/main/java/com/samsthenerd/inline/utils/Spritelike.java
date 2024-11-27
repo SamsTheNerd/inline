@@ -1,18 +1,18 @@
 package com.samsthenerd.inline.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.samsthenerd.inline.utils.TextureSprite.TextureSpriteType;
 import com.samsthenerd.inline.utils.URLSprite.UrlSpriteType;
-
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A wrapper around various texture sources. 
@@ -82,25 +82,25 @@ public abstract class Spritelike {
     public static final Codec<Spritelike> CODEC = TYPE_CODEC.dispatch("type", Spritelike::getType, SpritelikeType::getCodec);
 
     public interface SpritelikeType{
-        public Codec<? extends Spritelike> getCodec();
+        public MapCodec<? extends Spritelike> getCodec();
 
         public String getId();
 
-        public static SpritelikeType of(String id, Codec<Spritelike> codec){
+        public static SpritelikeType of(String id, MapCodec<Spritelike> codec){
             return new Simple(id, codec);
         }
 
         public static class Simple implements SpritelikeType{
             private final String id;
-            private final Codec<Spritelike> codec;
+            private final MapCodec<Spritelike> codec;
 
-            public Simple(String id, Codec<Spritelike> codec){
+            public Simple(String id, MapCodec<Spritelike> codec){
                 this.id = id;
                 this.codec = codec;
             }
 
             @Override
-            public Codec<Spritelike> getCodec(){
+            public MapCodec<Spritelike> getCodec(){
                 return codec;
             }
 

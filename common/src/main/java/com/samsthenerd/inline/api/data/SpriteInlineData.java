@@ -14,7 +14,7 @@ public class SpriteInlineData implements InlineData<SpriteInlineData>{
 
     @Override
     public Identifier getRendererId(){
-        return new Identifier(Inline.MOD_ID, "spritelike");
+        return Inline.id( "spritelike");
     }
 
     public final Spritelike sprite;
@@ -28,7 +28,7 @@ public class SpriteInlineData implements InlineData<SpriteInlineData>{
 
         @Override
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "spritelike");
+            return Inline.id( "spritelike");
         }
 
         @Override

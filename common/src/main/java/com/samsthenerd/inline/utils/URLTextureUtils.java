@@ -1,5 +1,14 @@
 package com.samsthenerd.inline.utils;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.samsthenerd.inline.Inline;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -7,17 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
-import javax.annotation.Nullable;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.samsthenerd.inline.Inline;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 
 public class URLTextureUtils {
 
@@ -62,7 +60,7 @@ public class URLTextureUtils {
                 Inline.LOGGER.error("Failed to load texture from URL: " + url + "\n:" + e);
             }
             });
-        return new Identifier("");
+        return Identifier.of("");
     }
 
     @Nullable

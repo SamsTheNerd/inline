@@ -89,7 +89,7 @@ public class PlayerCradle extends EntityCradle {
         public static PlayerCradleType INSTANCE = EntityCradle.addCradleType(new PlayerCradleType());
 
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "nbt");
+            return Inline.id( "nbt");
         }
 
         public Codec<PlayerCradle> getCodec(){

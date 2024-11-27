@@ -60,7 +60,7 @@ public class InlineClientConfigImpl implements InlineClientConfig {
             List<String> dMatchers = config.getList("disabledMatchers", List.of());
             disabledMatchers.clear();
             for(String mId : dMatchers){
-                disabledMatchers.add(new Identifier(mId));                
+                disabledMatchers.add(Identifier.of(mId));
             }
 
             renderModIcon = config.getBoolean("modIconInTooltip", true);

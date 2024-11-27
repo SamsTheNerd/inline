@@ -1,9 +1,9 @@
 package com.samsthenerd.inline.utils;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.render.*;
-
-import java.util.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectSortedMaps;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 
 /**
  * This is a stupid stupid stupid thing to let our DrawContext have an immediate even if the actual vc provider is
@@ -24,7 +24,8 @@ public class VCPImmediateButImLyingAboutIt extends VertexConsumerProvider.Immedi
     }
 
     private VCPImmediateButImLyingAboutIt(VertexConsumerProvider provider){
-        super(Tessellator.getInstance().getBuffer(), Map.of());
+//        super(Tessellator.getInstance().getBuffer(), Map.of());
+        super(null, Object2ObjectSortedMaps.emptyMap()); // TODO: write an accessor for the buffer allocator?
         this.provider = provider;
     }
 

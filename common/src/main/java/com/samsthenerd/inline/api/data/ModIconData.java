@@ -1,10 +1,5 @@
 package com.samsthenerd.inline.api.data;
 
-import java.nio.file.Path;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.samsthenerd.inline.Inline;
@@ -15,12 +10,15 @@ import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.TextureSprite;
 import com.samsthenerd.inline.utils.URLSprite;
 import com.samsthenerd.inline.xplat.IModMeta;
-
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import javax.annotation.Nullable;
+import java.nio.file.Path;
+import java.util.Optional;
 
 // mostly just extending so we can still use the renderer
 public class ModIconData extends SpriteInlineData{
@@ -29,10 +27,10 @@ public class ModIconData extends SpriteInlineData{
     }
 
     public Identifier getRendererId(){
-        return new Identifier(Inline.MOD_ID, "spritelike");
+        return Inline.id( "spritelike");
     }
 
-    public static final Spritelike MISSING_ICON = new TextureSprite(new Identifier(Inline.MOD_ID, "textures/missingicon.png"));
+    public static final Spritelike MISSING_ICON = new TextureSprite(Inline.id( "textures/missingicon.png"));
 
     public String modid;
 
@@ -57,7 +55,7 @@ public class ModIconData extends SpriteInlineData{
             if(logoFile.isEmpty()) return usePlaceholder ? MISSING_ICON : null;
             Optional<Path> logoPath = mod.findResource(logoFile.get());
             if(logoPath.isEmpty()) return usePlaceholder ? MISSING_ICON : null;
-            return new URLSprite(logoPath.get().toUri().toURL().toString(), new Identifier("inlinemodicon", mod.getModId()));
+            return new URLSprite(logoPath.get().toUri().toURL().toString(), Identifier.of("inlinemodicon", mod.getModId()));
         } catch (Exception e){
             return usePlaceholder ? MISSING_ICON : null;
         }
@@ -93,7 +91,7 @@ public class ModIconData extends SpriteInlineData{
 
         @Override
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "modicon");
+            return Inline.id( "modicon");
         }
 
         @Override

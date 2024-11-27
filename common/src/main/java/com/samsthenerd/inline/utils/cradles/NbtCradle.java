@@ -1,16 +1,15 @@
 package com.samsthenerd.inline.utils.cradles;
 
-import java.util.HashMap;
-
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
 
 /**
  * An entity cradle backed by the entity's full nbt data
@@ -60,7 +59,7 @@ public class NbtCradle extends EntityCradle {
         public static NbtCradleType INSTANCE = EntityCradle.addCradleType(new NbtCradleType());
 
         public Identifier getId(){
-            return new Identifier(Inline.MOD_ID, "nbt");
+            return Inline.id( "nbt");
         }
 
         public Codec<NbtCradle> getCodec(){

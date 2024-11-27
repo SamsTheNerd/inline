@@ -1,10 +1,7 @@
 package com.samsthenerd.inline.tooltips.components;
 
-import java.util.function.BiFunction;
-
 import com.samsthenerd.inline.tooltips.data.EntityDisplayTTData;
 import com.samsthenerd.inline.utils.EntityCradle;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -15,6 +12,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
+
+import java.util.function.BiFunction;
 
 public class EntityDisplayTTComp implements TooltipComponent {
     public static final float DEFAULT_RENDER_SIZE = 96f;
@@ -35,7 +34,7 @@ public class EntityDisplayTTComp implements TooltipComponent {
 
         Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
 
-        double height = bounds.getYLength();
+        double height = bounds.getLengthY();
 
         float rot = 15f;
 
@@ -49,7 +48,6 @@ public class EntityDisplayTTComp implements TooltipComponent {
         matrices.scale(scaleFactor, -scaleFactor, scaleFactor);
         matrices.translate(0, -height, 0);
         MinecraftClient client = MinecraftClient.getInstance();
-        float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot));
         renderer.render(ent, 0, 0, matrices, context.getVertexConsumers(), LightmapTextureManager.MAX_LIGHT_COORDINATE);
@@ -64,9 +62,9 @@ public class EntityDisplayTTComp implements TooltipComponent {
         // Box bounds = ent.getBoundingBox().expand(0.15, 0.1, 0.15);
         Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
 
-        double width = bounds.getXLength();
-        double depth = bounds.getZLength();
-        double height = bounds.getYLength();
+        double width = bounds.getLengthX();
+        double depth = bounds.getLengthZ();
+        double height = bounds.getLengthY();
 
         float rot = 15f;
         double radRot = Math.toRadians(rot % 90);
@@ -84,9 +82,9 @@ public class EntityDisplayTTComp implements TooltipComponent {
 
         Box bounds = ent.getBoundingBox().expand(0, 0.05, 0);
 
-        double width = bounds.getXLength();
-        double depth = bounds.getZLength();
-        double height = bounds.getYLength();
+        double width = bounds.getLengthX();
+        double depth = bounds.getLengthZ();
+        double height = bounds.getLengthY();
 
         float rot = 15f;
         double radRot = Math.toRadians(rot % 90);

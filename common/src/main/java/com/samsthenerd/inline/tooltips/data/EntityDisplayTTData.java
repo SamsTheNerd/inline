@@ -1,12 +1,11 @@
 package com.samsthenerd.inline.tooltips.data;
 
+import com.samsthenerd.inline.utils.EntityCradle;
+import net.minecraft.item.tooltip.TooltipData;
+
 import java.util.function.BiFunction;
 
-import com.samsthenerd.inline.utils.EntityCradle;
-
-import net.minecraft.client.item.TooltipData;
-
-public class EntityDisplayTTData implements TooltipData{
+public class EntityDisplayTTData implements TooltipData {
     public final EntityCradle cradle;
     // takes in the  width and height of the given texture and returns the width to render it at
     public BiFunction<Integer, Integer, Integer> widthProvider = (w, h) -> 128;

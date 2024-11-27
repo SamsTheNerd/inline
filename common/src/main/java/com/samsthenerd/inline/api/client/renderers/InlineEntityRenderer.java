@@ -19,7 +19,7 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
     public static final InlineEntityRenderer INSTANCE = new InlineEntityRenderer();
 
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "entity");
+        return Inline.id( "entity");
     }
 
     public int render(EntityInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext){
@@ -42,9 +42,6 @@ public class InlineEntityRenderer implements InlineRenderer<EntityInlineData>{
         MatrixStack matrices = context.getMatrices();
         matrices.translate(cDist/2.0, 8, 0);
         matrices.scale(8 / height, -8 / height, 8 / height);
-        MinecraftClient.getInstance().getTickDelta();
-        MinecraftClient client = MinecraftClient.getInstance();
-        float tickDelta = client.getTickDelta();
         // float rotation = 90f * (Util.getMeasuringTimeMs() / 1000f + data.getUniqueOffset());
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot));
         renderer.render(ent, 0, 0, matrices, context.getVertexConsumers(), trContext.light());

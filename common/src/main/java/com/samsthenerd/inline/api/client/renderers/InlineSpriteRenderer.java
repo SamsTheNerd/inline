@@ -16,7 +16,7 @@ public class InlineSpriteRenderer implements InlineRenderer<SpriteInlineData>{
     public static final InlineSpriteRenderer INSTANCE = new InlineSpriteRenderer();
 
     public Identifier getId(){
-        return new Identifier(Inline.MOD_ID, "spritelike");
+        return Inline.id( "spritelike");
     
     }
 

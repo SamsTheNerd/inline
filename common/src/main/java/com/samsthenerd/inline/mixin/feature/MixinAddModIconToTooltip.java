@@ -1,25 +1,23 @@
 package com.samsthenerd.inline.mixin.feature;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.data.ModIconData;
 import com.samsthenerd.inline.xplat.IModMeta;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Mixin(value = ItemStack.class, priority = 10000)
 public class MixinAddModIconToTooltip {
     @ModifyReturnValue(
-        method="getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",
+        method="getTooltip(Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/tooltip/TooltipType;)Ljava/util/List;",
         at = @At("RETURN")
     )
     private List<Text> findAndAddModIcon(List<Text> originalTT){

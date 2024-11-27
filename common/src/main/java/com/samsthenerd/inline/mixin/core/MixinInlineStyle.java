@@ -1,6 +1,7 @@
 package com.samsthenerd.inline.mixin.core;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.impl.InlineStyle;
 import net.minecraft.text.ClickEvent;
@@ -96,7 +97,7 @@ public class MixinInlineStyle implements InlineStyle {
     @ModifyReturnValue(method = "getFont", at = @At("RETURN"))
     private Identifier overrideFont(Identifier original) {
         if(this.getInlineData() != null){
-            return new Identifier("inline", "dummy_font");
+            return Inline.id("dummy_font");
         }
         return original;
     }
