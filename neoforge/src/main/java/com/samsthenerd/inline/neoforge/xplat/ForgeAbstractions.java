@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.forge.xplat;
+package com.samsthenerd.inline.neoforge.xplat;
 
 import com.samsthenerd.inline.xplat.IXPlatAbstractions;
 

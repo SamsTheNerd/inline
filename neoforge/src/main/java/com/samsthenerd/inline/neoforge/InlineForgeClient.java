@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.forge;
+package com.samsthenerd.inline.neoforge;
 
 import java.util.Map.Entry;
 import java.util.function.Function;

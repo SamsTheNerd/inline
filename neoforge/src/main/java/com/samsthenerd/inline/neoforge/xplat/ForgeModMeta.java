@@ -1,4 +1,4 @@
-package com.samsthenerd.inline.forge.xplat;
+package com.samsthenerd.inline.neoforge.xplat;
 
 import java.net.URL;
 import java.nio.file.Files;
