@@ -6,7 +6,7 @@ RELEASE_BRANCHES = ["main"]
 pipeline {
     agent any
     tools {
-        jdk "jdk-17" // valid options are: "jdk-8", "jdk-16", "jdk-17" or "jdk-21", choose which one you need
+        jdk "jdk-21" // valid options are: "jdk-8", "jdk-16", "jdk-17" or "jdk-21", choose which one you need
     }
     parameters {
         booleanParam(
