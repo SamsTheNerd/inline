@@ -13,9 +13,9 @@ logoFile = "assets/inline/icon.png"
 authors = "samsthenerd"
 description = "A library for rendering in line with text"
 
-[[mixin]]
+[[mixins]]
 config = "inline-forge.mixins.json"
-[[mixin]]
+[[mixins]]
 config = "inline-common.mixins.json"
 
 [[dependencies.inline]]
