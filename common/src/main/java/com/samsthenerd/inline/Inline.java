@@ -11,10 +11,12 @@ import com.samsthenerd.inline.api.matching.InlineMatch;
 import com.samsthenerd.inline.api.matching.MatcherInfo;
 import com.samsthenerd.inline.api.matching.RegexMatcher;
 import com.samsthenerd.inline.xplat.XPlatInstances;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -62,8 +64,7 @@ public class Inline {
         RegexMatcher showOffMatcher = new RegexMatcher.ChatStandard("show", "hand|offhand", showOffID,
                 (whatToShow, ctx) -> {
                     ItemStack stack = new ItemStack(Items.AIR);
-                    // TODO: FIX
-//                    stack.setCustomName(Text.literal("Nothing to showoff"));
+                    stack.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Nothing to showoff"));
                     if(whatToShow.equals("hand")){
                         stack = ctx.getChatSender().getStackInHand(Hand.MAIN_HAND);
                     } else if(whatToShow.equals("offhand")){
@@ -71,7 +72,7 @@ public class Inline {
                     }
                     if(stack.isEmpty()){
                         stack = new ItemStack(Items.AIR);
-//                        stack.setCustomName(Text.literal("Nothing to showoff"));
+                        stack.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Nothing to showoff"));
                     }
                     HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(stack));
                     return new InlineMatch.DataMatch(new ItemInlineData(stack), Style.EMPTY.withHoverEvent(he));

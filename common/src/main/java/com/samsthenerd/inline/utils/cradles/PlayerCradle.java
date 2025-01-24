@@ -1,53 +1,27 @@
 package com.samsthenerd.inline.utils.cradles;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
 import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.Uuids;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * An entity cradle backed by a player GameProfile
  */
 public class PlayerCradle extends EntityCradle {
 
-    private static final HashMap<UUID, Entity> UUID_PLAYER_CACHE = new HashMap<>();
-    private static final HashMap<String, Entity> NAME_PLAYER_CACHE = new HashMap<>();
+    private final GameProfileish profile;
 
-    public static final Codec<GameProfile> GAME_PROFILE_CODEC = Codec.either(
-            Codec.STRING.fieldOf("username").codec(), 
-            Uuids.CODEC.fieldOf("uuid").codec()
-        ).xmap(
-            (nameOrId) -> nameOrId.map(
-                name -> new GameProfile(null, name), 
-                uuid -> new GameProfile(uuid, null)),
-            
-            (profile) -> {
-                // TODO: maybe switch away from an Either codec.
-                String name = profile.getName();
-                if(name != null && !name.isEmpty()){
-                    return Either.left(name);
-                }
-                return Either.right(profile.getId());
-            }
-        );
-
-    private GameProfile profile;
-
-    public PlayerCradle(GameProfile profile){
+    public PlayerCradle(GameProfileish profile){
         this.profile = profile;
     }
 
-    public GameProfile getProfile(){
+    public GameProfileish getProfile(){
         return profile;
     }
 
@@ -57,31 +31,11 @@ public class PlayerCradle extends EntityCradle {
 
     @Override
     public String getId(){
-        return profile.getId() == null ? profile.getName() : profile.getId().toString();
+        return profile.map(Function.identity(), Object::toString);
     }
 
     public Entity getEntity(World world){
-        UUID playerId = profile.getId();
-        if(playerId != null && UUID_PLAYER_CACHE.containsKey(playerId)){
-            return UUID_PLAYER_CACHE.get(playerId);
-        }
-        String playerName = profile.getName();
-        if(playerName != null && !playerName.equals("") && NAME_PLAYER_CACHE.containsKey(playerName)){
-            return NAME_PLAYER_CACHE.get(playerName);
-        }
-
-        if(!world.isClient()){
-            return null;
-        }
-        
-        Pair<Entity, Boolean> playerRes = FakeClientPlayerMaker.getPlayerEntity(profile);
-        if(playerRes.getRight() && playerId != null){
-            UUID_PLAYER_CACHE.put(playerId, playerRes.getLeft());
-        }
-        if(playerRes.getRight() && playerName != null && !playerName.equals("")){
-            NAME_PLAYER_CACHE.put(playerName, playerRes.getLeft());
-        }
-        return playerRes.getLeft();
+        return FakeClientPlayerMaker.getPlayerEntity(profile);
     }
 
     private static class PlayerCradleType implements CradleType<PlayerCradle>{
@@ -93,7 +47,7 @@ public class PlayerCradle extends EntityCradle {
         }
 
         public Codec<PlayerCradle> getCodec(){
-            return GAME_PROFILE_CODEC.xmap(
+            return GameProfileish.GAME_PROFILEISH_CODEC.xmap(
                 PlayerCradle::new,
                 PlayerCradle::getProfile
             );

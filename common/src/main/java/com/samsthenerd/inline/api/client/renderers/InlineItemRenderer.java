@@ -14,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -71,11 +72,9 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
-            crashReportSection.add("Item Type", () -> String.valueOf(stack.getItem()));
-            crashReportSection.add("Item Damage", () -> String.valueOf(stack.getDamage()));
-            // TODO: FIX (just see how vanilla does it and copy all that)
-//            crashReportSection.add("Item NBT", () -> String.valueOf(stack.getNbt()));
-            crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
+            crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(stack.getItem())));
+            crashReportSection.add("Item Components", (CrashCallable<String>)(() -> String.valueOf(stack.getComponents())));
+            crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(stack.hasGlint())));
             throw new CrashException(crashReport);
         }
         matrices.pop();

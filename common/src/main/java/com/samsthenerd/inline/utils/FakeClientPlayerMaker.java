@@ -4,12 +4,12 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinAccessPlayerModelParts;
 import com.samsthenerd.inline.mixin.feature.playerskins.MixinClientAccessor;
+import com.samsthenerd.inline.utils.cradles.GameProfileish;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ApiServices;
-import net.minecraft.util.Pair;
 import net.minecraft.util.UserCache;
 
 import javax.annotation.Nullable;
@@ -20,15 +20,13 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 
 public class FakeClientPlayerMaker {
-    public static Pair<Entity, Boolean> getPlayerEntity(GameProfile profile){
-        GameProfile betterProfile = getBetterProfile(profile);
-        boolean isActuallyBetter = false;
-        GameProfile profileToUse = profile;
-        if(betterProfile != null){
-            profileToUse = betterProfile;
-            isActuallyBetter = true;
-        }
-        PlayerEntity player = new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profileToUse){
+
+    private static final HashMap<UUID, Entity> UUID_PLAYER_CACHE = new HashMap<>();
+    private static final HashMap<String, Entity> NAME_PLAYER_CACHE = new HashMap<>();
+
+    public static Entity getPlayerEntity(GameProfileish profile){
+        // maybe cache here?
+        PlayerEntity player = new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile.fetchSomeProfile()){
             @Override
             public boolean shouldRenderName() {
                 return false;
@@ -38,10 +36,7 @@ public class FakeClientPlayerMaker {
         player.prevCapeX = player.capeX = player.getX();
         player.prevCapeZ = player.capeZ = player.getZ();
         player.getDataTracker().set(MixinAccessPlayerModelParts.getPlayerModelParts(), (byte)0b11111111);
-        return new Pair<>(
-            player,
-            isActuallyBetter
-        );
+        return player;
     }
 
     private static final Map<UUID, Optional<GameProfile>> UUID_PROFILE_CACHE = new HashMap<>();
@@ -85,7 +80,7 @@ public class FakeClientPlayerMaker {
             NAME_PROFILE_CACHE.put(weakProf.getName().toLowerCase(), Optional.empty());
 
 
-        // TODO :FIX
+        // TODO: FIX
 //        if(MixinClientHeadChecker.getSessionService() == null){
 //            SkullBlockEntity.setServices(apiServices, executor);
 //        }

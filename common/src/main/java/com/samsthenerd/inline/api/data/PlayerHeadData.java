@@ -4,14 +4,13 @@ package com.samsthenerd.inline.api.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.tooltips.CustomTooltipManager;
 import com.samsthenerd.inline.tooltips.providers.EntityTTProvider;
+import com.samsthenerd.inline.utils.cradles.GameProfileish;
 import com.samsthenerd.inline.utils.cradles.PlayerCradle;
-
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
@@ -28,11 +27,9 @@ public class PlayerHeadData implements InlineData<PlayerHeadData>{
         return Inline.id( "playerhead");
     }
 
-    public final GameProfile profile;
+    public final GameProfileish profile;
 
-    public PlayerHeadData(GameProfile profile){
-        this.profile = profile;
-    }
+    public PlayerHeadData(GameProfileish profile){ this.profile = profile; }
 
     public HoverEvent getEntityDisplayHoverEvent(){
         return new HoverEvent(
@@ -59,15 +56,15 @@ public class PlayerHeadData implements InlineData<PlayerHeadData>{
 
         @Override
         public Codec<PlayerHeadData> getCodec(){
-            return PlayerCradle.GAME_PROFILE_CODEC.xmap(PlayerHeadData::new, data -> data.profile);
+            return GameProfileish.GAME_PROFILEISH_CODEC.xmap(PlayerHeadData::new, data -> data.profile);
         }
 
         public PlayerHeadData deserialize(JsonElement json){
-            return new PlayerHeadData(GSON.fromJson(json, GameProfile.class));
+            return new PlayerHeadData(GSON.fromJson(json, GameProfileish.class));
         }
 
         public JsonElement serializeData(PlayerHeadData data){
-            GameProfile profile = ((PlayerHeadData)data).profile;
+            GameProfileish profile = ((PlayerHeadData)data).profile;
             return GSON.toJsonTree(profile);
         }
     }

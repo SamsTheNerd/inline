@@ -1,17 +1,19 @@
 package com.samsthenerd.inline.api.client.renderers;
 
-import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
-import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
 import com.samsthenerd.inline.utils.TextureSprite;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Function;
 
 public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
@@ -23,16 +25,8 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     }
 
     public Identifier textureFromHeadData(PlayerHeadData data){
-        GameProfile prof = FakeClientPlayerMaker.getBetterProfile(data.profile);
-        Identifier skinTextId = null;
-        // TODO: FIX
-        if(prof == null){
-            // get a steve head i guess
-//            skinTextId = DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(data.profile));
-        } else {
-//            skinTextId = MinecraftClient.getInstance().getSkinProvider().loadSkin(prof);
-        }
-        return skinTextId;
+        PlayerSkinProvider playerSkinProvider = MinecraftClient.getInstance().getSkinProvider();
+        return playerSkinProvider.getSkinTextures(data.profile.fetchSomeProfile()).texture();
     }
 
     public SpriteInlineData getFace(PlayerHeadData data){
@@ -71,13 +65,6 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
     @Override
     public GlowHandling getGlowPreference(PlayerHeadData forData){
-        // silly but should be fine.
-        if(forData.profile.getName() != null){
-            return new GlowHandling.Full(forData.profile.getName().toLowerCase());
-        }
-        if(forData.profile.getId() != null){
-            return new GlowHandling.Full(forData.profile.getId().toString().toLowerCase());
-        }
-        return new GlowHandling.Full();
+        return new GlowHandling.Full(forData.profile.map(Function.identity(), Object::toString).toLowerCase());
     }
 }
