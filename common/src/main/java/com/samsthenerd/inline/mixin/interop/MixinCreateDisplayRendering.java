@@ -3,6 +3,7 @@ package com.samsthenerd.inline.mixin.interop;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.impl.InlineRenderCore;
+import com.samsthenerd.inline.utils.mixin.RequireMods;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Style;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
+@RequireMods("create")
 @Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer$FlapDisplayRenderOutput")
 public class MixinCreateDisplayRendering {
     @Final @Shadow VertexConsumerProvider bufferSource;

@@ -2,6 +2,8 @@ package com.samsthenerd.inline.tooltips;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -12,10 +14,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * An item-less custom tooltip system.
@@ -45,12 +44,16 @@ public class CustomTooltipManager {
      * @param content Arbitrary data to be handled by the provider.
      * @return an itemstack that will have a tooltip given by our provider and content.
      */
+    //TODO: Test this on a dedicated server
     public static <T> ItemStack getForTooltip(CustomTooltipProvider<T> provider, T content){
         ItemStack stack = new ItemStack(HIJACKED_ITEM);
-//        NbtCompound tag = new NbtCompound();
-//        tag.putString("id", provider.getId().toString());
-//        tag.put("data", provider.getCodec().encodeStart(NbtOps.INSTANCE, content).getOrThrow(false, Inline.LOGGER::error));
-//        stack.setSubNbt("inlinecustomtooltip", tag);
+        List<Text> tooltipText = new ArrayList<>(provider.getTooltipText(content));
+        if (!tooltipText.isEmpty()) {
+            stack.set(DataComponentTypes.ITEM_NAME, tooltipText.removeFirst());
+            if (!tooltipText.isEmpty()) {
+                stack.set(DataComponentTypes.LORE, new LoreComponent(tooltipText));
+            }
+        }
         return stack;
     }
 
