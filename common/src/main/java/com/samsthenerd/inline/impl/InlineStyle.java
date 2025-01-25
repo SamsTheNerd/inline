@@ -1,6 +1,7 @@
 package com.samsthenerd.inline.impl;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.samsthenerd.inline.api.InlineData;
 
 import net.minecraft.text.Style;
@@ -8,6 +9,7 @@ import net.minecraft.text.Style;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -24,14 +26,24 @@ public interface InlineStyle {
     }
 
     default <C> C getComponent(ISComponent<C> component){return null;}
+    default Map<ISComponent<?>, Object> getComponentMap(){ return null; }
     default Set<ISComponent<?>> getComponents(){ return null; }
     default <C> Style withComponent(ISComponent<C> component, @Nullable C value){ return null; }
     default <C> Style setComponent(ISComponent<C> component, @Nullable C value){ return null; }
 
     // ensure that C has a valid .equals() in order for the styles to have it as well.
     record ISComponent<C>(String id, Codec<C> codec, C defaultValue, BiFunction<C, C, C> merger){
+        public static final Map<String, ISComponent<?>> ALL_COMPS = new HashMap<>();
 
-        public static Map<String, ISComponent> ALL_COMPS = new HashMap<>();
+        public static final Codec<ISComponent<?>> CODEC = Codec.STRING
+          .comapFlatMap(
+            id -> Optional.ofNullable(ALL_COMPS.get(id))
+              .<DataResult<ISComponent<?>>>map(DataResult::success)
+              .orElseGet(() -> DataResult.error(() -> "Unknown Inline style component: " + id)),
+            ISComponent::id
+          );
+
+        public static final Codec<Map<ISComponent<?>, Object>> COMPONENT_TO_VALUE_MAP_CODEC = Codec.dispatchedMap(InlineStyle.ISComponent.CODEC, InlineStyle.ISComponent::codec);
 
         public ISComponent(String id, Codec<C> codec, C defaultValue, BiFunction<C, C, C> merger){
             this.id = id; this.codec = codec; this.defaultValue = defaultValue; this.merger = merger;
@@ -59,7 +71,7 @@ public interface InlineStyle {
      */
     ISComponent<Integer> GLOWY_PARENT_COMP = new ISComponent<>("glowyparent", Codec.INT, -1);
 
-    public static Style makeCopy(Style original){
+    static Style makeCopy(Style original){
         return original.withColor(original.getColor());
     }
 }
