@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.matching.MatchContext;
+import com.samsthenerd.inline.utils.mixin.RequireMods;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -18,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 @Pseudo
+@RequireMods("create")
 @Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer")
 public class MixinCreateMakeDisplaySectionsNotTooLong {
 

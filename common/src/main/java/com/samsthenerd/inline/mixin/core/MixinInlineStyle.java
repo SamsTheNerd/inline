@@ -42,8 +42,13 @@ public class MixinInlineStyle implements InlineStyle {
     }
 
     @Override
+    public Map<ISComponent<?>, Object> getComponentMap() {
+        return Map.copyOf(components);
+    }
+
+    @Override
     public Set<ISComponent<?>> getComponents(){
-        return new HashSet<>(components.keySet());
+        return components.keySet();
     }
 
     @Override

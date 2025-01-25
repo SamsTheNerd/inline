@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
@@ -26,7 +27,7 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
     public Identifier textureFromHeadData(PlayerHeadData data){
         PlayerSkinProvider playerSkinProvider = MinecraftClient.getInstance().getSkinProvider();
-        return playerSkinProvider.getSkinTextures(data.profile.fetchSomeProfile()).texture();
+        return playerSkinProvider.getSkinTextures(data.profile().gameProfile()).texture();
     }
 
     public SpriteInlineData getFace(PlayerHeadData data){
@@ -65,6 +66,6 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
 
     @Override
     public GlowHandling getGlowPreference(PlayerHeadData forData){
-        return new GlowHandling.Full(forData.profile.map(Function.identity(), Object::toString).toLowerCase());
+        return new GlowHandling.Full(forData.profile().id().map(Objects::toString).orElseGet(() -> forData.profile().name().get()).toLowerCase());
     }
 }

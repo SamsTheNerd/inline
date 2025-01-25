@@ -41,7 +41,7 @@
     "java": ">=17",
     "cloth-config": ">=11.0.0"
   },
-  "conflicts": {
+  "breaks": {
     "emojiful": "*"
   }
 }
