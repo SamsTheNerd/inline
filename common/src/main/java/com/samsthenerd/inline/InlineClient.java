@@ -13,7 +13,7 @@ import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
 import com.samsthenerd.inline.api.matching.MatcherInfo;
 import com.samsthenerd.inline.api.matching.RegexMatcher;
 import com.samsthenerd.inline.api.matching.RegexMatcher.Standard;
-import com.samsthenerd.inline.utils.cradles.GameProfileish;
+import com.samsthenerd.inline.impl.ProfileComponentUtil;
 import com.samsthenerd.inline.xplat.IModMeta;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -98,9 +98,9 @@ public class InlineClient {
         }, MatcherInfo.fromId(modMatcherId)));
 
         Identifier faceMatcherId = Inline.id( "playerface");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("face", "[a-zA-Z0-9_]{1,16}", faceMatcherId, 
-        (String playerName) -> {
-            PlayerHeadData headData = new PlayerHeadData(new GameProfileish(playerName));
+        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("face", "[a-zA-Z0-9_]{1,16}|[a-f0-9]{8}(?:-[a-f0-9]{4}){4}[a-f0-9]{8}", faceMatcherId,
+          (String playerName) -> {
+            PlayerHeadData headData = new PlayerHeadData(ProfileComponentUtil.from(null, playerName));
             return new DataMatch(headData, Style.EMPTY.withHoverEvent(headData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(faceMatcherId)));
     }
