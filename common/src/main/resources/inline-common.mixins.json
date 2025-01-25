@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.samsthenerd.inline.mixin",
+  "plugin": "com.samsthenerd.inline.mixin.InlineMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "core.MixinInlineStyle",
@@ -22,7 +23,6 @@
     "interop.MixinCreateDisplayRendering",
     "interop.MixinCreateMakeBoardsRightLength",
     "interop.MixinCreateMakeDisplaySectionsNotTooLong",
-    "interop.MixinInjectHeadCancelEmojiful",
     "prompts.MixinSuggestInChat"
   ],
   "injectors": {
