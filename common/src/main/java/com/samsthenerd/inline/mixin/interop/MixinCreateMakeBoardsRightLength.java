@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.matching.MatchContext;
+import com.samsthenerd.inline.utils.mixin.RequireMods;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Pseudo
+@RequireMods("create")
 @Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplaySection")
 public class MixinCreateMakeBoardsRightLength {
 
