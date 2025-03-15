@@ -22,7 +22,6 @@
     "interop.MixinCreateDisplayRendering",
     "interop.MixinCreateMakeBoardsRightLength",
     "interop.MixinCreateMakeDisplaySectionsNotTooLong",
-    "interop.MixinInjectHeadCancelEmojiful",
     "prompts.MixinSuggestInChat"
   ],
   "injectors": {
