@@ -3,7 +3,9 @@ package com.samsthenerd.inline;
 import java.util.Optional;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.client.extrahooks.ItemOverlayRenderer;
 import com.samsthenerd.inline.api.data.*;
 import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
 import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
@@ -14,12 +16,21 @@ import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
+import com.samsthenerd.inline.impl.extrahooks.ItemOverlayManager;
+import com.samsthenerd.inline.utils.Spritelike;
+import com.samsthenerd.inline.utils.SpritelikeRenderers;
+import com.samsthenerd.inline.utils.SpritelikeUtils;
 import com.samsthenerd.inline.utils.URLSprite;
 import com.samsthenerd.inline.xplat.IModMeta;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.*;
 import net.minecraft.text.HoverEvent.ItemStackContent;
@@ -33,6 +44,8 @@ public class InlineClient {
 
         addDefaultRenderers();
         addDefaultMatchers();
+
+        addExtraHookTests();
     }
 
     private static void addDefaultRenderers(){
@@ -115,5 +128,36 @@ public class InlineClient {
             PlayerHeadData headData = new PlayerHeadData(profile);
             return new DataMatch(headData, Style.EMPTY.withHoverEvent(headData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(faceMatcherId)));
+    }
+
+    private static void addExtraHookTests(){
+        ItemOverlayManager.addRenderer(Items.COOKIE, new ItemOverlayRenderer() {
+            @Override
+            public void render(ItemStack stack, DrawContext drawContext) {
+//                drawContext.fill(-100, -100, 1000, 1100, 10000, 0xFF_FFFFFF);
+//                RenderSystem.disableCull();
+//
+//                drawContext.draw();
+//
+//                RenderSystem.enableCull();
+                Spritelike cookiemonster = new URLSprite("https://easydrawingguides.com/wp-content/uploads/2019/01/Cookie-Monster-10.png",
+                    Identifier.of("cookiemonster", "cookiermonster"));
+                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
+            }
+        });
+
+        ItemOverlayManager.addRenderer(Items.POTION, new ItemOverlayRenderer() {
+            @Override
+            public void render(ItemStack stack, DrawContext drawContext) {
+
+                var effects = PotionUtil.getPotionEffects(stack);
+                if(effects.isEmpty()) return;
+                var effect = effects.get(0);
+                var effectSprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
+                Spritelike effectSpritelike = SpritelikeUtils.spritelikeFromSprite(effectSprite);
+
+                SpritelikeRenderers.getRenderer(effectSpritelike).drawSprite(effectSpritelike, drawContext, 7, 7, 100, 9, 9);
+            }
+        });
     }
 }

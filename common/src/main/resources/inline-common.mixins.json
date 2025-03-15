@@ -10,6 +10,7 @@
   "client": [
     "core.MixinInlineParsing",
     "core.MixinInlineRendering",
+    "core.MixinItemOverlayHook",
     "core.MixinSetTessBuffer",
     "core.MixinTextWiden",
     "core.NativeImageAccessor",
