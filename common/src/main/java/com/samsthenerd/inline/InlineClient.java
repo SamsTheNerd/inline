@@ -4,7 +4,9 @@ import java.util.Optional;
 
 import com.mojang.authlib.GameProfile;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
+import com.samsthenerd.inline.api.data.*;
 import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
+import com.samsthenerd.inline.api.matching.InlineMatch.TextMatch;
 import com.samsthenerd.inline.api.matching.MatcherInfo;
 import com.samsthenerd.inline.api.matching.RegexMatcher;
 import com.samsthenerd.inline.api.matching.RegexMatcher.Standard;
@@ -12,19 +14,16 @@ import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
-import com.samsthenerd.inline.api.data.EntityInlineData;
-import com.samsthenerd.inline.api.data.ItemInlineData;
-import com.samsthenerd.inline.api.data.ModIconData;
-import com.samsthenerd.inline.api.data.PlayerHeadData;
+import com.samsthenerd.inline.utils.URLSprite;
 import com.samsthenerd.inline.xplat.IModMeta;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.text.HoverEvent;
+import net.minecraft.text.*;
 import net.minecraft.text.HoverEvent.ItemStackContent;
-import net.minecraft.text.Style;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class InlineClient {
@@ -77,6 +76,17 @@ public class InlineClient {
             return new TextMatch(linkText);
         }, MatcherInfo.fromId(linkMatcherId)));
         */
+//
+//        Identifier imgMatcherId = new Identifier(Inline.MOD_ID, "imgtest");
+//        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("img", "[^\\[\\]]+", imgMatcherId,
+//            (String url) -> {
+//                var urlId = url.chars()
+//                    .mapToObj(ch -> (char)ch)
+//                    .filter(c -> c != ':' && Identifier.isCharValid(c))
+//                    .collect(StringBuilder::new,StringBuilder::appendCodePoint,StringBuilder::append)
+//                    .toString();
+//                return new DataMatch(new SpriteInlineData(new URLSprite(url, new Identifier(urlId))));
+//            }, MatcherInfo.fromId(imgMatcherId)));
 
         // InlineClientAPI.INSTANCE.addMatcher(new Identifier(Inline.MOD_ID, "bolditalic"), new RegexMatcher.Simple("(?<ast>\\*{1,3})\\b([^*]+)(\\k<ast>)", (MatchResult mr) ->{
         //     String text = mr.group(2);

@@ -6,28 +6,39 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
+// this sprite can be used to fetch pngs or gifs from URLs, local or remote.
 public class URLSprite extends Spritelike{
     
-    private String url;
-    private Identifier id;
-    private Identifier textureID;
-    private float minU;
-    private float minV;
-    private float maxU;
-    private float maxV;
+    private final String url;
+    private final Identifier id;
 
-    public URLSprite(String url, Identifier id, float minU, float minV, float maxU, float maxV){
-        this.url = url;
-        this.id = id;
-        this.minU = minU;
-        this.minV = minV;
-        this.maxU = maxU;
-        this.maxV = maxV;
-    }
+    @NotNull
+    private final UnaryOperator<SpriteUVLens> lensModifier;
+
+    @Nullable
+    private IntPair textDims;
+    @Nullable
+    private SpriteUVLens lens;
+    @Nullable
+    private Identifier textureID;
+
+//    public static final SpritePosDataOld DEFAULT_UNLOADED_POS_DATA = new SpritePosDataOld(0,0,1,1,0,0);
 
     public URLSprite(String url, Identifier id){
-        this(url, id, 0, 0, 1, 1);
+        this(url, id, UnaryOperator.identity());
+    }
+
+    public URLSprite(String url, Identifier id, UnaryOperator<SpriteUVLens> lensModifier){
+        this.url = url;
+        this.id = id;
+        this.lensModifier = lensModifier;
     }
 
     public SpritelikeType getType(){
@@ -46,47 +57,44 @@ public class URLSprite extends Spritelike{
         return url;
     }
 
-    // should these take some timing input to allow for animated sprites ?
-    public float getMinU(){
-        return this.minU;
-    }
-    public float getMinV(){
-        return this.minV;
-    }
-    public float getMaxU(){
-        return this.maxU;
-    }
-    public float getMaxV(){
-        return this.maxV;
+    private IntPair getOrFetchDims(){
+        if(this.textDims != null) return this.textDims;
+        var newTextInfo = URLTextureUtils.getTextureInfo(id);
+        if(newTextInfo != null){
+            this.textDims = newTextInfo.getLeft();
+        }
+        return textDims;
     }
 
+    private SpriteUVLens getOrFetchLens(){
+        if(this.lens != null) return this.lens;
+        var newTextInfo = URLTextureUtils.getTextureInfo(id);
+        if(newTextInfo != null){
+            this.lens = lensModifier.apply(newTextInfo.getRight());
+        }
+        return this.lens;
+    }
+
+    @Override
     public int getTextureWidth(){
-        getTextureId(); // force it to load real quick
-        Pair<Integer, Integer> dims = URLTextureUtils.getTextureDimensions(id);
-        if(dims == null){
-            return 0;
-        }
-        return dims.getLeft();
+        return Objects.requireNonNullElse(getOrFetchDims(), new IntPair(0, 0)).width();
     }
 
+    @Override
     public int getTextureHeight(){
-        getTextureId(); // force it to load real quick
-        Pair<Integer, Integer> dims = URLTextureUtils.getTextureDimensions(id);
-        if(dims == null){
-            return 0;
-        }
-        return dims.getRight();
+        return Objects.requireNonNullElse(getOrFetchDims(), new IntPair(0, 0)).height();
+    }
+
+    @Override
+    public SpriteUVRegion getUVs(long time) {
+        return Objects.requireNonNullElse(getOrFetchLens(), SpriteUVLens::identity).genUVs(time);
     }
 
     public static class UrlSpriteType implements SpritelikeType{
         public static final UrlSpriteType INSTANCE = new UrlSpriteType();
         private static final Codec<URLSprite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("url").forGetter(URLSprite::getUrl),
-            Identifier.CODEC.fieldOf("id").forGetter(URLSprite::getId),
-            Codec.FLOAT.optionalFieldOf("minU", 0f).forGetter(URLSprite::getMinU),
-            Codec.FLOAT.optionalFieldOf("minV", 0f).forGetter(URLSprite::getMinV),
-            Codec.FLOAT.optionalFieldOf("maxU", 1f).forGetter(URLSprite::getMaxU),
-            Codec.FLOAT.optionalFieldOf("maxV", 1f).forGetter(URLSprite::getMaxV)
+            Identifier.CODEC.fieldOf("id").forGetter(URLSprite::getId)
         ).apply(instance, URLSprite::new));
 
         public Codec<URLSprite> getCodec(){
