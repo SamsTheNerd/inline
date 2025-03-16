@@ -3,6 +3,7 @@ package com.samsthenerd.inline.mixin;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.samsthenerd.inline.utils.mixin.RequireMods;
 import com.samsthenerd.inline.xplat.IModMeta;
+import com.samsthenerd.inline.xplat.XPlatInstances;
 import org.jetbrains.annotations.ApiStatus;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -102,7 +103,7 @@ public class InlineMixinPlugin implements IMixinConfigPlugin {
         try {
             Class<?> xPlatClass = Class.forName("com.samsthenerd.inline.xplat.XPlat");
             Object invoked = xPlatClass.getMethod("getPlat").invoke(null);
-            XPLAT_METHOD = (Function<String, Optional<IModMeta>>) invoked;
+            XPLAT_METHOD = ((XPlatInstances) invoked).modFactory;
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
