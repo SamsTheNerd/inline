@@ -2,7 +2,7 @@ package com.samsthenerd.inline.mixin;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.samsthenerd.inline.utils.mixin.RequireMods;
-import net.fabricmc.loader.api.FabricLoader;
+import com.samsthenerd.inline.xplat.IModMeta;
 import org.jetbrains.annotations.ApiStatus;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -15,12 +15,16 @@ import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.util.Annotations;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 @ApiStatus.Internal
 public class InlineMixinPlugin implements IMixinConfigPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger("Inline Mixin Plugin");
+    private static final Function<String, Optional<IModMeta>> XPLAT_METHOD;
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -87,10 +91,20 @@ public class InlineMixinPlugin implements IMixinConfigPlugin {
 
     private static boolean anyModsLoaded(List<String> modIds) {
         for (String modId : modIds) {
-            if (FabricLoader.getInstance().isModLoaded(modId)) {
+            if (XPLAT_METHOD.apply(modId).isPresent()) {
                 return true;
             }
         }
         return false;
+    }
+
+    static {
+        try {
+            Class<?> xPlatClass = Class.forName("com.samsthenerd.inline.xplat.XPlat");
+            Object invoked = xPlatClass.getMethod("getPlat").invoke(null);
+            XPLAT_METHOD = (Function<String, Optional<IModMeta>>) invoked;
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
