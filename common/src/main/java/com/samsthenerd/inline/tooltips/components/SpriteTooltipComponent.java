@@ -2,6 +2,7 @@ package com.samsthenerd.inline.tooltips.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.tooltips.data.SpriteTooltipData;
+import com.samsthenerd.inline.utils.SpriteUVRegion;
 import com.samsthenerd.inline.utils.Spritelike;
 import com.samsthenerd.inline.utils.SpritelikeRenderers;
 import net.minecraft.client.font.TextRenderer;
@@ -37,26 +38,23 @@ public class SpriteTooltipComponent implements TooltipComponent {
         
         SpritelikeRenderers.getRenderer(sprite).drawSprite(sprite, context, 0, 0, 0, getWidth(font), getRenderHeight());
 
-
-        // float scale = ((float)getWidth(font)) / sprite.getSpriteWidth();
-        // ps.scale(scale, scale, 1f);
-        // context.drawTexture(textureId, 0, 0, 0, 0, 0, texture.getWidth(), texture.getHeight(), texture.getWidth(), texture.getHeight());
-
         ps.pop();
     }
 
     @Override
     public int getWidth(TextRenderer pFont) {
+        SpriteUVRegion uvs = sprite.getUVs();
         return widthProvider.apply(
-            (int) ((sprite.getMaxU()-sprite.getMinU()) * sprite.getTextureWidth()),
-            (int) ((sprite.getMaxV()-sprite.getMinV()) * sprite.getTextureHeight())
+            (int) (uvs.uWidth() * sprite.getTextureWidth()),
+            (int) (uvs.vHeight() * sprite.getTextureHeight())
         );
     }
 
     private int getRenderHeight(){
+        SpriteUVRegion uvs = sprite.getUVs();
         int realWidth = widthProvider.apply(
-            (int) ((sprite.getMaxU()-sprite.getMinU()) * sprite.getTextureWidth()),
-            (int) ((sprite.getMaxV()-sprite.getMinV()) * sprite.getTextureHeight())
+            (int) (uvs.uWidth() * sprite.getTextureWidth()),
+            (int) (uvs.vHeight() * sprite.getTextureHeight())
         );
         if(realWidth == 0 || sprite.getTextureWidth() == 0){
             return 0;

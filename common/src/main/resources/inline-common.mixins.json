@@ -12,6 +12,7 @@
     "core.MixinInlineRendering",
     "core.MixinSetTessBuffer",
     "core.MixinTextWiden",
+    "core.NativeImageAccessor",
     "feature.MixinAddModIconToTooltip",
     "feature.MixinHijackFeatherForTooltip",
     "feature.playerskins.MixinAccessPlayerModelParts",

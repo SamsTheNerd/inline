@@ -14,11 +14,17 @@ import net.minecraft.util.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 /**
  * A wrapper around various texture sources. 
  * <p>
  * Spritelike is server safe, on the client it renders with a SpritelikeRenderer.
- * You shouldn't need to make new Spritelike types. 
+ * IMPORTANT NOTE: spritelike serialization is a bit spotty, if you need to send it
+ * to the client you should consider instead sending something more specific that can
+ * then reconstruct a spritelike. See SpriteInlineData for some more related notes.
+ * <p>
+ * You shouldn't need to make new Spritelike types.
  * 
  * @see URLSprite
  * @see TextureSprite
@@ -27,26 +33,18 @@ public abstract class Spritelike {
 
     public abstract SpritelikeType getType();
 
+    @Nullable
     public abstract Identifier getTextureId();
 
-    public abstract float getMinU();
-    public abstract float getMinV();
-    public abstract float getMaxU();
-    public abstract float getMaxV();
+    public abstract SpriteUVRegion getUVs(long time);
+
+    public SpriteUVRegion getUVs(){
+        return getUVs(SpriteUVLens.getSysTime());
+    }
 
     // these are mostly just here for the w:h ratio
     public abstract int getTextureWidth();
     public abstract int getTextureHeight();
-
-    public int getSpriteWidth(){
-        return (int) ((getMaxU()-getMinU()) * getTextureWidth());
-    }
-
-    public int getSpriteHeight(){
-        return (int) ((getMaxV()-getMinV()) * getTextureHeight());
-    }
-
-    
 
     public static Spritelike fromJson(JsonElement json){
         return Spritelike.CODEC.parse(JsonOps.INSTANCE, (json))

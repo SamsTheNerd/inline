@@ -10,21 +10,21 @@ import net.minecraft.util.Identifier;
 public class TextureSprite extends Spritelike{
     
     private Identifier id;
-    private float minU;
-    private float minV;
-    private float maxU;
-    private float maxV;
-    private int textWidth;
-    private int textHeight;
+    private final IntPair textDims;
+    private final SpriteUVLens lens;
 
-    public TextureSprite(Identifier id, float minU, float minV, float maxU, float maxV, int textWidth, int textHeight){
+    public TextureSprite(Identifier id, float minU, float minV, float maxU, float maxV, int textureWidth, int textureHeight){
+        this(id, new IntPair(textureWidth, textureHeight), new SpriteUVRegion(minU, minV, maxU, maxV).asLens());
+    }
+
+    public TextureSprite(Identifier id, int textureWidth, int textureHeight){
+        this(id, 0, 0, 1, 1, textureWidth, textureHeight);
+    }
+
+    public TextureSprite(Identifier id, IntPair textureDimensions, SpriteUVLens lens){
         this.id = id;
-        this.minU = minU;
-        this.minV = minV;
-        this.maxU = maxU;
-        this.maxV = maxV;
-        this.textWidth = textWidth;
-        this.textHeight = textHeight;
+        this.textDims = textureDimensions;
+        this.lens = lens;
     }
 
     public static TextureSprite fromPixels(Identifier id, int left, int top, int width, int height, int textWidth, int textHeight){
@@ -44,36 +44,24 @@ public class TextureSprite extends Spritelike{
         return id;
     }
 
-    // should these take some timing input to allow for animated sprites ?
-    public float getMinU(){
-        return this.minU;
-    }
-    public float getMinV(){
-        return this.minV;
-    }
-    public float getMaxU(){
-        return this.maxU;
-    }
-    public float getMaxV(){
-        return this.maxV;
+    @Override
+    public SpriteUVRegion getUVs(long time) {
+        return lens.genUVs(time);
     }
 
+
     public int getTextureWidth(){
-        return textWidth;
+        return textDims.width();
     }
 
     public int getTextureHeight(){
-        return textHeight;
+        return textDims.height();
     }
 
     public static class TextureSpriteType implements SpritelikeType{
         public static final TextureSpriteType INSTANCE = new TextureSpriteType();
         private static final MapCodec<TextureSprite> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Identifier.CODEC.fieldOf("id").forGetter(TextureSprite::getTextureId),
-            Codec.FLOAT.optionalFieldOf("minU", 0f).forGetter(TextureSprite::getMinU),
-            Codec.FLOAT.optionalFieldOf("minV", 0f).forGetter(TextureSprite::getMinV),
-            Codec.FLOAT.optionalFieldOf("maxU", 1f).forGetter(TextureSprite::getMaxU),
-            Codec.FLOAT.optionalFieldOf("maxV", 1f).forGetter(TextureSprite::getMaxV),
             Codec.INT.optionalFieldOf("textWidth", 16).forGetter(TextureSprite::getTextureWidth),
             Codec.INT.optionalFieldOf("textHeight", 16).forGetter(TextureSprite::getTextureHeight)
         ).apply(instance, TextureSprite::new));
