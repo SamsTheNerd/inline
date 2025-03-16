@@ -1,11 +1,16 @@
 package com.samsthenerd.inline.tooltips;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -36,6 +41,7 @@ import java.util.Optional;
 public class CustomTooltipManager {
 
     public static final Item HIJACKED_ITEM = Items.FEATHER;
+    private static final String TOOLTIP_DATA_KEY = "inlinecustomtooltip";
 
     /**
      * Gets a dummy itemstack hijacked with the data to display the tooltip 
@@ -45,56 +51,60 @@ public class CustomTooltipManager {
      * @param content Arbitrary data to be handled by the provider.
      * @return an itemstack that will have a tooltip given by our provider and content.
      */
+    //TODO: Test this on a dedicated server
     public static <T> ItemStack getForTooltip(CustomTooltipProvider<T> provider, T content){
         ItemStack stack = new ItemStack(HIJACKED_ITEM);
-//        NbtCompound tag = new NbtCompound();
-//        tag.putString("id", provider.getId().toString());
-//        tag.put("data", provider.getCodec().encodeStart(NbtOps.INSTANCE, content).getOrThrow(false, Inline.LOGGER::error));
-//        stack.setSubNbt("inlinecustomtooltip", tag);
+        var ctpd = new CTPData<T>(provider, content);
+
+        stack.apply(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT, tagComp ->
+            tagComp.with(NbtOps.INSTANCE, CTPData.CODEC, Optional.of(ctpd)).getOrThrow());
         return stack;
     }
 
     @Nullable
     public static CustomTooltipProvider<?> getProvider(ItemStack stack){
-//        NbtCompound tag = stack.getSubNbt("inlinecustomtooltip");
-        // we're throwing this all in a try/catch because it's good enough 
-        try{
-//            return PROVIDERS.get(Identifier.of(tag.getString("id")));
-            return null;
-        } catch(Exception e) {
+        var tagComp = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if(tagComp == null) return null;
+        try {
+            return tagComp.get(CTPData.CODEC).getOrThrow().map(CTPData::provider).orElse(null);
+        } catch (Exception e){
             return null;
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> List<Text> getTooltipText(ItemStack stack){
-        try{
-//            NbtCompound tag = stack.getSubNbt("inlinecustomtooltip");
-//            CustomTooltipProvider<T> provider = (CustomTooltipProvider<T>)getProvider(stack);
-//            DataResult<T> contentRes = provider.getCodec().parse(NbtOps.INSTANCE, tag.get("data"));
-//            T content = contentRes.resultOrPartial(Inline.LOGGER::error).orElseThrow();
-//            return provider.getTooltipText(content);
-            return null;
-        } catch(Exception e) {
+    public static List<Text> getTooltipText(ItemStack stack){
+        var tagComp = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if(tagComp == null) return null;
+        try {
+            return tagComp.get(CTPData.CODEC).getOrThrow()
+                .map(ctpd -> ctpd.provider().getTooltipText(ctpd.data))
+                .orElse(null);
+        } catch (Exception e){
             return null;
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public static <T> Optional<TooltipData> getTooltipData(ItemStack stack){
-        try{
-//            NbtCompound tag = stack.getSubNbt("inlinecustomtooltip");
-//            CustomTooltipProvider<T> provider = (CustomTooltipProvider<T>)getProvider(stack);
-//            DataResult<T> contentRes = provider.getCodec().parse(NbtOps.INSTANCE, tag.get("data"));
-//            T content = contentRes.resultOrPartial(Inline.LOGGER::error).orElseThrow();
-//            return provider.getTooltipData(content);
-            return null;
-        } catch(Exception e) {
-            return null;
+        var tagComp = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if(tagComp == null) return Optional.empty();
+        try {
+            return tagComp.get(CTPData.CODEC).getOrThrow()
+                .flatMap(ctpd -> ctpd.provider().getTooltipData(ctpd.data));
+        } catch (Exception e){
+            return Optional.empty();
         }
     }
 
     private static final Map<Identifier, CustomTooltipProvider> PROVIDERS = new HashMap<>();
+
+    private static final Codec<CustomTooltipProvider> PROVIDERS_CODEC = Identifier.CODEC.comapFlatMap(
+        DataResult.partialGet(PROVIDERS::get, () -> "Provider not found"),
+        CustomTooltipProvider::getId
+    );
 
     /**
      * Registers a provider.
@@ -124,5 +134,21 @@ public class CustomTooltipManager {
 
         @NotNull
         public Codec<T> getCodec();
+    }
+
+    // helper class to make data storage a tad easier
+    public record CTPData<T>(CustomTooltipProvider<T> provider, T data){
+        @SuppressWarnings("unchecked")
+        public static final MapCodec<Optional<CTPData>> CODEC = PROVIDERS_CODEC.dispatch("inline_ctp_id",
+            (CTPData ctpd) -> ctpd.provider(),
+            CTPData::makeCTPDCodec
+        ).optionalFieldOf(TOOLTIP_DATA_KEY);
+
+        public static <T> MapCodec<CTPData<T>> makeCTPDCodec(CustomTooltipProvider<T> provider){
+            return provider.getCodec().fieldOf("inline_ctp_data").xmap(
+                d -> new CTPData<T>(provider, d),
+                CTPData::data
+            );
+        }
     }
 }
