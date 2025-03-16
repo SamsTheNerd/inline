@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.utils.EntityCradle;
 import com.samsthenerd.inline.utils.FakeClientPlayerMaker;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -15,13 +16,13 @@ import java.util.function.Function;
  */
 public class PlayerCradle extends EntityCradle {
 
-    private final GameProfileish profile;
+    private final ProfileComponent profile;
 
-    public PlayerCradle(GameProfileish profile){
+    public PlayerCradle(ProfileComponent profile){
         this.profile = profile;
     }
 
-    public GameProfileish getProfile(){
+    public ProfileComponent getProfile(){
         return profile;
     }
 
@@ -31,7 +32,7 @@ public class PlayerCradle extends EntityCradle {
 
     @Override
     public String getId(){
-        return profile.map(Function.identity(), Object::toString);
+        return profile.id().map(Object::toString).orElseGet(() -> profile.name().get());
     }
 
     public Entity getEntity(World world){
@@ -47,7 +48,7 @@ public class PlayerCradle extends EntityCradle {
         }
 
         public Codec<PlayerCradle> getCodec(){
-            return GameProfileish.GAME_PROFILEISH_CODEC.xmap(
+            return ProfileComponent.CODEC.xmap(
                 PlayerCradle::new,
                 PlayerCradle::getProfile
             );
