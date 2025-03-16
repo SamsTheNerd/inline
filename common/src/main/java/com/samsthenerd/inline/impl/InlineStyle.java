@@ -1,13 +1,16 @@
 package com.samsthenerd.inline.impl;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.samsthenerd.inline.api.InlineData;
-
 import net.minecraft.text.Style;
+import net.minecraft.text.Style.Codecs;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -24,14 +27,25 @@ public interface InlineStyle {
     }
 
     default <C> C getComponent(ISComponent<C> component){return null;}
+    default Map<ISComponent<?>, Object> getComponentMap(){ return null; }
     default Set<ISComponent<?>> getComponents(){ return null; }
     default <C> Style withComponent(ISComponent<C> component, @Nullable C value){ return null; }
     default <C> Style setComponent(ISComponent<C> component, @Nullable C value){ return null; }
 
     // ensure that C has a valid .equals() in order for the styles to have it as well.
     record ISComponent<C>(String id, Codec<C> codec, C defaultValue, BiFunction<C, C, C> merger){
+        public static final Map<String, ISComponent<?>> ALL_COMPS = new HashMap<>();
 
-        public static Map<String, ISComponent> ALL_COMPS = new HashMap<>();
+        public static final Codec<ISComponent<?>> CODEC = Codec.STRING
+          .comapFlatMap(
+            id -> Optional.ofNullable(ALL_COMPS.get(id))
+              .<DataResult<ISComponent<?>>>map(DataResult::success)
+              .orElseGet(() -> DataResult.error(() -> "Unknown Inline style component: " + id)),
+            ISComponent::id
+          );
+
+        public static final Codec<Map<ISComponent<?>, Object>> COMPONENT_TO_VALUE_MAP_CODEC
+            = Codec.dispatchedMap(InlineStyle.ISComponent.CODEC, InlineStyle.ISComponent::codec);
 
         public ISComponent(String id, Codec<C> codec, C defaultValue, BiFunction<C, C, C> merger){
             this.id = id; this.codec = codec; this.defaultValue = defaultValue; this.merger = merger;
@@ -59,7 +73,25 @@ public interface InlineStyle {
      */
     ISComponent<Integer> GLOWY_PARENT_COMP = new ISComponent<>("glowyparent", Codec.INT, -1);
 
-    public static Style makeCopy(Style original){
+    static Style makeCopy(Style original){
         return original.withColor(original.getColor());
+    }
+
+    // utility to test that codecs are working
+    static Style testStyleSer(Style sty){
+//        Inline.logPrint("Before: ");
+//        for(var entry : sty.getComponentMap().entrySet()){
+//            Inline.logPrint("\t" + entry.getKey() + " : " + entry.getValue());
+//        }
+//        var compsEncoded = ISComponent.COMPONENT_TO_VALUE_MAP_CODEC.encodeStart(JsonOps.INSTANCE, sty.getComponentMap()).getOrThrow();
+//        Inline.logPrint(compsEncoded.toString());
+        var encoded = Codecs.CODEC.encodeStart(JsonOps.INSTANCE, sty).getOrThrow();
+//        Inline.logPrint(encoded.toString());
+        Style newerStyle = Codecs.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+//        Inline.logPrint("After: ");
+//        for(var entry : newerStyle.getComponentMap().entrySet()){
+//            Inline.logPrint("\t" + entry.getKey() + " : " + entry.getValue());
+//        }
+        return newerStyle;
     }
 }
