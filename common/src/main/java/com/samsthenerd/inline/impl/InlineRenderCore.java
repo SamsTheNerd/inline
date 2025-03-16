@@ -18,6 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
@@ -45,9 +46,12 @@ public class InlineRenderCore {
         InlineRenderer renderer = InlineClientAPI.INSTANCE.getRenderer(inlData.getRendererId());
         if(renderer == null) return false;
 
-        if(!(renderer.getGlowPreference(inlData) instanceof GlowHandling.None) && style.getComponent(InlineStyle.GLOWY_MARKER_COMP)){
+        boolean noGlowHandle = !(renderer.getGlowPreference(inlData) instanceof GlowHandling.None);
+        boolean hasGlowyMarker = style.getComponent(InlineStyle.GLOWY_MARKER_COMP);
+        if(noGlowHandle && hasGlowyMarker){
             return true;
         }
+
         int glowColor = style.getComponent(InlineStyle.GLOWY_PARENT_COMP);
         boolean needsGlowChildren = glowColor != -1 && renderer.getGlowPreference(inlData) instanceof GlowHandling.Full;
 
@@ -102,13 +106,18 @@ public class InlineRenderCore {
             RenderSystem.setShaderColor(1, 1, 1, alphaToUse);
         }
 
+        if (InlineRenderer.isFlat(matrices, trContext.layerType())) {
+            DiffuseLighting.disableGuiDepthLighting();
+        } else {
+            DiffuseLighting.enableGuiDepthLighting();
+        }
+
         if(needsGlowChildren){
             Pair<Spritelike, Runnable> texResult = getGlowTextureSprite(inlData, renderer, immToUse, sizeMod, index, style, codepoint, trContext);
             Spritelike backSprite = texResult.getLeft();
             int brighterGlow = ColorUtils.ARGBtoHSB(glowColor)[2] > ColorUtils.ARGBtoHSB(usableColor)[2] ? glowColor : usableColor;
             SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), brighterGlow);
             texResult.getRight().run(); // cleanup if needed
-        } else {
         }
         matrices.translate(0, 0, 10);
             args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));

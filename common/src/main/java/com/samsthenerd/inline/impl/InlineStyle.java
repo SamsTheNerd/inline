@@ -74,7 +74,8 @@ public interface InlineStyle {
     ISComponent<Integer> GLOWY_PARENT_COMP = new ISComponent<>("glowyparent", Codec.INT, -1);
 
     static Style makeCopy(Style original){
-        return original.withColor(original.getColor());
+        // do it twice to get around the no change check.
+        return original.withStrikethrough(!original.isStrikethrough()).withStrikethrough(original.isStrikethrough());
     }
 
     // utility to test that codecs are working
