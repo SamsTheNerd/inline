@@ -62,7 +62,7 @@ public class EntityInlineData implements InlineData<EntityInlineData>{
 
     public HoverEvent getEntityDisplayHoverEvent(){
         return new HoverEvent(
-            HoverEvent.Action.SHOW_ITEM, 
+            HoverEvent.Action.SHOW_ITEM,
             new HoverEvent.ItemStackContent(CustomTooltipManager.getForTooltip(EntityTTProvider.INSTANCE, cradle))
         ); 
     }

@@ -38,3 +38,10 @@ config = "inline-common.mixins.json"
     versionRange="[15.0.0,)"
     ordering="NONE"
     side="CLIENT"
+
+  [[dependencies.inline]]
+    modId = "emojiful"
+    type = "incompatible"
+    versionRange = "*"
+    ordering = "NONE"
+    side = "BOTH"

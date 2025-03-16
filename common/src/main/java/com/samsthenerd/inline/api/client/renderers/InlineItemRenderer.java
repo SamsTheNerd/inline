@@ -85,7 +85,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         return 8;
     }
 
-    // TODO: handle animated items ehre
+    // TODO: handle animated items here
     @Override
     public GlowHandling getGlowPreference(ItemInlineData forData){
         // this nonsense should force it to refresh for animated sprites ?
