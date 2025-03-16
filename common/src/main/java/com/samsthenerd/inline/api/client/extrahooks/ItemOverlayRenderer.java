@@ -1,7 +1,11 @@
 package com.samsthenerd.inline.api.client.extrahooks;
 
+import com.samsthenerd.inline.impl.extrahooks.ItemOverlayManager;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
 
 public interface ItemOverlayRenderer {
     /**
@@ -17,5 +21,9 @@ public interface ItemOverlayRenderer {
      */
     default boolean isActive(ItemStack stack){
         return true;
+    }
+
+    static void registerRenderer(Item item, ItemOverlayRenderer renderer){
+        ItemOverlayManager.addRenderer(item, renderer);
     }
 }

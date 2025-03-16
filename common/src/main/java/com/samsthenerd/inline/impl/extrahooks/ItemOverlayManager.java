@@ -20,10 +20,4 @@ public class ItemOverlayManager {
     public static void addRenderer(Item item, ItemOverlayRenderer renderer){
         RENDERERS.computeIfAbsent(item, it -> new ArrayList<>()).add(renderer);
     }
-
-    public static void matrixTransform(MatrixStack ctxMat, Matrix4f posMat){
-        ctxMat.multiplyPositionMatrix(posMat);
-        ctxMat.scale(1f/16, -1f/16, 1f/16);
-        ctxMat.translate(0, -16, 0);
-    }
 }

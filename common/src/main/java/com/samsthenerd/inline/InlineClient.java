@@ -131,33 +131,28 @@ public class InlineClient {
     }
 
     private static void addExtraHookTests(){
-        ItemOverlayManager.addRenderer(Items.COOKIE, new ItemOverlayRenderer() {
-            @Override
-            public void render(ItemStack stack, DrawContext drawContext) {
-//                drawContext.fill(-100, -100, 1000, 1100, 10000, 0xFF_FFFFFF);
-//                RenderSystem.disableCull();
+        // these shouldn't be in the mod probably :p but this is how to use them.
+//        ItemOverlayManager.addRenderer(Items.COOKIE, new ItemOverlayRenderer() {
+//            @Override
+//            public void render(ItemStack stack, DrawContext drawContext) {
+//                Spritelike cookiemonster = new URLSprite("https://easydrawingguides.com/wp-content/uploads/2019/01/Cookie-Monster-10.png",
+//                    Identifier.of("cookiemonster", "cookiermonster"));
+//                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
+//            }
+//        });
 //
-//                drawContext.draw();
+//        ItemOverlayManager.addRenderer(Items.POTION, new ItemOverlayRenderer() {
+//            @Override
+//            public void render(ItemStack stack, DrawContext drawContext) {
 //
-//                RenderSystem.enableCull();
-                Spritelike cookiemonster = new URLSprite("https://easydrawingguides.com/wp-content/uploads/2019/01/Cookie-Monster-10.png",
-                    Identifier.of("cookiemonster", "cookiermonster"));
-                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
-            }
-        });
-
-        ItemOverlayManager.addRenderer(Items.POTION, new ItemOverlayRenderer() {
-            @Override
-            public void render(ItemStack stack, DrawContext drawContext) {
-
-                var effects = PotionUtil.getPotionEffects(stack);
-                if(effects.isEmpty()) return;
-                var effect = effects.get(0);
-                var effectSprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
-                Spritelike effectSpritelike = SpritelikeUtils.spritelikeFromSprite(effectSprite);
-
-                SpritelikeRenderers.getRenderer(effectSpritelike).drawSprite(effectSpritelike, drawContext, 7, 7, 100, 9, 9);
-            }
-        });
+//                var effects = PotionUtil.getPotionEffects(stack);
+//                if(effects.isEmpty()) return;
+//                var effect = effects.get(0);
+//                var effectSprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
+//                Spritelike effectSpritelike = SpritelikeUtils.spritelikeFromSprite(effectSprite);
+//
+//                SpritelikeRenderers.getRenderer(effectSpritelike).drawSprite(effectSpritelike, drawContext, 7, 7, 100, 9, 9);
+//            }
+//        });
     }
 }
