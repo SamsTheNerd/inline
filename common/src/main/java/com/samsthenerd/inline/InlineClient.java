@@ -5,13 +5,15 @@ import com.samsthenerd.inline.api.client.renderers.InlineEntityRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineItemRenderer;
 import com.samsthenerd.inline.api.client.renderers.InlineSpriteRenderer;
 import com.samsthenerd.inline.api.client.renderers.PlayerHeadRenderer;
-import com.samsthenerd.inline.api.data.*;
+import com.samsthenerd.inline.api.data.EntityInlineData;
+import com.samsthenerd.inline.api.data.ItemInlineData;
+import com.samsthenerd.inline.api.data.ModIconData;
+import com.samsthenerd.inline.api.data.PlayerHeadData;
 import com.samsthenerd.inline.api.matching.InlineMatch.DataMatch;
 import com.samsthenerd.inline.api.matching.MatcherInfo;
 import com.samsthenerd.inline.api.matching.RegexMatcher;
 import com.samsthenerd.inline.api.matching.RegexMatcher.Standard;
 import com.samsthenerd.inline.impl.ProfileComponentUtil;
-import com.samsthenerd.inline.utils.URLSprite;
 import com.samsthenerd.inline.xplat.IModMeta;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.EntityType;
@@ -33,6 +35,8 @@ public class InlineClient {
 
         addDefaultRenderers();
         addDefaultMatchers();
+
+        addExtraHookTests();
     }
 
     private static void addDefaultRenderers(){
@@ -76,17 +80,17 @@ public class InlineClient {
             return new TextMatch(linkText);
         }, MatcherInfo.fromId(linkMatcherId)));
         */
-
-        Identifier imgMatcherId = Inline.id( "imgtest");
-        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("img", "[^\\[\\]]+", imgMatcherId,
-            (String url) -> {
-                var urlId = url.chars()
-                    .mapToObj(ch -> (char)ch)
-                    .filter(c -> c != ':' && Identifier.isCharValid(c))
-                    .collect(StringBuilder::new,StringBuilder::appendCodePoint,StringBuilder::append)
-                    .toString();
-                return new DataMatch(new SpriteInlineData(new URLSprite(url, Identifier.of(urlId))));
-            }, MatcherInfo.fromId(imgMatcherId)));
+//
+//        Identifier imgMatcherId = Inline.id( "imgtest");
+//        InlineClientAPI.INSTANCE.addMatcher(new RegexMatcher.Standard("img", "[^\\[\\]]+", imgMatcherId,
+//            (String url) -> {
+//                var urlId = url.chars()
+//                    .mapToObj(ch -> (char)ch)
+//                    .filter(c -> c != ':' && Identifier.isCharValid(c))
+//                    .collect(StringBuilder::new,StringBuilder::appendCodePoint,StringBuilder::append)
+//                    .toString();
+//                return new DataMatch(new SpriteInlineData(new URLSprite(url, Identifier.of(urlId))));
+//            }, MatcherInfo.fromId(imgMatcherId)));
 
         // InlineClientAPI.INSTANCE.addMatcher(new Identifier(Inline.MOD_ID, "bolditalic"), new RegexMatcher.Simple("(?<ast>\\*{1,3})\\b([^*]+)(\\k<ast>)", (MatchResult mr) ->{
         //     String text = mr.group(2);
@@ -104,7 +108,6 @@ public class InlineClient {
             if(maybeMod.isEmpty()){
                 return null;
             }
-            // IModMeta mod = maybeMod.get();
             return new DataMatch(new ModIconData(modidLowercase), ModIconData.getTooltipStyle(modidLowercase));
         }, MatcherInfo.fromId(modMatcherId)));
 
@@ -120,5 +123,32 @@ public class InlineClient {
             PlayerHeadData headData = new PlayerHeadData(profile);
             return new DataMatch(headData, Style.EMPTY.withHoverEvent(headData.getEntityDisplayHoverEvent()));
         }, MatcherInfo.fromId(faceMatcherId)));
+    }
+
+    private static void addExtraHookTests(){
+//        ItemOverlayManager.addRenderer(Items.COOKIE, new ItemOverlayRenderer() {
+//            @Override
+//            public void render(ItemStack stack, DrawContext drawContext) {
+//                Spritelike cookiemonster = new URLSprite("https://easydrawingguides.com/wp-content/uploads/2019/01/Cookie-Monster-10.png",
+//                    Identifier.of("cookiemonster", "cookiermonster"));
+//                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
+//            }
+//        });
+//
+//        ItemOverlayManager.addRenderer(Items.POTION, new ItemOverlayRenderer() {
+//            @Override
+//            public void render(ItemStack stack, DrawContext drawContext) {
+//
+//                var potComp = stack.get(DataComponentTypes.POTION_CONTENTS);
+//                if(potComp == null) return;
+//                var effects = potComp.getEffects();
+//                if(!effects.iterator().hasNext()) return;
+//                var effect = effects.iterator().next();
+//                var effectSprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
+//                Spritelike effectSpritelike = SpritelikeUtils.spritelikeFromSprite(effectSprite);
+//
+//                SpritelikeRenderers.getRenderer(effectSpritelike).drawSprite(effectSpritelike, drawContext, 7, 7, 100, 9, 9);
+//            }
+//        });
     }
 }
