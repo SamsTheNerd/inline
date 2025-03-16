@@ -1,5 +1,6 @@
 package com.samsthenerd.inline.mixin.core;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.samsthenerd.inline.impl.InlineStyle;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 @Mixin(Style.Codecs.class)
 public class MixinInlineStyleSerializer {
     @Shadow @Final @Mutable public static MapCodec<Style> MAP_CODEC;
+    @Shadow @Final @Mutable public static Codec<Style> CODEC;
 
     @Unique
     private static MapCodec<Style> INLINE_CODEC;
@@ -36,5 +38,6 @@ public class MixinInlineStyleSerializer {
         );
 
         MAP_CODEC = INLINE_CODEC;
+        CODEC = MAP_CODEC.codec();
     }
 }
