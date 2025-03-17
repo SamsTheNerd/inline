@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // so much of this is yoinked from hexdebug, thanks kyra
-RELEASE_BRANCHES = ["main"]
+RELEASE_BRANCHES = ["1.20.1"]
 
 pipeline {
     agent any
