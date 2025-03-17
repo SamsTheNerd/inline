@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- Support for animated sprites in spritelike system
+- Render hook for rendering over items in GUI
+- Sprite renderer color toggle
+
 ## 1.0.2
 
 ### Fixed
