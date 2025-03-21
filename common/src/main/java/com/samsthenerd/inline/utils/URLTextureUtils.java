@@ -63,20 +63,17 @@ public class URLTextureUtils {
                     InputStream stream = conn.getInputStream();
                     // Inline.logPrint("in thread maybe ?");
                     NativeImage baseImage = NativeImage.read(stream);
-                    NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
-                    Runnable registerTextureRunnable = () -> {
+                    MinecraftClient.getInstance().execute(() -> {
+                        NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
+
                         MinecraftClient.getInstance().getTextureManager()
-                            .registerTexture(textureId, texture);
+                          .registerTexture(textureId, texture);
                         LOADED_TEXTURES.put(textureId, textureId);
                         TEXTURE_INFO.put(textureId, new Pair<>(
-                                new IntPair(baseImage.getWidth(), baseImage.getHeight()),
-                                SpriteUVRegion.FULL.asLens()
-                            ));
+                          new IntPair(baseImage.getWidth(), baseImage.getHeight()),
+                          SpriteUVRegion.FULL.asLens()
+                        ));
                         IN_PROGRESS_TEXTURES.remove(textureId);
-                    };
-                    MinecraftClient.getInstance().execute(() -> {
-                        Objects.requireNonNull(registerTextureRunnable);
-                        RenderSystem.recordRenderCall(registerTextureRunnable::run);
                     });
                 } else if("image/gif".equals(contentType)){
                     var byBuf = TextureUtil.readResource(conn.getInputStream());
