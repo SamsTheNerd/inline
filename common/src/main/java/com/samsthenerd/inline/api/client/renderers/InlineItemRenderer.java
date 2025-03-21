@@ -6,7 +6,6 @@ import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -49,19 +48,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             return 8;
         }
         BakedModel bakedModel = client.getItemRenderer().getModel(stack, world, null, 0);
-        boolean flat = !bakedModel.isSideLit();
-        /*
-         * here we do a bunch of garbage to make lighting work as nicely as possible in-game.
-         *
-         * the main issue is that DiffuseLighting.disableGuiDepthLighting() messes up the game's lighting but is needed
-         * to make an item look Right when rendered in a flat UI.
-         *
-         * First we check that it's flat and that the layer type is normal (all UI text rendering seems to use this?)
-         * Then we check that the position matrix at the top is flat.
-         */
-        if (flat && InlineRenderer.isFlat(matrices, trContext.layerType())) {
-            DiffuseLighting.disableGuiDepthLighting();
-        }
+
         matrices.push();
         matrices.translate(4, 4, 0);
         try {

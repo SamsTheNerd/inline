@@ -40,6 +40,23 @@ public class InlineSpriteRenderer implements InlineRenderer<SpriteInlineData>{
         return (int)Math.ceil(whRatio * 8);
     }
 
+    @Override
+    public void preRender(SpriteInlineData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext) {
+        if (data == null || data.sprite == null) return;
+        SpriteUVRegion uvs = data.sprite.getUVs();
+        double height = uvs.vHeight() * data.sprite.getTextureHeight();
+        if (height == 0) {
+            return;
+        }
+        double width = uvs.uWidth() * data.sprite.getTextureWidth();
+        float whRatio = (float) (width / height);
+        MatrixStack matrices = context.getMatrices();
+        matrices.translate(0, 0, 1);
+        RenderSystem.enableDepthTest();
+        SpritelikeRenderers.getRenderer(data.sprite).drawSpriteWithEntityTranslucent(data.sprite, context, 0, 0, 0, 8 * whRatio, 8, trContext.light(),
+          data.shouldTint ? trContext.usableColor() : 0xFFFFFFFF);
+    }
+
     public int charWidth(SpriteInlineData data, Style style, int codepoint){
         if(data == null || data.sprite == null) return 0;
         SpriteUVRegion uvs = data.sprite.getUVs();

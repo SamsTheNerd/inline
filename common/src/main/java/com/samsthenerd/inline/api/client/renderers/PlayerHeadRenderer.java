@@ -60,6 +60,22 @@ public class PlayerHeadRenderer implements InlineRenderer<PlayerHeadData>{
     }
 
     @Override
+    public void preRender(PlayerHeadData data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext) {
+        SpriteInlineData faceSpriteData = getFace(data);
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(0.25, 0.25, 0);
+        matrices.scale(8/(float)8.5, 8/(float)8.5,1);
+        InlineSpriteRenderer.INSTANCE.preRender(faceSpriteData, context, index, style, codepoint, trContext);
+        matrices.pop();
+        SpriteInlineData outerSpriteData = getOuter(data);
+        matrices.push();
+        matrices.translate(0, 0, 10);
+        InlineSpriteRenderer.INSTANCE.preRender(outerSpriteData, context, index, style, codepoint, trContext);
+        matrices.pop();
+    }
+
+    @Override
     public int charWidth(PlayerHeadData data, Style style, int codepoint){
         return 8;
     }

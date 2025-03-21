@@ -2,6 +2,7 @@ package com.samsthenerd.inline.mixin.core;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.client.InlineClientAPI;
 import com.samsthenerd.inline.api.client.InlineRenderer;
@@ -71,13 +72,14 @@ public class MixinTextWiden {
 
     @WrapOperation(
             method="drawWithOutline(Lnet/minecraft/text/OrderedText;FFIILorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-            at=@At(value="INVOKE", target="Lnet/minecraft/text/OrderedText;accept(Lnet/minecraft/text/CharacterVisitor;)Z")
+            at=@At(value="INVOKE", target="Lnet/minecraft/text/OrderedText;accept(Lnet/minecraft/text/CharacterVisitor;)Z", ordinal = 1)
     )
     private boolean MarkTextParentGlowy(OrderedText originalText, CharacterVisitor visitor, Operation<Boolean> originalOp,
-                                            // parent method params so we can get outlineColor
-                                            OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light){
+                                        // parent method params so we can get outlineColor
+                                        OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light,
+                                        @Local(ordinal = 3) int adjustedOutlineColor){
         CharacterVisitor markedVisitor = (int index, Style style, int codePoint) ->
-                visitor.accept(index, style.withComponent(InlineStyle.GLOWY_PARENT_COMP, outlineColor), codePoint);
+                visitor.accept(index, style.withComponent(InlineStyle.GLOWY_PARENT_COMP, adjustedOutlineColor), codePoint);
         return originalOp.call(originalText, markedVisitor);
     }
 
