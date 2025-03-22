@@ -76,10 +76,9 @@ public class MixinTextWiden {
     )
     private boolean MarkTextParentGlowy(OrderedText originalText, CharacterVisitor visitor, Operation<Boolean> originalOp,
                                         // parent method params so we can get outlineColor
-                                        OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light,
-                                        @Local(ordinal = 3) int adjustedOutlineColor){
+                                        OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light){
         CharacterVisitor markedVisitor = (int index, Style style, int codePoint) ->
-                visitor.accept(index, style.withComponent(InlineStyle.GLOWY_PARENT_COMP, adjustedOutlineColor), codePoint);
+                visitor.accept(index, style.withComponent(InlineStyle.GLOWY_PARENT_COMP, outlineColor), codePoint);
         return originalOp.call(originalText, markedVisitor);
     }
 
