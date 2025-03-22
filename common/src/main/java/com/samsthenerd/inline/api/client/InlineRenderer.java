@@ -55,6 +55,20 @@ public interface InlineRenderer<D extends InlineData<D>> {
     int render(D data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext);
 
     /**
+     * The same as {@link #render}. Used to get the texture into memory for the outline to work. Can be overriden if needed in case {@link #render} isn't enough for the outline to work.
+     * @param data the data to render.
+     * @param context a {@link DrawContext} with a {@link MatrixStack} set to the correct
+     * position for this character and with a {@link VertexConsumerProvider} for rendering to.
+     * @param index the index of this character in the overall string.
+     * @param style the style attached to the text.
+     * @param codepoint the unicode codepoint for this character.
+     * @param trContext a collection of values taken from the text renderer.
+     */
+    default void preRender(D data, DrawContext context, int index, Style style, int codepoint, TextRenderingContext trContext) {
+        render(data, context, index, style, codepoint, trContext);
+    }
+
+    /**
      * Gets the width of the render without doing the rendering.
      * @param data the data to render.
      * @param style the style attached to the text.

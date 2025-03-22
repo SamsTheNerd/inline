@@ -11,6 +11,7 @@
     "core.MixinInlineParsing",
     "core.MixinInlineRendering",
     "core.MixinItemOverlayHook",
+    "core.MixinItemRenderer",
     "core.MixinSetTessBuffer",
     "core.MixinTextWiden",
     "core.NativeImageAccessor",

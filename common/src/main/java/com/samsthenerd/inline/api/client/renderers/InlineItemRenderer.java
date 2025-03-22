@@ -4,9 +4,9 @@ import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
+import com.samsthenerd.inline.impl.TextItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -49,25 +49,13 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
             return 8;
         }
         BakedModel bakedModel = client.getItemRenderer().getModel(stack, world, null, 0);
-        boolean flat = !bakedModel.isSideLit();
-        /*
-         * here we do a bunch of garbage to make lighting work as nicely as possible in-game.
-         *
-         * the main issue is that DiffuseLighting.disableGuiDepthLighting() messes up the game's lighting but is needed
-         * to make an item look Right when rendered in a flat UI.
-         *
-         * First we check that it's flat and that the layer type is normal (all UI text rendering seems to use this?)
-         * Then we check that the position matrix at the top is flat.
-         */
-        if (flat && InlineRenderer.isFlat(matrices, trContext.layerType())) {
-            DiffuseLighting.disableGuiDepthLighting();
-        }
+
         matrices.push();
         matrices.translate(4, 4, 0);
         try {
             matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
             matrices.scale(8.0f, 8.0f, 8f);
-            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
+            ((TextItemRenderer) client.getItemRenderer()).inline$renderTextItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
             context.getVertexConsumers().draw();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");

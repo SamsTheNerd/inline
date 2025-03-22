@@ -31,43 +31,76 @@ public class SpritelikeRenderers {
     }
 
     public static class SpritelikeRenderer{
-        public void drawSpriteWithLight(Spritelike sprite, DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb) {
+        public void drawSpriteWithEntityTranslucent(Spritelike sprite, DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb) {
             Identifier texture = sprite.getTextureId();
             if(texture == null) return;
             RenderSystem.setShaderTexture(0, texture);
-            RenderSystem.setShader(GameRenderer::getRenderTypeEntityTranslucentProgram);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
             RenderLayer renderLayer = RenderLayer.getEntityTranslucent(texture);
             VertexConsumer vc = ctx.getVertexConsumers().getBuffer(renderLayer);
             SpriteUVRegion uvs = sprite.getUVs();
             vc.vertex(matrix4f, x, y, z)
-                .color(argb)
-                .texture((float)uvs.minU(), (float)uvs.minV())
-                .overlay(OverlayTexture.DEFAULT_UV)
-                .light(light)
-                .normal(ctx.getMatrices().peek(), 0, 0, 1f)
-                ;
+              .color(argb)
+              .texture((float)uvs.minU(), (float)uvs.minV())
+              .overlay(OverlayTexture.DEFAULT_UV)
+              .light(light)
+              .normal(ctx.getMatrices().peek(), 0, 0, 1f)
+            ;
             vc.vertex(matrix4f, x, y+height, z)
-                .color(argb)
-                .texture((float)uvs.minU(), (float)uvs.maxV())
-                .overlay(OverlayTexture.DEFAULT_UV)
-                .light(light)
-                .normal(ctx.getMatrices().peek(), 0, 0, 1f)
-                ;
+              .color(argb)
+              .texture((float)uvs.minU(), (float)uvs.maxV())
+              .overlay(OverlayTexture.DEFAULT_UV)
+              .light(light)
+              .normal(ctx.getMatrices().peek(), 0, 0, 1f)
+            ;
             vc.vertex(matrix4f, x+width, y+height, z)
-                .color(argb)
-                .texture((float)uvs.maxU(), (float)uvs.maxV())
-                .overlay(OverlayTexture.DEFAULT_UV)
-                .light(light)
-                .normal(ctx.getMatrices().peek(), 0, 0, 1f)
-                ;
+              .color(argb)
+              .texture((float)uvs.maxU(), (float)uvs.maxV())
+              .overlay(OverlayTexture.DEFAULT_UV)
+              .light(light)
+              .normal(ctx.getMatrices().peek(), 0, 0, 1f)
+            ;
             vc.vertex(matrix4f, x+width, y, z)
-                .color(argb)
-                .texture((float)uvs.maxU(), (float)uvs.minV())
-                .overlay(OverlayTexture.DEFAULT_UV)
-                .light(light)
-                .normal(ctx.getMatrices().peek(), 0, 0, 1f)
-                ;
+              .color(argb)
+              .texture((float)uvs.maxU(), (float)uvs.minV())
+              .overlay(OverlayTexture.DEFAULT_UV)
+              .light(light)
+              .normal(ctx.getMatrices().peek(), 0, 0, 1f)
+            ;
+
+            ctx.getVertexConsumers().draw(renderLayer);
+        }
+
+        public void drawSpriteWithLight(Spritelike sprite, DrawContext ctx, float x, float y, float z, float width, float height, int light, int argb) {
+            Identifier texture = sprite.getTextureId();
+            if(texture == null) return;
+            RenderSystem.setShaderTexture(0, texture);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            Matrix4f matrix4f = ctx.getMatrices().peek().getPositionMatrix();
+            RenderLayer renderLayer = RenderLayer.getText(texture);
+            VertexConsumer vc = ctx.getVertexConsumers().getBuffer(renderLayer);
+            SpriteUVRegion uvs = sprite.getUVs();
+            vc.vertex(matrix4f, x, y, z)
+              .color(argb)
+              .texture((float)uvs.minU(), (float)uvs.minV())
+              .light(light)
+            ;
+            vc.vertex(matrix4f, x, y+height, z)
+              .color(argb)
+              .texture((float)uvs.minU(), (float)uvs.maxV())
+              .light(light)
+            ;
+            vc.vertex(matrix4f, x+width, y+height, z)
+              .color(argb)
+              .texture((float)uvs.maxU(), (float)uvs.maxV())
+              .light(light)
+            ;
+            vc.vertex(matrix4f, x+width, y, z)
+              .color(argb)
+              .texture((float)uvs.maxU(), (float)uvs.minV())
+              .light(light)
+            ;
 
             ctx.getVertexConsumers().draw(renderLayer);
         }

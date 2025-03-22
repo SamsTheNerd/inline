@@ -18,7 +18,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
@@ -77,7 +76,7 @@ public class InlineRenderCore {
 
         // only handle sizing here if sizing exists, renderer won't handle it, and player config says it's ok
         double maxSizeMod = InlineClientAPI.INSTANCE.getConfig().maxChatSizeModifier();
-        if(sizeMod > maxSizeMod && com.samsthenerd.inline.api.client.InlineRenderer.isFlat(matrices, args.layerType) && com.samsthenerd.inline.api.client.InlineRenderer.isChatty()) sizeMod = maxSizeMod;
+        if(sizeMod > maxSizeMod && InlineRenderer.isFlat(matrices, args.layerType) && InlineRenderer.isChatty()) sizeMod = maxSizeMod;
 
         boolean needToHandleSize = sizeMod != 1.0 && !renderer.handleOwnSizing(inlData);
 
@@ -106,17 +105,10 @@ public class InlineRenderCore {
             RenderSystem.setShaderColor(1, 1, 1, alphaToUse);
         }
 
-        if (InlineRenderer.isFlat(matrices, trContext.layerType())) {
-            DiffuseLighting.disableGuiDepthLighting();
-        } else {
-            DiffuseLighting.enableGuiDepthLighting();
-        }
-
         if(needsGlowChildren){
             Pair<Spritelike, Runnable> texResult = getGlowTextureSprite(inlData, renderer, immToUse, sizeMod, index, style, codepoint, trContext);
             Spritelike backSprite = texResult.getLeft();
-            int brighterGlow = ColorUtils.ARGBtoHSB(glowColor)[2] > ColorUtils.ARGBtoHSB(usableColor)[2] ? glowColor : usableColor;
-            SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), brighterGlow);
+            SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), glowColor);
             texResult.getRight().run(); // cleanup if needed
         }
         matrices.translate(0, 0, 10);
@@ -187,7 +179,7 @@ public class InlineRenderCore {
         glowStack.translate(2*resScale, 4 * resScale, -50);
         glowStack.scale(resScale, resScale, 1f);
         glowStack.multiplyPositionMatrix(new Matrix4f().scale(1, 1, 0.01f));
-        float xOffsetDiff = renderer.render(inlData, glowContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f);
+        renderer.preRender(inlData, glowContext, index, style, codepoint, trContext);
 //            args.xUpdater().addAndGet(xOffsetDiff);
 
         immToUse.draw();
