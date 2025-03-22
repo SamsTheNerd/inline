@@ -4,6 +4,7 @@ import com.samsthenerd.inline.Inline;
 import com.samsthenerd.inline.api.client.GlowHandling;
 import com.samsthenerd.inline.api.client.InlineRenderer;
 import com.samsthenerd.inline.api.data.ItemInlineData;
+import com.samsthenerd.inline.impl.TextItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.OverlayTexture;
@@ -54,7 +55,7 @@ public class InlineItemRenderer implements InlineRenderer<ItemInlineData>{
         try {
             matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
             matrices.scale(8.0f, 8.0f, 8f);
-            client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
+            ((TextItemRenderer) client.getItemRenderer()).inline$renderTextItem(stack, ModelTransformationMode.GUI, false, matrices, context.getVertexConsumers(), trContext.light(), OverlayTexture.DEFAULT_UV, bakedModel);
             context.getVertexConsumers().draw();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
