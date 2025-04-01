@@ -32,12 +32,16 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 public class InlineRenderCore {
 
     private static SimpleFramebuffer GLOW_BUFF = new SimpleFramebuffer(128, 128, true, MinecraftClient.IS_SYSTEM_MAC);
+
+    private static Set<Identifier> ERRORED_RENDERERS = new HashSet<>();
 
     public static boolean textDrawerAcceptHandler(int index, Style style, int codepoint, RenderArgs args) {
         InlineData inlData = style.getInlineData();
@@ -108,18 +112,25 @@ public class InlineRenderCore {
             RenderSystem.setShaderColor(1, 1, 1, alphaToUse);
         }
 
-        if(needsGlowChildren){
-            Pair<Spritelike, Runnable> texResult = getGlowTextureSprite(inlData, renderer, immToUse, sizeMod, index, style, codepoint, trContext);
-            Spritelike backSprite = texResult.getLeft();
-            int brighterGlow = ColorUtils.ARGBtoHSB(glowColor)[2] > ColorUtils.ARGBtoHSB(usableColor)[2] ? glowColor : usableColor;
-            SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), brighterGlow);
-            texResult.getRight().run(); // cleanup if needed
+        try {
+            if(needsGlowChildren){
+                Pair<Spritelike, Runnable> texResult = getGlowTextureSprite(inlData, renderer, immToUse, sizeMod, index, style, codepoint, trContext);
+                Spritelike backSprite = texResult.getLeft();
+                int brighterGlow = ColorUtils.ARGBtoHSB(glowColor)[2] > ColorUtils.ARGBtoHSB(usableColor)[2] ? glowColor : usableColor;
+                SpritelikeRenderers.getRenderer(backSprite).drawSpriteWithLight(backSprite, drawContext, -2, -4, 0, 16, 16, trContext.light(), brighterGlow);
+                texResult.getRight().run(); // cleanup if needed
+            }
+            matrices.translate(0, 0, 10);
+                args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
+
+            immToUse.draw();
+        } catch(Exception e){
+            if(ERRORED_RENDERERS.add(inlData.getRendererId())){
+                Inline.LOGGER.error("Error rendering inline with renderer: " + inlData.getRendererId().toString()
+                    + " -- To prevent logspam this will only show once. This is likely an issue with whatever mod adds the renderer.");
+            }
         }
-        matrices.translate(0, 0, 10);
-            args.xUpdater().addAndGet(renderer.render(inlData, drawContext, index, style, codepoint, trContext) * (needToHandleSize ? (float)sizeMod : 1f));
 
-
-        immToUse.draw();
 
         if(!renderer.handleOwnTransparency(inlData)){
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
