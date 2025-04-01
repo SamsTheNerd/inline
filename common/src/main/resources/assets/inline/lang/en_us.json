@@ -1,5 +1,7 @@
 {
 
+    "ui.inline.nothingtoshowoff": "Nothing to showoff",
+
     "config.inline.title": "Inline",
     "config.inline.category.matchers": "Matchers",
     "config.inline.category.extras": "Extras",
