@@ -47,6 +47,7 @@ Inline renders can be used on the create display boards. Due to some limitations
 ### Serverside
 
 Server-side matchers match against `[show:hand]` or `[show:offhand]` to show off your currently held item in chat.
+As of 1.1.1 you can also use `[show:<slot>]` where `<slot>` is head, chest, legs, or feet.
 
 ## Known Mod Conflicts
 - Emojiful - due to them replacing the text renderer, preventing inline's mixins from applying.

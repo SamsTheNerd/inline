@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1
+
+### Fixed
+
+- showoff hand packet issue
+- mild off thread rendering
+- uncaught potential renderer exceptions
+
+### Changed
+
+- showoff now accepts any equipmentslot (ie head, chest, legs, etc)
+
 ## 1.1.0
 
 ### Added
