@@ -18,7 +18,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
@@ -68,11 +67,14 @@ public class InlineRenderCore {
 
         double sizeMod = style.getComponent(InlineStyle.SIZE_MODIFIER_COMP);
 
-//        matrices.multiply(args.matrix().getUnnormalizedRotation(new Quaternionf()).normalize());
+        // note that we need to deal with position before normals now bc of matrixstack change.
         matrices.multiplyPositionMatrix(args.matrix());
+        matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
         // there's almost certainly a better way to do this, but we're just flipping the y and z axes
         matrices.peek().getNormalMatrix().mul(new Matrix3f(1, 0, 0, 0, 0, 1, 0, 1, 0));
-        matrices.multiplyPositionMatrix(new Matrix4f().scale(1f, 1f, 0.001f));
+        // then inverting. idk why this is necessary.
+        matrices.peek().getNormalMatrix().scale(-1);
+
         matrices.translate(args.x(), args.y(), 0);
 
         // only handle sizing here if sizing exists, renderer won't handle it, and player config says it's ok
@@ -104,12 +106,6 @@ public class InlineRenderCore {
 
         if(!renderer.handleOwnTransparency(inlData)){
             RenderSystem.setShaderColor(1, 1, 1, alphaToUse);
-        }
-
-        if (InlineRenderer.isFlat(matrices, trContext.layerType())) {
-            DiffuseLighting.disableGuiDepthLighting();
-        } else {
-            DiffuseLighting.enableGuiDepthLighting();
         }
 
         if(needsGlowChildren){
