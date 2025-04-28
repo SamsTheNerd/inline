@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+### Changed
+
+- Item overlay API improvements & global renderers.
+
 ## 1.1.1
 
 ### Fixed
