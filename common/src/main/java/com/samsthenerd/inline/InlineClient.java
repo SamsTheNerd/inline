@@ -134,6 +134,14 @@ public class InlineClient {
 //                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
 //            }
 //        });
+//        ItemOverlayManager.addRenderer(Items.CHEST, new ItemOverlayRenderer() {
+//            @Override
+//            public void render(ItemStack stack, DrawContext drawContext) {
+//                Spritelike cookiemonster = new URLSprite("https://easydrawingguides.com/wp-content/uploads/2019/01/Cookie-Monster-10.png",
+//                    Identifier.of("cookiemonster", "cookiermonster"));
+//                SpritelikeRenderers.getRenderer(cookiemonster).drawSprite(cookiemonster, drawContext, 0, 6, 100, 10, 10);
+//            }
+//        });
 //
 //        ItemOverlayManager.addRenderer(Items.POTION, new ItemOverlayRenderer() {
 //            @Override
