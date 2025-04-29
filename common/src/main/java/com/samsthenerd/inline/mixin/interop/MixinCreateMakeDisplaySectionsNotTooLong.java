@@ -18,7 +18,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 @Pseudo
-@Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer")
+@Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer", remap = false)
 public class MixinCreateMakeDisplaySectionsNotTooLong {
 
     @Unique
@@ -33,19 +33,22 @@ public class MixinCreateMakeDisplaySectionsNotTooLong {
     }
 
     @WrapOperation(
-            method="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer;renderSafe(Lcom/simibubi/create/content/trains/display/FlapDisplayBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
-            at=@At(value="INVOKE", target="Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", ordinal=0),
+//            method="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer;renderSafe(Lcom/simibubi/create/content/trains/display/FlapDisplayBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
+            method="renderSafe",
+            at=@At(value="INVOKE", target="Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", ordinal=0, remap = true),
             slice=@Slice(
-                    from=@At(value="INVOKE", target="Lnet/minecraft/text/TextVisitFactory;visitFormatted(Ljava/lang/String;Lnet/minecraft/text/Style;Lnet/minecraft/text/CharacterVisitor;)Z")
-            )
+                    from=@At(value="INVOKE", target="Lnet/minecraft/text/TextVisitFactory;visitFormatted(Ljava/lang/String;Lnet/minecraft/text/Style;Lnet/minecraft/text/CharacterVisitor;)Z", remap = true)
+            ), remap = false
     )
     private void makeTranslateNotMove(MatrixStack stack, float x, float y, float z, Operation<Void> translateOp, @Share("takeitbacknowyall") LocalFloatRef backRef){
         translateOp.call(stack,x - backRef.get(), y, z);
     }
 
     @WrapOperation(
-            method="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer;renderSafe(Lcom/simibubi/create/content/trains/display/FlapDisplayBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
-            at=@At(value="INVOKE", target="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer$FlapDisplayRenderOutput;nextSection(Lcom/simibubi/create/content/trains/display/FlapDisplaySection;)V")
+//            method="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer;renderSafe(Lcom/simibubi/create/content/trains/display/FlapDisplayBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
+            method="renderSafe",
+            at=@At(value="INVOKE", target="Lcom/simibubi/create/content/trains/display/FlapDisplayRenderer$FlapDisplayRenderOutput;nextSection(Lcom/simibubi/create/content/trains/display/FlapDisplaySection;)V"),
+            remap = false
     )
     private void catchSection(@Coerce Object renderOutput, @Coerce Object nextSection, Operation<Void> actualOp, @Share("takeitbacknowyall") LocalFloatRef backRef){
         if(InlineClientAPI.INSTANCE.getConfig().shouldDoCreateMixins()) {

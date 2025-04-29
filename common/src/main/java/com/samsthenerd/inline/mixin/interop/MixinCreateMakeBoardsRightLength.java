@@ -31,6 +31,7 @@ public class MixinCreateMakeBoardsRightLength {
 
     @WrapOperation(
             method="Lcom/simibubi/create/content/trains/display/FlapDisplaySection;refresh(Z)V",
+            remap = false,
             at=@At(value="INVOKE", target="Ljava/lang/Math;min(II)I")
     )
     private int getInlineBasedTextLength(int spinningLength, int origLength, Operation<Integer> minOp, @Local LocalRef<String> textRef){
@@ -63,6 +64,7 @@ public class MixinCreateMakeBoardsRightLength {
 
     @WrapOperation(
             method="Lcom/simibubi/create/content/trains/display/FlapDisplaySection;refresh(Z)V",
+            remap = false,
             at=@At(value="INVOKE", target="Ljava/lang/String;charAt(I)C")
     )
     private char getSafeCharAt(String maybeOldText, int idx, Operation<Character> opCharAt){

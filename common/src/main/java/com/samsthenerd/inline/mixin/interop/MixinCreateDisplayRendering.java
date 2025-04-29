@@ -6,7 +6,6 @@ import com.samsthenerd.inline.impl.InlineRenderCore;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Style;
-import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer$FlapDisplayRenderOutput")
+@Mixin(targets="com.simibubi.create.content.trains.display.FlapDisplayRenderer$FlapDisplayRenderOutput", remap = false)
 public class MixinCreateDisplayRendering {
     @Final @Shadow VertexConsumerProvider bufferSource;
     @Final @Shadow float r, g, b, a;
@@ -27,7 +26,10 @@ public class MixinCreateDisplayRendering {
     @Shadow float x;
     @Shadow private int lineIndex;
 
-    @Inject(method = "accept(ILnet/minecraft/text/Style;I)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(
+//        method = "accept(ILnet/minecraft/text/Style;I)Z"
+        method = "accept"
+        , at = @At("HEAD"), cancellable = true, remap = false)
     private void InlineCreateRenderDrawerAccept(int index, Style style, int codepoint, CallbackInfoReturnable<Boolean> cir) {
         if(!InlineClientAPI.INSTANCE.getConfig().shouldDoCreateMixins()){
             return;
