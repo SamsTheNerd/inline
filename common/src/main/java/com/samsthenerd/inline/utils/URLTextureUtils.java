@@ -1,19 +1,7 @@
 package com.samsthenerd.inline.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.samsthenerd.inline.Inline;
-
 import com.samsthenerd.inline.mixin.core.NativeImageAccessor;
 import com.samsthenerd.inline.utils.SpriteUVLens.AnimUVLens;
 import net.minecraft.client.MinecraftClient;
@@ -27,12 +15,14 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class URLTextureUtils {
@@ -46,7 +36,7 @@ public class URLTextureUtils {
 
     // informed by hellozyemlya on discord
     @Nullable
-    public static Identifier loadTextureFromURL(String url, Identifier textureId){
+    public static Identifier loadTextureFromURL(String urlStr, Identifier textureId){
         Identifier maybeTexture = LOADED_TEXTURES.get(textureId);
         if(maybeTexture != null){
             return maybeTexture;
@@ -56,36 +46,49 @@ public class URLTextureUtils {
         // Inline.logPrint("Loading texture from URL: " + url);
         CompletableFuture.runAsync(() -> {
             try{
-                URL textureUrl = new URL(url);
+                URL textureUrl = URI.create(urlStr).toURL();
                 var conn = textureUrl.openConnection();
-                String contentType = conn.getContentType();
-                if("image/png".equals(contentType)){
-                    InputStream stream = conn.getInputStream();
-                    // Inline.logPrint("in thread maybe ?");
-                    NativeImage baseImage = NativeImage.read(stream);
-                    MinecraftClient.getInstance().execute(() -> {
-                        NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
+                InputStream stream = conn.getInputStream();
 
-                        MinecraftClient.getInstance().getTextureManager()
-                          .registerTexture(textureId, texture);
-                        LOADED_TEXTURES.put(textureId, textureId);
-                        TEXTURE_INFO.put(textureId, new Pair<>(
-                          new IntPair(baseImage.getWidth(), baseImage.getHeight()),
-                          SpriteUVRegion.FULL.asLens()
-                        ));
-                        IN_PROGRESS_TEXTURES.remove(textureId);
-                    });
-                } else if("image/gif".equals(contentType)){
-                    var byBuf = TextureUtil.readResource(conn.getInputStream());
-//                    var byBuf = ByteBuffer.wrap(conn.getInputStream().readAllBytes());
-                    byBuf.rewind();
-                    readGif(textureId, byBuf);
-                } else {
-                    Inline.LOGGER.error("Unknown image type at url: " + url);
+                String contentType = URLConnection.guessContentTypeFromStream(stream);
+                if(contentType == null) contentType = conn.getContentType();
+                switch(contentType){
+                    case "image/png": {
+                        NativeImage baseImage = NativeImage.read(stream);
+                        MinecraftClient.getInstance().execute(() -> {
+                            NativeImageBackedTexture texture = new NativeImageBackedTexture(baseImage);
+
+                            MinecraftClient.getInstance().getTextureManager()
+                                .registerTexture(textureId, texture);
+                            LOADED_TEXTURES.put(textureId, textureId);
+                            TEXTURE_INFO.put(textureId, new Pair<>(
+                                new IntPair(baseImage.getWidth(), baseImage.getHeight()),
+                                SpriteUVRegion.FULL.asLens()
+                            ));
+                            IN_PROGRESS_TEXTURES.remove(textureId);
+                        });
+                        break;
+                    }
+                    case "image/gif": {
+                        var byBuf = TextureUtil.readResource(conn.getInputStream());
+                        byBuf.rewind();
+                        readGif(textureId, byBuf);
+                        break;
+                    }
+                    case null:
+                    default: {
+                        try{
+                            var byBuf = TextureUtil.readResource(conn.getInputStream());
+                            byBuf.rewind();
+                            readImageSTB(textureId, byBuf);
+                        } catch (Exception e){
+                            Inline.LOGGER.error("Unable to load image at URL:" + textureUrl
+                            + "\n\t" + "Likely an unknown image type \"" + contentType + "\"");
+                        }
+                    }
                 }
-
             } catch (Exception e){
-                Inline.LOGGER.error("Failed to load texture from URL: " + url + "\n:" + e);
+                Inline.LOGGER.error("Failed to load texture from URL: " + urlStr + "\n:" + e);
             }
             });
         return null;
@@ -141,6 +144,52 @@ public class URLTextureUtils {
             Pair<IntPair, SpriteUVLens> textInfo = new Pair<>(
                 new IntPair(wBuf.get(0), hBuf.get(0) * framesBuf.get(0)),
                 new AnimUVLens(1.0/framesBuf.get(0), true, delays)
+            );
+
+            MinecraftClient.getInstance().execute(() -> {
+//                var actualId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(loc.toTranslationKey(), tex);
+                MinecraftClient.getInstance().getTextureManager().registerTexture(loc, tex);
+                LOADED_TEXTURES.put(loc, loc);
+                TEXTURE_INFO.put(loc, textInfo);
+                IN_PROGRESS_TEXTURES.remove(loc);
+            });
+            return textInfo;
+        }
+    }
+
+    public static Pair<IntPair, SpriteUVLens> readImageSTB(Identifier loc, ByteBuffer buf) throws IOException{
+        NativeImage image;
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            IntBuffer wBuf = memoryStack.mallocInt(1);
+            IntBuffer hBuf = memoryStack.mallocInt(1);
+            IntBuffer channelsBuf = memoryStack.mallocInt(1);
+            ByteBuffer imageBuf = STBImage.stbi_load_from_memory(
+                buf,
+                wBuf,
+                hBuf,
+                channelsBuf,
+                4
+            );
+            if (imageBuf == null) {
+                throw new IOException("Could not load image here: " + STBImage.stbi_failure_reason());
+            }
+
+            image = new NativeImage(
+                wBuf.get(0),
+                hBuf.get(0),
+                true
+            );
+            MemoryUtil.memCopy(
+                MemoryUtil.memAddress(imageBuf),
+                ((NativeImageAccessor) (Object) image).getPointer(),
+                (long) wBuf.get(0) * hBuf.get(0) * 4
+            );
+
+            var tex = new NativeImageBackedTexture(image);
+
+            Pair<IntPair, SpriteUVLens> textInfo = new Pair<>(
+                new IntPair(wBuf.get(0), hBuf.get(0)),
+                SpriteUVRegion.FULL.asLens()
             );
 
             MinecraftClient.getInstance().execute(() -> {
