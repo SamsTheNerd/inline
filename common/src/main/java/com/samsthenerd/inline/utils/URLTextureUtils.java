@@ -10,6 +10,8 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.nanovg.NSVGImage;
+import org.lwjgl.nanovg.NanoSVG;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -24,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 public class URLTextureUtils {
 
@@ -70,9 +73,19 @@ public class URLTextureUtils {
                         break;
                     }
                     case "image/gif": {
-                        var byBuf = TextureUtil.readResource(conn.getInputStream());
+                        ByteBuffer byBuf = TextureUtil.readResource(conn.getInputStream());
                         byBuf.rewind();
                         readGif(textureId, byBuf);
+                        break;
+                    }
+                    case "image/svg+xml": {
+//                        String svgXml = new String(conn.getInputStream().readAllBytes());
+                        ByteBuffer byBuf = TextureUtil.readResource(conn.getInputStream());
+                        byBuf.rewind();
+                        readSVG(textureId, byBuf, (w, h) -> {
+                            float scale = Math.min(256 / w, 256 / h);
+                            return Math.round(w * scale);
+                        });
                         break;
                     }
                     case null:
@@ -132,11 +145,7 @@ public class URLTextureUtils {
                 ((NativeImageAccessor) (Object) image).getPointer(),
                 (long) wBuf.get(0) * hBuf.get(0) * framesBuf.get(0) * 4
             );
-//
-//
-//            var cutImageBuff = imageBuf.slice(0, wBuf.get(0) * hBuf.get(0) * framesBuf.get(0) * 4);
-//            image = NativeImage.read(cutImageBuff);
-////
+
             var tex = new NativeImageBackedTexture(image);
 
             var delays = new int[framesBuf.get(0)];
@@ -193,13 +202,82 @@ public class URLTextureUtils {
             );
 
             MinecraftClient.getInstance().execute(() -> {
-//                var actualId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(loc.toTranslationKey(), tex);
                 MinecraftClient.getInstance().getTextureManager().registerTexture(loc, tex);
                 LOADED_TEXTURES.put(loc, loc);
                 TEXTURE_INFO.put(loc, textInfo);
                 IN_PROGRESS_TEXTURES.remove(loc);
             });
             return textInfo;
+        }
+    }
+
+    /**
+     * rasterizes an svg saving the result in loaded_textures
+     * @param loc loaded_textures key
+     * @param svgXmlBuf svg content
+     * @param sizeFunc takes svg width, svg height -> (texture width)
+     */
+    public static Pair<IntPair, SpriteUVLens> readSVG(Identifier loc, ByteBuffer svgXmlBuf, BiFunction<Float, Float, Integer> sizeFunc){
+        NativeImage image;
+
+//        MemoryStack stack = null;
+//
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            stack = MemoryStack.stackPush();
+//            svgXml += '\0';
+//            ByteBuffer svgXmlBuf = ByteBuffer.wrap(svgXml.getBytes(StandardCharsets.US_ASCII));
+
+//            NSVGImage svg = NanoSVG.nsvgParse(stack.ASCII(svgXml), stack.ASCII("px"), 96.0f);
+//            NSVGImage svg = NanoSVG.nsvgParse(svgXml, "px", 96.0f);
+            NSVGImage svg = NanoSVG.nsvgParse(svgXmlBuf, stack.ASCII("px"), 96.0f);
+
+            if (svg == null) {
+                throw new IllegalStateException("Failed to parse SVG.");
+            }
+
+            long rast = NanoSVG.nsvgCreateRasterizer();
+
+            int width  = sizeFunc.apply(svg.width(), svg.height());
+            float scale = width/(svg.width());
+            int height = Math.round(svg.height()*scale);
+
+            ByteBuffer svgRast = MemoryUtil.memAlloc(width * height * 4);
+
+            NanoSVG.nsvgRasterize(rast, svg, 0, 0, scale, svgRast, width, height, width * 4);
+
+            NanoSVG.nsvgDeleteRasterizer(rast);
+
+            image = new NativeImage(
+                width,
+                height,
+                true
+            );
+
+            MemoryUtil.memCopy(
+                MemoryUtil.memAddress(svgRast),
+                ((NativeImageAccessor) (Object) image).getPointer(),
+                (long) width * height * 4
+            );
+
+            var tex = new NativeImageBackedTexture(image);
+
+            Pair<IntPair, SpriteUVLens> textInfo = new Pair<>(
+                new IntPair(width, height),
+                SpriteUVRegion.FULL.asLens()
+            );
+
+            MinecraftClient.getInstance().execute(() -> {
+                MinecraftClient.getInstance().getTextureManager().registerTexture(loc, tex);
+                LOADED_TEXTURES.put(loc, loc);
+                TEXTURE_INFO.put(loc, textInfo);
+                IN_PROGRESS_TEXTURES.remove(loc);
+            });
+            return textInfo;
+
+        } catch( Exception e){
+            Inline.LOGGER.error(e.toString());
+//            if(stack != null) stack.close();
+            throw e;
         }
     }
 }

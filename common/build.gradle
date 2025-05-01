@@ -11,6 +11,14 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel.cloth:cloth-config:${rootProject.cloth_config_version}"
 
+    implementation 'org.lwjgl:lwjgl-nanovg:3.3.3'
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows"
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos"
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux"
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64"
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
+    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
+
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2' // for @Nonnull
 
 }

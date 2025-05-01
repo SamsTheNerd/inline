@@ -62,6 +62,14 @@ dependencies {
     modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:0.5.1-f-build.1335+mc1.20.1")
      */
 
+    include 'org.lwjgl:lwjgl-nanovg:3.3.3'
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }

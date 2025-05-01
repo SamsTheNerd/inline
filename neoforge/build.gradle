@@ -55,6 +55,21 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    forgeRuntimeLibrary 'org.lwjgl:lwjgl-nanovg:3.3.3'
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows"
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos"
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux"
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64"
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
+    forgeRuntimeLibrary "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
+
+    include 'org.lwjgl:lwjgl-nanovg:3.3.3'
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
+    include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
 }
 
 processResources {
