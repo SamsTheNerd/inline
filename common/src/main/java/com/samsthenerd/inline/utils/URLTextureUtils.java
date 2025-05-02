@@ -9,6 +9,10 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.io.ByteBufferSeekableByteChannel;
+import org.jcodec.common.model.Picture;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.nanovg.NSVGImage;
 import org.lwjgl.nanovg.NanoSVG;
@@ -76,6 +80,13 @@ public class URLTextureUtils {
                         ByteBuffer byBuf = TextureUtil.readResource(conn.getInputStream());
                         byBuf.rewind();
                         readGif(textureId, byBuf);
+                        break;
+                    }
+                    case "image/webp": {
+                        ByteBuffer byBuf = TextureUtil.readResource(conn.getInputStream());
+                        byBuf.rewind();
+                        readImageWebP(textureId, byBuf);
+
                         break;
                     }
                     case "image/svg+xml": {
@@ -209,6 +220,49 @@ public class URLTextureUtils {
             });
             return textInfo;
         }
+    }
+
+    public static Pair<IntPair, SpriteUVLens> readImageWebP(Identifier loc, ByteBuffer buf) throws JCodecException, IOException {
+        NativeImage image;
+
+        var grab = FrameGrab.createFrameGrab(ByteBufferSeekableByteChannel.readFromByteBuffer(buf));
+        // just single frame for now
+        Picture pic = grab.getNativeFrame();
+
+//        ByteBuffer.wrap(pic.getData());
+
+        image = new NativeImage(
+            pic.getWidth(),
+            pic.getHeight(),
+            true
+        );
+
+        for(int w = 0; w < pic.getWidth(); w++){
+            for(int h = 0; h < pic.getHeight(); h++) {
+                image.setColor(w,h, pic.getData()[w][h]);
+            }
+        }
+
+//        MemoryUtil.memCopy(
+//            MemoryUtil.memAddress(pic.getData()),
+//            ((NativeImageAccessor) (Object) image).getPointer(),
+//            (long) wBuf.get(0) * hBuf.get(0) * 4
+//        );
+
+        var tex = new NativeImageBackedTexture(image);
+
+        Pair<IntPair, SpriteUVLens> textInfo = new Pair<>(
+            new IntPair(pic.getWidth(), pic.getHeight()),
+            SpriteUVRegion.FULL.asLens()
+        );
+
+        MinecraftClient.getInstance().execute(() -> {
+            MinecraftClient.getInstance().getTextureManager().registerTexture(loc, tex);
+            LOADED_TEXTURES.put(loc, loc);
+            TEXTURE_INFO.put(loc, textInfo);
+            IN_PROGRESS_TEXTURES.remove(loc);
+        });
+        return textInfo;
     }
 
     /**

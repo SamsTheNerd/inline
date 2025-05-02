@@ -19,6 +19,8 @@ dependencies {
 //    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
 //    implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
 
+    implementation 'org.jcodec:jcodec:0.2.5'
+
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2' // for @Nonnull
 
 }

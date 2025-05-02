@@ -70,6 +70,8 @@ dependencies {
     include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64"
     include "org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm32"
 
+    include 'org.jcodec:jcodec:0.2.5'
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
