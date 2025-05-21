@@ -13,8 +13,9 @@ dependencies {
 
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2' // for @Nonnull
 
+    implementation "org.lwjgl:lwjgl-nanovg:${lwjgl_version}"
+
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinExtrasVersion}"))
-    
     
 }
 
