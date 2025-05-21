@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.1
+
+### Fixed
+
+- mod icon renderer not working on forge/neoforge
+- issues with create on 1.21.1
+
+### Added
+
+- support for more image formats in url texture utils (SVG, JPG, anything else supported by stbimage)
+
 ## 1.2.0
 
 ### Changed

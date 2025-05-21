@@ -74,7 +74,7 @@ dependencies {
         }
     }
 
-//    implementation('org.lwjgl:lwjgl-nanovg:3.3.3')
+
     implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-windows') } }
     implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-macos') } }
     implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux') } }
