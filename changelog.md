@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2
+
+### Fixed
+
+- Serverside crashing caused by SVG parser
+  - SVGs are no longer supported -- if you're a mod dev and would like this feature, contact me.
+
 ## 1.2.1
 
 ### Fixed

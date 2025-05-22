@@ -54,49 +54,6 @@ dependencies {
     modCompileOnly(group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2') // for @Nonnull
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-    components {
-        withModule("org.lwjgl:lwjgl-nanovg") {
-
-            ['windows', 'macos', 'linux', 'macos-arm64', 'linux-arm64', 'linux-arm32'].each { featureRoot ->
-                addVariant("natives-${featureRoot}-elements", "runtime") {
-                    withFiles {
-                        removeAllFiles()
-                        addFile("${id.name}-${id.version}-natives-${featureRoot}.jar")
-                    }
-                    withDependencies { clear() }
-                    withCapabilities {
-                        removeCapability(id.group, id.name)
-                        addCapability(id.group, "${id.name}-natives-${featureRoot}", id.version)
-                    }
-                }
-            }
-        }
-    }
-
-
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-windows') } }
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-macos') } }
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux') } }
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-macos-arm64') } }
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux-arm64') } }
-    implementation('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux-arm32') } }
-
-    forgeRuntimeLibrary 'org.lwjgl:lwjgl-nanovg:3.3.3'
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-windows') } }
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-macos') } }
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-linux') } }
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-macos-arm64') } }
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-linux-arm64') } }
-    forgeRuntimeLibrary ("org.lwjgl:lwjgl-nanovg:3.3.3") { capabilities { requireFeature('natives-linux-arm32') } }
-
-    include "org.lwjgl:lwjgl-nanovg:3.3.3"
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-windows') } }
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-macos') } }
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux') } }
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-macos-arm64') } }
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux-arm64') } }
-    include ('org.lwjgl:lwjgl-nanovg:3.3.3') { capabilities { requireFeature('natives-linux-arm32') } }
 }
 
 processResources {

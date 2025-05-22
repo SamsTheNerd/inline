@@ -28,8 +28,6 @@ public class InlineForge {
         modBus.addListener(this::onClientSetup);
         NeoForge.EVENT_BUS.addListener(this::onServerChatDecoration);
 
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> InlineConfigHandler.getConfigScreen(parent));
-
         // note, technically double nested lambdas, so should be fine ?
 //        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
 //            () -> IConfigScreenFactory.((client, parent) -> InlineConfigHandler.getConfigScreen(parent)));
@@ -48,6 +46,7 @@ public class InlineForge {
     private void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             InlineClient.initClient();
+            ModLoadingContext.get().getActiveContainer().registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> InlineConfigHandler.getConfigScreen(parent));
         });
     }
 
