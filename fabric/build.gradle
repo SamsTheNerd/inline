@@ -64,41 +64,6 @@ dependencies {
     modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:0.5.1-f-build.1335+mc1.20.1")
      */
 
-    components {
-        withModule("org.lwjgl:lwjgl-nanovg") {
-
-            ['windows', 'macos', 'linux', 'macos-arm64', 'linux-arm64', 'linux-arm32'].each { featureRoot ->
-                addVariant("natives-${featureRoot}-elements", "runtime") {
-                    withFiles {
-                        removeAllFiles()
-                        addFile("${id.name}-${id.version}-natives-${featureRoot}.jar")
-                    }
-                    withDependencies { clear() }
-                    withCapabilities {
-                        removeCapability(id.group, id.name)
-                        addCapability(id.group, "${id.name}-natives-${featureRoot}", id.version)
-                    }
-                }
-            }
-        }
-    }
-
-    implementation "org.lwjgl:lwjgl-nanovg:${lwjgl_version}"
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-windows') } }
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-macos') } }
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux') } }
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-macos-arm64') } }
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux-arm64') } }
-    implementation ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux-arm32') } }
-
-    include "org.lwjgl:lwjgl-nanovg:${lwjgl_version}"
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-windows') } }
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-macos') } }
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux') } }
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-macos-arm64') } }
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux-arm64') } }
-    include ("org.lwjgl:lwjgl-nanovg:${lwjgl_version}") { capabilities { requireFeature('natives-linux-arm32') } }
-
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
@@ -206,6 +171,8 @@ tasks {
         // otherwise tasks.remapJar doesn't exist yet
         publishMods {
             github {
+                displayName = "Inline" + " " + project.version
+
                 additionalFiles.from(
                     project(":common").tasks.remapJar.archiveFile,
                     project(":forge").tasks.remapJar.archiveFile,
